@@ -1,8 +1,13 @@
+name: build_app
+
+on:
+  release:
+    types: [created] # 表示在创建新的 Release 时触发
 jobs:
   build:
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -35,6 +40,4 @@ jobs:
         with:
           name: ${{ runner.os }} Build
           path: |
-            build/*.exe
             build/*.bin
-            build/*.app/**/*
