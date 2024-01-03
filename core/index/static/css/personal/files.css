@@ -1,0 +1,44 @@
+body{
+    background: #333333;
+    width: 100%;
+    height: 100%;
+}
+
+.main{
+    background: #fff;
+    width: 90%;
+    height: 100%; /* 设置一个具体的高度值 */
+    margin: 50px auto;
+    border-radius: 20px;
+    overflow: hidden; /* 当内容超过高度时，会出现滚动条 */
+    padding: 10px;
+}
+
+.back-to-top{
+    position:fixed;
+    right: 50px;
+    bottom: 50px;
+}
+.path{
+    margin-left: 5px;
+}
+
+.btn-group-li{
+    margin: 0 10px;
+}
+
+#upload_panel .container{
+    width: 380px;
+}
+
+#upload_panel button{
+    margin: 0 auto;
+}
+.list-group-item .item-dir{
+    min-width: 550px;
+    max-height: 20px;
+}
+
+
+
+

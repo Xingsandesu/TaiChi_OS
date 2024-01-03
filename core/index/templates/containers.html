@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Docker Containers</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Docker Containers</h1>
+    <table id="containerTable">
+        <tr>
+            <th>CONTAINER ID</th>
+            <th>IMAGE</th>
+            <th>COMMAND</th>
+            <th>CREATED</th>
+            <th>STATUS</th>
+            <th>NAMES</th>
+        </tr>
+    </table>
+
+    <script>
+        fetch('/api/containers')
+            .then(response => response.json())
+            .then(data => {
+                const table = document.getElementById('containerTable');
+                data.data.forEach(container => {
+                    const row = table.insertRow();
+                    // 只显示前12个字符的ID
+                    row.insertCell().textContent = container.Id.substring(0, 12);
+                    row.insertCell().textContent = container.Config.Image;
+                    row.insertCell().textContent = container.Path;
+                    row.insertCell().textContent = container.Created;
+                    row.insertCell().textContent = container.State.Status;
+                    // 获取容器的别名
+                    row.insertCell().textContent = container.Name;
+                });
+            });
+    </script>
+</body>
+</html>

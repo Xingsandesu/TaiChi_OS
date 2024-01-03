@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <title>Universe OS 登录</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="stylesheet" href={{ url_for('static', filename='css/personal/login.css') }}>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.min.js"></script>
+  <script>
+    function encryptPassword() {
+      var passwordField = document.getElementById('password-field');
+      
+      for (var i = 0; i < 200; i++) {
+        passwordField.value = CryptoJS.SHA256(passwordField.value).toString();
+      }
+    }
+  </script>
+
+</head>
+<body class="img js-fullheight" style="background-image: url({{ url_for('static', filename='img/bg.jpg') }});">
+<section class="ftco-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6 text-center mb-5">
+        <h2 class="heading-section"> Universe OS 登录 </h2>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-4">
+        <div class="login-wrap p-0">
+          <h3 class="mb-4 text-center"></h3>
+          <form action="#" class="signin-form" method="post" onsubmit="encryptPassword()">
+            <div class="form-group">
+              <input type="text" class="form-control" name="username" placeholder="用户名" required>
+            </div>
+            <div class="form-group">
+              <input id="password-field" type="password" name="password" class="form-control" placeholder="密码"
+                     required>
+              <span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+              {% for message in get_flashed_messages() %}
+                {{ message }}
+              {% endfor %}
+            </div>
+            <div class="form-group">
+              <button type="submit" class="form-control btn btn-primary submit px-3">登录</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src={{ url_for('static', filename='js/public/jquery.min.js') }}></script>
+<script src={{ url_for('static', filename='js/public/bootstrap.min.js') }}></script>
+<script>
+    (function($) {
+
+  "use strict";
+
+  var fullHeight = function() {
+
+    $('.js-fullheight').css('height', $(window).height());
+    $(window).resize(function(){
+      $('.js-fullheight').css('height', $(window).height());
+    });
+
+  };
+  fullHeight();
+
+  $('#sidebarCollapse').on('click', function () {
+      $('#sidebar').toggleClass('active');
+  });
+
+})(jQuery);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/public/bootstrap/icons/font/bootstrap-icons.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/public/bootstrap/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/personal/index.css') }}">
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand d-none d-lg-block" href="#"><img src="{{ url_for('static', filename='img/logo.png') }}"
+                                                                alt="Logo" style="width: 2rem; height: auto;"></a>
+        <div class="d-flex justify-content-end">
+            <!-- 主页图标链接 -->
+            <a class="nav-link me-2" href="/">
+                <i class="bi bi-house-door"></i>
+            </a>
+            <!-- 文件夹图标链接 -->
+            <a class="nav-link me-2" href="/files">
+                <i class="bi bi-folder"></i>
+            </a>
+            <!-- Shell图标链接 -->
+            <a class="nav-link me-2" href="/webssh/">
+                <i class="bi bi-terminal"></i>
+            </a>
+            <!-- 应用图标链接 -->
+            <a class="nav-link me-2" href="/install">
+                <i class="bi bi-bag"></i>
+            </a>
+            <!-- 仪表台图标链接 -->
+            <a class="nav-link" href="/monitor">
+                <i class="bi bi-arrow-down-up"></i>
+            </a>
+        </div>
+    </div>
+</nav>
+<!-- Navbar End -->
+{% block content %}{% endblock %}
+<script src="{{ url_for('static', filename='js/public/bootstrap/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+#CPUchart, #RAMchart, #DiskIOChart, #NETWORKchart {
+    height: 100%;
+    width: 100%;
+    border: none;
+    padding: 10px;
+}

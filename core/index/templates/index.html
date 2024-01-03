@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/public/bootstrap/icons/font/bootstrap-icons.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/public/bootstrap/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/personal/index.css') }}">
+    <title>{{ title }}</title>
+
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand d-none d-lg-block" href="#"><img src="{{ url_for('static', filename='img/logo.png') }}"
+                                                                alt="Logo" style="width: 2rem; height: auto;"></a>
+
+        <div class="d-flex flex-row">
+            <!-- 系统状态信息，仅在宽屏下显示 -->
+            <div id="systemStatusTitle" class="d-none d-lg-flex flex-column flex-lg-row">
+                <div class="nav-link" id="systemVersion"></div>
+                <div class="nav-link" id="uploadLabel">上传: 0 Bytes/s</div>
+                <div class="nav-link" id="downloadLabel">下载: 0 Bytes/s</div>
+            </div>
+
+            <!-- 文件夹图标链接 -->
+            <a class="nav-link" href="/files">
+                <i class="bi bi-folder"></i>
+            </a>
+            <!-- Shell图标链接 -->
+            <a class="nav-link" href="/webssh/">
+                <i class="bi bi-terminal"></i>
+            </a>
+            <!-- 应用图标链接 -->
+            <a class="nav-link" href="/install">
+                <i class="bi bi-bag"></i>
+            </a>
+            <!-- 仪表台图标链接 -->
+            <a class="nav-link" href="/monitor">
+                <i class="bi bi-arrow-down-up"></i>
+            </a>
+        </div>
+    </div>
+</nav>
+<div class="container-fluid">
+    <!-- 主体部分开始 -->
+    <div class="row">
+        <!-- 第一行开始 -->
+        <div class="col" id="body1">
+            <!-- 第一列开始 -->
+            <div class="row" id="body2">
+                <!-- 第二行开始 -->
+                <div class="col-12 col-md-3 responsive-hide" id="md-3">
+                    <!-- 第一列开始 -->
+                    <div class="row">
+                        <div class="col" id="tubiao2">
+                            <div class="usage-area">
+                                <!-- 时间日期显示区域 -->
+                                <div id="status-display">
+                                    <div><span id="timeLabel"></span></div>
+                                    <div><span id="dateLabel"></span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <!-- 系统使用率显示区域 -->
+                            <div class="usage-area">
+                                <!-- CPU使用率显示区域 -->
+                                <div id="cpuUsageBlock" class="usage-block">
+                                    <canvas id="cpuUsageChart"></canvas>
+                                    <div id="cpuUsageLabel" class="centered-label">
+                                        <div class="usage">0%</div>
+                                        <div class="type">CPU</div>
+                                    </div>
+                                </div>
+
+                                <!-- 内存使用率显示区域 -->
+                                <div id="memoryUsageBlock" class="usage-block">
+                                    <canvas id="memoryUsageChart"></canvas>
+                                    <div id="memoryUsageLabel" class="centered-label">
+                                        <div class="usage">0%</div>
+                                        <div class="type">内存</div>
+                                    </div>
+                                </div>
+
+                                <!-- 磁盘使用率显示区域 -->
+                                <div id="diskUsageBlock" class="usage-block">
+                                    <canvas id="diskUsageChart"></canvas>
+                                    <div id="diskUsageLabel" class="centered-label">
+                                        <div class="usage">0%</div>
+                                        <div class="type">磁盘</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-9" id="md-9">
+                    <div class="row">
+                        <div class="col">
+                            <!-- 搜索功能 -->
+                            <form id="searchForm" action="https://www.google.com/search" method="get" target="_blank">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="searchEngineIcon">
+                                            <i id="googleIcon" class="bi bi-google" style="display: none;"></i>
+                                            <i id="baiduIcon" class="bi bi-search"></i>
+                                            <!-- 这里图标是反的，是在BUG上运行的，能跑就行 -->
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control" name="q" placeholder="搜索...">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <script>
+                        // 获取元素
+                        var searchForm = document.getElementById('searchForm');
+                        var googleIcon = document.getElementById('googleIcon');
+                        var baiduIcon = document.getElementById('baiduIcon');
+                        var searchInput = document.querySelector('input[name="q"]');
+
+                        // 设置默认搜索引擎为百度
+                        baiduIcon.style.display = '';
+                        googleIcon.style.display = 'none';
+
+
+                        // 处理表单的提交事件
+                        searchForm.addEventListener('submit', function (e) {
+                            e.preventDefault();
+                            var query = searchInput.value;
+                            var url;
+                            if (googleIcon.style.display === 'none') {
+                                url = 'https://www.baidu.com/#ie=UTF-8&wd=' + encodeURIComponent(query);
+                            } else {
+                                url = 'https://www.google.com/search?q=' + encodeURIComponent(query);
+                            }
+                            window.open(url, '_blank');
+                        });
+
+                        // 处理图标的点击事件
+                        googleIcon.addEventListener('click', function () {
+                            googleIcon.style.display = 'none';
+                            baiduIcon.style.display = '';
+                        });
+                        baiduIcon.addEventListener('click', function () {
+                            googleIcon.style.display = '';
+                            baiduIcon.style.display = 'none';
+                        });
+                    </script>
+                    <!-- 第二列开始 -->
+                    <div class="outer" id="outer"
+                         style="width: 100%; height: auto; overflow: auto; position: relative;">
+                        <div class="row" id="row4">
+                            <!-- 动态生成的项目列表显示区域 -->
+                            <div class="col">
+                                <!-- 添加左右切换的透明圆圈按钮 -->
+                                <div id="prev">
+                                    <!-- 使用 Bootstrap 的图标类 -->
+                                    <i class="bi bi-chevron-left"></i>
+                                </div>
+                                <div id="next">
+                                    <!-- 使用 Bootstrap 的图标类 -->
+                                    <i class="bi bi-chevron-right"></i>
+                                </div>
+
+                                {% for category, items in items_dict.items() %}
+                                    <div class="container">
+                                        <div class="container-header">
+                                            {{ category }}
+
+                                        </div>
+                                        <div class="container-body">
+                                            {% for item in items %}
+                                                <div class="item-block">
+                                                    <a href="{{ item.link }}" target="_blank">
+                                                        <div class="item-top">
+                                                            <div class="item-logo"><img src="{{ item.logo }}" alt="">
+                                                            </div>
+                                                            <div class="item-body">
+                                                                <span class="title">{{ item.title }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" id="tubiao1">
+                            <!-- 监控图表显示区域 -->
+                            <div class="col-12">
+                                <div id="CPUchart"></div>
+                            </div>
+                            <div class="col-12">
+                                <div id="NETWORKchart"></div>
+                            </div>
+                            <div class="col-12">
+                                <div id="DiskIOChart"></div>
+                            </div>
+                            <div class="col-12">
+                                <div id="RAMchart"></div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <script>
+                        var index = 0; // 当前显示的项目列表的索引
+                        var containers = document.getElementsByClassName('container'); // 所有的项目列表
+                        var startX = 0; // 触摸开始的X坐标
+
+                        // 显示指定索引的项目列表
+                        function showContainer(index) {
+                            for (var i = 0; i < containers.length; i++) {
+                                containers[i].style.display = 'none';
+                            }
+                            containers[index].style.display = 'block';
+                        }
+
+                        // 上一个按钮的点击事件
+                        document.getElementById('prev').addEventListener('click', function () {
+                            if (index > 0) {
+                                index--;
+                                showContainer(index);
+                            }
+                        });
+
+                        // 下一个按钮的点击事件
+                        document.getElementById('next').addEventListener('click', function () {
+                            if (index < containers.length - 1) {
+                                index++;
+                                showContainer(index);
+                            }
+                        });
+
+                        // 鼠标滚动事件
+                        document.getElementById('outer').addEventListener('wheel', function (e) {
+                            if (e.deltaY < 0 && index > 0) {
+                                index--;
+                                showContainer(index);
+                            } else if (e.deltaY > 0 && index < containers.length - 1) {
+                                index++;
+                                showContainer(index);
+                            }
+                        });
+
+                        // 触摸开始事件
+                        document.getElementById('outer').addEventListener('touchstart', function (e) {
+                            startX = e.touches[0].clientX;
+                        });
+
+                        // 触摸移动事件
+                        document.getElementById('outer').addEventListener('touchmove', function (e) {
+                            var moveX = e.touches[0].clientX;
+                            if (moveX - startX > 50 && index > 0) {
+                                index--;
+                                showContainer(index);
+                            } else if (moveX - startX < -50 && index < containers.length - 1) {
+                                index++;
+                                showContainer(index);
+                            }
+                        });
+
+                        // 初始显示第一个项目列表
+                        showContainer(index);
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/public/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/public/bootstrap/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/public/socket.io.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/personal/index.js') }}"></script>
+<script src="{{ url_for('static', filename='js/public/echarts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/public/chart.js') }}"></script>
+</body>
+</html>
