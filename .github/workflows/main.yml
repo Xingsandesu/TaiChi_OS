@@ -34,17 +34,12 @@ jobs:
         with:
           nuitka-version: main
           script-name: run.py
-          standalone: true    
-      
-      - name: Copy files
-        run: |
-          mkdir -p build/core/index
-          cp -r core/index/templates build/core/index/
-          cp -r core/index/static build/core/index/
+          standalone: true
+          include-data-dir: core/index/templates,core/index/static
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: ${{ runner.os }} Build
           path: |
-            build
+            build/run.dist
