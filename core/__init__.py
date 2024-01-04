@@ -7,7 +7,7 @@ from .index import bp as index_bp
 from .login import db, User
 from .login.views import bp as login_bp
 
-app = Flask(__name__, template_folder='index/templates', static_folder='index/static')
+app = Flask(__name__, template_folder='html/templates', static_folder='html/static')
 app.config.from_object(Config)
 db.init_app(app)
 login_manager = LoginManager(app)

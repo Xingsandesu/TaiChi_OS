@@ -54,7 +54,7 @@ max_body_size = 1 * 1024 * 1024
 
 def get_app_settings(options):
     settings = dict(
-        template_path=os.path.join(base_dir, 'core', 'index','templates'),
+        template_path=os.path.join(base_dir, 'core', 'html', 'templates'),
         websocket_ping_interval=options.wpintvl,
         debug=options.debug,
         xsrf_cookies=options.xsrf,
