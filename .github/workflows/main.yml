@@ -39,8 +39,8 @@ jobs:
       - name: Copy files
         run: |
           mkdir -p build/core/index
-          cp -r core/index/templates build/run.dist/core/index/
-          cp -r core/index/static build/run.dist/core/index/
+          cp -r core/index/templates build/run.dist/core/index/templates
+          cp -r core/index/static build/run.dist/core/index/static
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
