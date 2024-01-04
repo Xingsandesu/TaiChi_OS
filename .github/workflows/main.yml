@@ -34,8 +34,8 @@ jobs:
         with:
           nuitka-version: main
           script-name: run.py
-          standalone: true
-          include-data-dir: core/index/static=core/index/static --include-data-dir=core/index/templates=core/index/templates
+          onefile: true
+          include-data-dir: core/html=core/html
 
 
       - name: Upload Artifacts

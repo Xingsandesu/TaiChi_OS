@@ -11,8 +11,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     WIN = sys.platform.startswith('win')
     prefix = 'sqlite:///' if WIN else 'sqlite:////'
-    SQLALCHEMY_DATABASE_URI = prefix + os.path.join(os.path.dirname(__file__), 'data.db')
-
+    SQLALCHEMY_DATABASE_URI = prefix + os.path.join(os.path.dirname(sys.argv[0]), 'data.db')
 
 # @/file 配置文件
 HOME_PATH = os.path.abspath('/')  # 将路径转化为标准绝对路径
