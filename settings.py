@@ -1,4 +1,3 @@
-import logging
 import os.path
 import ssl
 
@@ -11,19 +10,14 @@ from webssh.utils import (
     to_ip_address, parse_origin_from_url, is_valid_encoding
 )
 
-define('address', default='', help='Listen address')
-define('port', type=int, default=8888,  help='Listen port')
-define('ssladdress', default='', help='SSL listen address')
-define('sslport', type=int, default=4433,  help='SSL listen port')
-define('certfile', default='', help='SSL certificate file')
-define('keyfile', default='', help='SSL private key file')
-define('debug', type=bool, default=False, help='Debug mode')
+define('address', default='0.0.0.0', help='绑定IP地址')
+define('port', type=int, default=80,  help='绑定端口')
+define('debug', type=bool, default=False, help='Debug 模式')
 define('policy', default='warning',
        help='Missing host key policy, reject|autoadd|warning')
 define('hostfile', default='', help='User defined host keys file')
 define('syshostfile', default='', help='System wide host keys file')
 define('tdstream', default='', help='Trusted downstream, separated by comma')
-define('redirect', type=bool, default=True, help='Redirecting http to https')
 define('fbidhttp', type=bool, default=True,
        help='Forbid public plain http incoming requests')
 define('xheaders', type=bool, default=True, help='Support xheaders')
@@ -39,7 +33,6 @@ define('timeout', type=float, default=3, help='SSH connection timeout')
 define('delay', type=float, default=3, help='The delay to call recycle_worker')
 define('maxconn', type=int, default=20,
        help='Maximum live connections (ssh sessions) per client')
-define('font', default='', help='custom font filename')
 define('encoding', default='',
        help='''The default character encoding of ssh servers.
 Example: --encoding='utf-8' to solve the problem with some switches&routers''')

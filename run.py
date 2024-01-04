@@ -1,5 +1,4 @@
 import logging
-
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
@@ -12,7 +11,7 @@ from core import create_app as make_core_app
 from websocket.system_usage import monitor_app
 # 引入WebSSH应用
 from webssh.main import make_app as make_webssh_app
-from webssh.settings import get_server_settings, check_encoding_setting
+from settings import get_server_settings, check_encoding_setting
 
 
 def add_handlers_to_app(app, pattern, handlers):
@@ -32,8 +31,12 @@ def add_handlers_to_app(app, pattern, handlers):
 
 def main():
     # 解析命令行参数
-    options.parse_command_line()
-
+    try:
+        options.parse_command_line()
+    except tornado.options.Error:
+        logging.error('命令行参数解析失败')
+        exit(1)
+        
     # 检查编码设置
     check_encoding_setting(options.encoding)
 
@@ -61,15 +64,13 @@ def main():
         server_settings = get_server_settings(options)
 
         # 启动服务器
-        main_app.listen(80, '0.0.0.0', **server_settings)
-        logging.info(
-            '服务器启动成功! 运行在 {}:{}'.format('0.0.0.0', 80)
-        )
+        main_app.listen(options.port, options.address, **server_settings)
+        logging.info(f"服务器启动成功! 运行在 {options.address}:{options.port}")
         loop.start()
     except KeyboardInterrupt:
         logging.info('服务器已停止')
     except OSError:
-        logging.error('服务器启动失败,请检查端口是否被占用')
+        logging.error('服务器启动失败,请检查端口是否被占用，或者地址是否正确')
     except Exception as e:
         logging.error('服务器启动失败,请检查错误日志')
         logging.exception(e)

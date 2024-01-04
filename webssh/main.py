@@ -1,12 +1,10 @@
-import os
-
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
 import tornado.wsgi
 
 from webssh.handler import IndexHandler, WsockHandler, NotFoundHandler
-from webssh.settings import (
+from settings import (
     get_app_settings, get_host_keys_settings, get_policy_setting
 )
 
