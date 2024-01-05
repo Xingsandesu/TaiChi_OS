@@ -299,7 +299,8 @@ $(document).ready(function () {
         }
     };
 
-    const socket = new WebSocket(`ws://${window.location.hostname}/Monitor`);
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const socket = new WebSocket(`${protocol}//${window.location.hostname}/Monitor`);
     let recvData = null;
     socket.onmessage = function (event) {
         recvData = JSON.parse(event.data);

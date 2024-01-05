@@ -11,7 +11,7 @@ from webssh.utils import (
 )
 
 define('address', default='0.0.0.0', help='绑定IP地址')
-define('port', type=int, default=80,  help='绑定端口')
+define('port', type=int, default=80, help='绑定端口')
 define('debug', type=bool, default=False, help='Debug 模式')
 define('policy', default='warning',
        help='Missing host key policy, reject|autoadd|warning')
@@ -37,17 +37,13 @@ define('encoding', default='',
        help='''The default character encoding of ssh servers.
 Example: --encoding='utf-8' to solve the problem with some switches&routers''')
 
-
-
-base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 max_body_size = 1 * 1024 * 1024
-
-
 
 
 def get_app_settings(options):
     settings = dict(
-        template_path=os.path.join(base_dir, 'core', 'html', 'templates'),
+        template_path=os.path.join('core', 'html', 'templates'),
         websocket_ping_interval=options.wpintvl,
         debug=options.debug,
         xsrf_cookies=options.xsrf,
@@ -67,7 +63,7 @@ def get_server_settings(options):
 
 def get_host_keys_settings(options):
     if not options.hostfile:
-        host_keys_filename = os.path.join(base_dir, 'known_hosts')
+        host_keys_filename = os.path.join('known_hosts')
     else:
         host_keys_filename = options.hostfile
     host_keys = load_host_keys(host_keys_filename)
@@ -142,9 +138,6 @@ def get_origin_setting(options):
         raise ValueError('Empty origin list')
 
     return origins
-
-
-
 
 
 def check_encoding_setting(encoding):

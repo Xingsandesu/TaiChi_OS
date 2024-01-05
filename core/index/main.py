@@ -2,10 +2,11 @@ import os
 import time
 from os.path import join, isdir, abspath, pardir, basename, getmtime
 
+from docker import DockerClient
 from flask import Blueprint, render_template, request
 from flask_login import login_required
 
-from core.config import items_dict, index_title, HOME_PATH
+from core.config import items, HOME_PATH, DEFAULT_LOGO_PATH, DOCKER_CATEGORY, app_logo_mapping
 
 
 # noinspection PyShadowingBuiltins,PyShadowingNames
@@ -76,25 +77,74 @@ def get_abs_path(start, path):
     return None
 
 
+# 定义一个函数，根据应用名称获取对应的logo路径
+def get_logo_path(app_name):
+    # 从app_logo_mapping字典中获取应用名称对应的logo路径，如果没有找到，则返回默认的logo路径
+    return app_logo_mapping.get(app_name, DEFAULT_LOGO_PATH)
+
+
+# 定义一个函数，获取Docker容器的信息
+def get_docker_info(container):
+    # 获取容器的名称
+    app_name = container.name
+    # 获取容器的端口信息
+    ports = container.ports
+    # 获取映射的端口信息
+    mapped_ports = [port_info[0]['HostPort'] for port_info in ports.values() if port_info]
+    # 获取应用的logo路径
+    logo_path = get_logo_path(app_name)
+    # 获取访问者的IP地址
+    server_ip = request.host.split(':')[0]
+    # 构造基础链接
+    base_link = f'http://{server_ip}'
+    # 如果有映射的端口，链接中加入端口信息，否则只使用基础链接
+    link = f'{base_link}:{mapped_ports[0]}' if mapped_ports else base_link
+    # 返回一个字典，包含应用名称、链接和logo路径
+    return {'title': app_name, 'link': link, 'logo': logo_path}
+
+
+# 定义一个函数，更新Docker信息
+def update_docker():
+    # 从环境变量中创建一个Docker客户端
+    client = DockerClient.from_env()
+    # 列出所有的Docker容器
+    dockers = client.containers.list()
+    # 获取所有容器的信息
+    existing_items = [get_docker_info(container) for container in dockers]
+    # 如果Docker类别不在items字典中，添加该类别和对应的容器信息
+    if DOCKER_CATEGORY not in items.items_dict:
+        items.add_category(DOCKER_CATEGORY, existing_items)
+    else:
+        # 如果Docker类别已经存在，对于每一个容器信息，如果它不在类别中，就添加进去
+        for item in existing_items:
+            if not items.item_exists_in_category(DOCKER_CATEGORY, item):
+                items.add_item_to_category(DOCKER_CATEGORY, item)
+        # 移除类别中已经不存在的容器信息
+        items.remove_nonexistent_items(DOCKER_CATEGORY, existing_items)
+
+
 bp = Blueprint('index', __name__, url_prefix='/')
 
 
 @bp.route('/')  # /
 @login_required
 def index():
-    return render_template('index.html', items_dict=items_dict, title=index_title)
+    update_docker()
+    return render_template('index.html', items_dict=items.items_dict)
 
 
 @bp.route('/None')  # /about
 @login_required
-def None_back():
-    return render_template('index.html', items_dict=items_dict, title=index_title)
+def none_back():
+    update_docker()
+    return render_template('index.html', items_dict=items.items_dict)
 
 
 @bp.route('/install')  # /install
 @login_required
 def install():
     return render_template('install.html')
+
 
 @bp.route('/containers')  # /containers
 def containers():

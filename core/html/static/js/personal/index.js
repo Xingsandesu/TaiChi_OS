@@ -1,6 +1,7 @@
 let cpuChart, memoryChart;
 
-const socket = new WebSocket(`ws://${window.location.hostname}/Monitor`);
+const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+const socket = new WebSocket(`${protocol}//${window.location.hostname}/Monitor`);
 let recvData = null;
 socket.onmessage = function (event) {
     recvData = JSON.parse(event.data);
@@ -110,13 +111,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const diskChart = createChart(diskCtx, diskGradient, '磁盘 使用率');
     getSystemInfo(diskChart);
 
-    const socket = new WebSocket(`ws://${window.location.hostname}/Monitor`);
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const socket = new WebSocket(`${protocol}//${window.location.hostname}/Monitor`);
     let recvData = null;
     socket.onmessage = function (event) {
         recvData = JSON.parse(event.data);
         handleResponse(recvData, cpuChart, memoryChart);
     };
-
     $(window).resize(function () {
         if (cpuChart) {
             cpuChart.resize();

@@ -11,7 +11,6 @@ try:
 except ImportError:
     from urlparse import urlparse
 
-
 numeric = re.compile(r'[0-9]+$')
 allowed = re.compile(r'(?!-)[a-z0-9-]{1,63}(?<!-)$', re.IGNORECASE)
 

@@ -1,10 +1,10 @@
 from flask import Flask
 from flask_login import LoginManager
 
+from core.models import db, User
 from .api import *
 from .config import Config
 from .index import bp as index_bp
-from .login import db, User
 from .login.views import bp as login_bp
 
 app = Flask(__name__, template_folder='html/templates', static_folder='html/static')
@@ -13,7 +13,6 @@ db.init_app(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login.login'
 login_manager.login_message = ''
-
 
 
 @login_manager.user_loader

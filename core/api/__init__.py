@@ -1,8 +1,8 @@
 from .blueprint import bp
+from .docker import *
 # from .command import *
 from .files import *
 from .system_info import *
-from .docker import *
 
 if __name__ == '__main__':
     def create_app():

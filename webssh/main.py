@@ -3,10 +3,10 @@ import tornado.ioloop
 import tornado.web
 import tornado.wsgi
 
-from webssh.handler import IndexHandler, WsockHandler, NotFoundHandler
 from settings import (
     get_app_settings, get_host_keys_settings, get_policy_setting
 )
+from webssh.handler import IndexHandler, WsockHandler, NotFoundHandler
 
 
 def make_app(loop, options):

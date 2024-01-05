@@ -2,12 +2,12 @@ import mimetypes
 import os
 import shutil
 import time
-from flask_login import login_required
 from os.path import exists, isfile, dirname
 from os.path import join, isdir, abspath, pardir, basename, getmtime
 
 import chardet
 from flask import request, send_file
+from flask_login import login_required
 
 from core.config import HOME_PATH
 from .blueprint import bp
@@ -79,6 +79,7 @@ def get_abs_path(start, path):
         if abs_path.startswith(start):
             return abs_path
     return None
+
 
 @bp.route('/remove/', methods=['POST'])
 @login_required

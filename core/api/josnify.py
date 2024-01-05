@@ -1,5 +1,6 @@
-from flask import jsonify, Response
 import json
+
+from flask import Response
 
 CODE_YES = 200  # 操作成功的响应码
 CODE_NO = 400  # 操作失败的响应码
@@ -24,5 +25,3 @@ def create_api_response(code, errmsg='', data=None):
     response = Response(json.dumps(json_data, ensure_ascii=False),
                         mimetype="application/json; charset=utf-8")
     return response
-
-

@@ -38,6 +38,7 @@ def delete_container(id):
     except Exception as e:
         return create_api_response(CODE_NO, str(e))
 
+
 # 删除一个镜像
 # noinspection PyShadowingBuiltins
 @bp.route('/images/<id>/delete', methods=['DELETE'])

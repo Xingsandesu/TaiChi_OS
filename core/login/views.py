@@ -1,9 +1,12 @@
 from datetime import timedelta
+
 from flask import render_template, request, redirect, url_for, flash, session, Blueprint
 from flask_login import login_user, login_required, logout_user
-from .models import User, db
+
+from core.models import User, db
 
 bp = Blueprint('login', __name__)
+
 
 @bp.route('/register', methods=['GET', 'POST'])
 def register():

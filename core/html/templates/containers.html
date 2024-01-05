@@ -1,49 +1,32 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Docker Containers</title>
+{% extends "navbar.html" %}
+{% block title %}
+    Universe OS 容器管理
+{% endblock %}
+{% block content %}
+    <script src="{{ url_for('static', filename='js/public/jquery.min.js') }}"></script>
     <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .rounded {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 0;
+            border-radius: 20px;
         }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
+
+        .custom-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            height: 50%;
         }
     </style>
-</head>
-<body>
-    <h1>Docker Containers</h1>
-    <table id="containerTable">
-        <tr>
-            <th>CONTAINER ID</th>
-            <th>IMAGE</th>
-            <th>COMMAND</th>
-            <th>CREATED</th>
-            <th>STATUS</th>
-            <th>NAMES</th>
-        </tr>
-    </table>
+    <div class="d-flex justify-content-center align-items-center" style="height: 100vh; transform: scale(0.95)">
+        <div class="rounded" style="width: 85rem; height: 40rem; background-color: transparent;">
+            <div class="custom-row">
+                123
+            </div>
+        </div>
+    </div>
+{% endblock %}
 
-    <script>
-        fetch('/api/containers')
-            .then(response => response.json())
-            .then(data => {
-                const table = document.getElementById('containerTable');
-                data.data.forEach(container => {
-                    const row = table.insertRow();
-                    // 只显示前12个字符的ID
-                    row.insertCell().textContent = container.Id.substring(0, 12);
-                    row.insertCell().textContent = container.Config.Image;
-                    row.insertCell().textContent = container.Path;
-                    row.insertCell().textContent = container.Created;
-                    row.insertCell().textContent = container.State.Status;
-                    // 获取容器的别名
-                    row.insertCell().textContent = container.Name;
-                });
-            });
-    </script>
-</body>
-</html>

@@ -6,7 +6,7 @@
           href="{{ url_for('static', filename='css/public/bootstrap/icons/font/bootstrap-icons.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/public/bootstrap/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/personal/index.css') }}">
-    <title>{{ title }}</title>
+    <title>Universe OS</title>
 
 <body>
 <!-- Navbar -->
@@ -31,6 +31,9 @@
             <a class="nav-link" href="/webssh/">
                 <i class="bi bi-terminal"></i>
             </a>
+            <a class="nav-link" href="/containers">
+                <i class="bi bi-boxes"></i>
+            </a>
             <!-- 应用图标链接 -->
             <a class="nav-link" href="/install">
                 <i class="bi bi-bag"></i>
@@ -38,6 +41,9 @@
             <!-- 仪表台图标链接 -->
             <a class="nav-link" href="/monitor">
                 <i class="bi bi-arrow-down-up"></i>
+            </a>
+            <a class="nav-link" href="/logout">
+                <i class="bi bi-box-arrow-right"></i>
             </a>
         </div>
     </div>

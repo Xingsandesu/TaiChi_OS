@@ -1,4 +1,5 @@
 import logging
+
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
@@ -7,11 +8,11 @@ from tornado.options import options
 
 # 引入Flask应用
 from core import create_app as make_core_app
+from settings import get_server_settings, check_encoding_setting
 # 引入WebSocket-Monitor应用
 from websocket.system_usage import monitor_app
 # 引入WebSSH应用
 from webssh.main import make_app as make_webssh_app
-from settings import get_server_settings, check_encoding_setting
 
 
 def add_handlers_to_app(app, pattern, handlers):
@@ -36,7 +37,7 @@ def main():
     except tornado.options.Error:
         logging.error('命令行参数解析失败')
         exit(1)
-        
+
     # 检查编码设置
     check_encoding_setting(options.encoding)
 
