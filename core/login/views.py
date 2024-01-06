@@ -81,5 +81,5 @@ def login():
 @login_required  # 用于视图保护，后面会详细介绍
 def logout():
     logout_user()  # 登出用户
-    flash('再见')
+    flash('')
     return redirect(url_for('login.login'))  # 重定向回首页

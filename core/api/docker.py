@@ -1,9 +1,7 @@
-from docker import DockerClient
+from core.models import client
 
 from .blueprint import bp
 from .josnify import create_api_response, CODE_YES, CODE_NO
-
-client = DockerClient.from_env()
 
 
 # 获取所有容器的列表

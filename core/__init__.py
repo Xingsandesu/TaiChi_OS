@@ -1,9 +1,8 @@
 from flask import Flask
 from flask_login import LoginManager
 
-from core.models import db, User
+from core.models import db, User, Config
 from .api import *
-from .config import Config
 from .index import bp as index_bp
 from .login.views import bp as login_bp
 

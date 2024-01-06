@@ -38,7 +38,7 @@ define('encoding', default='',
 Example: --encoding='utf-8' to solve the problem with some switches&routers''')
 
 # base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-max_body_size = 1 * 1024 * 1024
+max_body_size = 1 * 1024 * 1024 * 1024
 
 
 def get_app_settings(options):

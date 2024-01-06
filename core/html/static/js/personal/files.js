@@ -258,10 +258,14 @@ window.onload = function () {
         var dst = $('#save_data').data('dst'); //获取目标路径
         var operation = $('#save_data').data('operation');  //获取操作方法
 
+        console.log("src: ", src); // 调试代码
+        console.log("dst: ", dst); // 调试代码
+        console.log("operation: ", operation); // 调试代码
+
         var url = '';
-        if (operation == 'copy') {
+        if (operation == '复制') {
             url = '/api/copy/';
-        } else if (operation == 'move') {
+        } else if (operation == '移动') {
             url = '/api/move/';
         }
 
@@ -272,11 +276,13 @@ window.onload = function () {
                 } else {
                     alert(response['errmsg']);
                 }
+            }).fail(function(jqXHR, textStatus, errorThrown) { // 添加错误处理函数
+                console.error("Request failed: ", textStatus, ", ", errorThrown);
+                alert('请求失败!');
             });
         } else {
             alert('操作失败!');
         }
-
     });
 
     //复制/移动 窗口中的路径被点击

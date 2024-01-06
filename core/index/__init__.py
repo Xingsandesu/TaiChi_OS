@@ -1,4 +1,4 @@
-from .main import bp
+from .views import bp
 
 if __name__ == '__main__':
     def create_app():

@@ -1,8 +1,19 @@
+import os
+import secrets
+import sys
+import time
+from os.path import join, isdir, abspath, pardir, basename, getmtime
+
+from docker import DockerClient
+from flask import request
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from core.config import DOCKER_CATEGORY, DEFAULT_LOGO_PATH, APP_LOGO_MAPPING
+
 db = SQLAlchemy()
+client = DockerClient.from_env()
 
 
 class User(db.Model, UserMixin):
@@ -20,6 +31,168 @@ class User(db.Model, UserMixin):
     @classmethod
     def user_exists(cls, username):
         return cls.query.filter_by(username=username).first() is not None
+
+
+### 配置相关Class
+class Config:
+    SECRET_KEY = secrets.token_hex(16)
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    prefix = 'sqlite:///'
+    SQLALCHEMY_DATABASE_URI = prefix + os.path.join(os.path.dirname(sys.argv[0]), 'data.db')
+
+
+# @/ 配置文件
+class Items:
+    def __init__(self):
+        self.items_dict = {}
+
+    def add_category(self, category_name, category_items):
+        self.items_dict[category_name] = category_items
+
+    def delete_category(self, category_name):
+        if category_name in self.items_dict:
+            del self.items_dict[category_name]
+
+    def update_category(self, category_name, category_items):
+        if category_name in self.items_dict:
+            self.items_dict[category_name] = category_items
+
+    def get_category(self, category_name):
+        return self.items_dict.get(category_name, None)
+
+    def add_item_to_category(self, category_name, item):
+        if category_name in self.items_dict:
+            self.items_dict[category_name].append(item)
+
+    def delete_item_from_category(self, category_name, item):
+        if category_name in self.items_dict and item in self.items_dict[category_name]:
+            self.items_dict[category_name].remove(item)
+
+    def item_exists_in_category(self, category_name, item):
+        if category_name in self.items_dict:
+            return item in self.items_dict[category_name]
+        return False
+
+    def remove_nonexistent_items(self, category_name, existing_items):
+        if category_name in self.items_dict:
+            self.items_dict[category_name] = [item for item in self.items_dict[category_name] if item in existing_items]
+
+
+### files相关def
+# noinspection PyShadowingBuiltins,PyShadowingNames
+def listdir(dir):
+    """遍历dir文件夹，返回目录列表和文件列表"""
+    dirs = []
+    files = []
+    for item in os.listdir(dir):
+        full_name = join(dir, item)
+        if isdir(full_name):
+            dirs.append(item)
+        else:
+            files.append(item)
+
+    return dirs, files
+
+
+def get_m_time(start, paths):
+    """
+    获取文件或目录的创建时间
+    :param start:  起始目录
+    :param paths:  文件或目录的名字的列表
+    :return:  返回包含元组(path, m_time)类型的列表
+    """
+    lst = []
+    for path in paths:
+        full_path = join(start, path)
+        m_time = getmtime(full_path)
+        lst.append((path, time.asctime(time.localtime(m_time))))
+
+    return lst
+
+
+def get_levels(start, path):
+    """
+    获取path每一层的路径, 以start为起始目录 (应确保path在start下)
+    :param start: 根目录绝对路径
+    :param path: 路径绝对路径
+    :return: 包含每层目录的绝对路径的列表
+    """
+
+    levels = []
+    full_path = path
+    base_name = basename(full_path)
+    levels.append((full_path, base_name))
+    while full_path != start:
+        full_path = abspath(join(full_path, pardir))  # 移动到父目录
+        base_name = basename(full_path)
+        levels.append((full_path, base_name))
+
+    return levels[:: -1]  # 返回反转后的列表
+
+
+def get_abs_path(start, path):
+    """
+    获取path的绝对路径,
+    :param start: 根目录
+    :param path: 相对路径
+    :return: 如果path不在start下返回None， 反之返回其绝对路径
+    """
+    if start and path:
+        # start 和 path 都不能为空
+        start = abspath(start)
+        path = path.lstrip('/')  # 移除路径开头的所有斜杠
+        abs_path = abspath(join(start, path))  # 将路径解析为相对于start的绝对路径
+        if abs_path.startswith(start):
+            return abs_path
+    return None
+
+
+### index docker相关def
+items = Items()
+
+
+# 定义一个函数，根据应用名称获取对应的logo路径
+def get_logo_path(app_name):
+    # 从app_logo_mapping字典中获取应用名称对应的logo路径，如果没有找到，则返回默认的logo路径
+    return APP_LOGO_MAPPING.get(app_name, DEFAULT_LOGO_PATH)
+
+
+# 定义一个函数，获取Docker容器的信息
+def get_docker_info(container):
+    # 获取容器的名称
+    app_name = container.name
+    # 获取容器的端口信息
+    ports = container.ports
+    # 获取映射的端口信息
+    mapped_ports = [port_info[0]['HostPort'] for port_info in ports.values() if port_info]
+    # 获取应用的logo路径
+    logo_path = get_logo_path(app_name)
+    # 获取访问者的IP地址
+    server_ip = request.host.split(':')[0]
+    # 构造基础链接
+    base_link = f'http://{server_ip}'
+    # 如果有映射的端口，链接中加入端口信息，否则只使用基础链接
+    link = f'{base_link}:{mapped_ports[0]}' if mapped_ports else base_link
+    # 返回一个字典，包含应用名称、链接和logo路径
+    return {'title': app_name, 'link': link, 'logo': logo_path}
+
+
+# 定义一个函数，更新Docker信息
+def update_docker():
+    # 列出所有的Docker容器
+    dockers = client.containers.list()
+    # 获取所有容器的信息
+    existing_items = [get_docker_info(container) for container in dockers]
+    # 如果Docker类别不在items字典中，添加该类别和对应的容器信息
+    if DOCKER_CATEGORY not in items.items_dict:
+        items.add_category(DOCKER_CATEGORY, existing_items)
+    else:
+        # 如果Docker类别已经存在，对于每一个容器信息，如果它不在类别中，就添加进去
+        for item in existing_items:
+            if not items.item_exists_in_category(DOCKER_CATEGORY, item):
+                items.add_item_to_category(DOCKER_CATEGORY, item)
+        # 移除类别中已经不存在的容器信息
+        items.remove_nonexistent_items(DOCKER_CATEGORY, existing_items)
 
 
 #

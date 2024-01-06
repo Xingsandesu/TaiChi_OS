@@ -380,7 +380,7 @@
 
         function custom_font_is_loaded() {
             if (!custom_font) {
-                console.log('No custom font specified.');
+                {#console.log('No custom font specified.');#}
             } else {
                 console.log('Status of custom font ' + custom_font.family + ': ' + custom_font.status);
                 if (custom_font.status === 'loaded') {
@@ -500,7 +500,7 @@
 
 
         function log_status(text, to_populate) {
-            console.log(text);
+            alert(text);
             status.html(text.split('\n').join('<br/>'));
 
             if (to_populate && validated_form_data) {
@@ -789,7 +789,7 @@
                 errors.push('Value of hostname is required.');
             } else {
                 if (!hostname_tester.test(hostname)) {
-                    errors.push('Invalid hostname: ' + hostname);
+                    errors.push('主机名错误: ' + hostname);
                 }
             }
 
@@ -797,18 +797,18 @@
                 port = 22;
             } else {
                 if (!(port > 0 && port <= 65535)) {
-                    errors.push('Invalid port: ' + port);
+                    errors.push('端口错误: ' + port);
                 }
             }
 
             if (!username) {
-                errors.push('Value of username is required.');
+                errors.push('用户名的值是必需的');
             }
 
             if (pk) {
                 size = pk.size || pk.length;
                 if (size > key_max_size) {
-                    errors.push('Invalid private key: ' + pk.name || '');
+                    errors.push('密钥错误: ' + pk.name || '');
                 }
             }
 
@@ -879,7 +879,7 @@
             if (pk && pk.size && !debug) {
                 read_file_as_text(pk, function (text) {
                     if (text === undefined) {
-                        log_status('Invalid private key: ' + pk.name);
+                        log_status('密钥错误: ' + pk.name);
                     } else {
                         ajax_post();
                     }

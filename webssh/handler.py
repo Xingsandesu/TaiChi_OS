@@ -51,12 +51,12 @@ class SSHClient(paramiko.SSHClient):
             elif prompt.startswith('verification'):
                 answers.append(self.totp)
             else:
-                raise ValueError('Unknown prompt: {}'.format(prompt_))
+                raise ValueError('未知提示: {}'.format(prompt_))
         return answers
 
     def auth_interactive(self, username, handler):
         if not self.totp:
-            raise ValueError('Need a verification code for 2fa.')
+            raise ValueError('需要进行两步验证')
         self._transport.auth_interactive(username, handler)
 
     def _auth(self, username, password, pkey, *args):
@@ -120,7 +120,7 @@ class PrivateKey(object):
 
     def check_length(self):
         if len(self.privatekey) > self.max_length:
-            raise InvalidValueError('Invalid key length.')
+            raise InvalidValueError('密钥长度无效')
 
     def parse_name(self, iostr, tag_to_name):
         name = None
@@ -148,7 +148,7 @@ class PrivateKey(object):
         try:
             pkey = pkeycls.from_private_key(self.iostr, password=password)
         except paramiko.PasswordRequiredException:
-            raise InvalidValueError('Need a passphrase to decrypt the key.')
+            raise InvalidValueError('需要密码解密密钥')
         except (paramiko.SSHException, ValueError) as exc:
             self.last_exception = exc
             logging.debug(str(exc))
@@ -159,7 +159,7 @@ class PrivateKey(object):
         logging.info('Parsing private key {!r}'.format(self.filename))
         name, length = self.parse_name(self.iostr, self.tag_to_name)
         if not name:
-            raise InvalidValueError('Invalid key {}.'.format(self.filename))
+            raise InvalidValueError('密钥无效 {}.'.format(self.filename))
 
         offset = self.iostr.tell() - length
         password = to_bytes(self.password) if self.password else None
@@ -270,7 +270,7 @@ class MixinHandler(object):
     def get_value(self, name):
         value = self.get_argument(name)
         if not value:
-            raise InvalidValueError('Missing value {}'.format(name))
+            raise InvalidValueError('缺少值 {}'.format(name))
         return value
 
     def get_context_addr(self):
@@ -361,7 +361,7 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
     def get_hostname(self):
         value = self.get_value('hostname')
         if not (is_valid_hostname(value) or is_valid_ip_address(value)):
-            raise InvalidValueError('Invalid hostname: {}'.format(value))
+            raise InvalidValueError('无效的主机名: {}'.format(value))
         return value
 
     def get_port(self):
@@ -371,7 +371,7 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
 
         port = to_int(value)
         if port is None or not is_valid_port(port):
-            raise InvalidValueError('Invalid port: {}'.format(value))
+            raise InvalidValueError('无效端口: {}'.format(value))
         return port
 
     def lookup_hostname(self, hostname, port):
@@ -380,7 +380,7 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
         if self.ssh_client._system_host_keys.lookup(key) is None:
             if self.ssh_client._host_keys.lookup(key) is None:
                 raise tornado.web.HTTPError(
-                    403, 'Connection to {}:{} is not allowed.'.format(
+                    403, '连接 {}:{} 不允许'.format(
                         hostname, port)
                 )
 
@@ -451,13 +451,13 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
         try:
             ssh.connect(*args, timeout=options.timeout)
         except socket.error:
-            raise ValueError('Unable to connect to {}:{}'.format(*dst_addr))
+            raise tornado.web.HTTPError(400, 'socket错误, 无法连接 {}:{}'.format(*dst_addr))
         except paramiko.BadAuthenticationType:
-            raise ValueError('Bad authentication type.')
+            raise tornado.web.HTTPError(400, '身份验证类型错误')
         except paramiko.AuthenticationException:
-            raise ValueError('Authentication failed.')
+            raise tornado.web.HTTPError(400, '身份验证失败')
         except paramiko.BadHostKeyException:
-            raise ValueError('Bad host key.')
+            raise tornado.web.HTTPError(400, '密钥错误')
 
         term = self.get_argument('term', u'') or u'xterm'
         chan = ssh.invoke_shell(term=term)
@@ -475,7 +475,7 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
         if origin:
             if not super(IndexHandler, self).check_origin(origin):
                 raise tornado.web.HTTPError(
-                    403, 'Cross origin operation is not allowed.'
+                    403, '不允许跨站操作'
                 )
 
             if not event_origin and self.origin_policy != 'same':
@@ -491,12 +491,12 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
     def post(self):
         if self.debug and self.get_argument('error', u''):
             # for testing purpose only
-            raise ValueError('Uncaught exception')
+            raise ValueError('未捕获的异常')
 
         ip, port = self.get_client_addr()
         workers = clients.get(ip, {})
         if workers and len(workers) >= options.maxconn:
-            raise tornado.web.HTTPError(403, 'Too many live connections.')
+            raise tornado.web.HTTPError(403, '连接过多')
 
         self.check_origin()
 
