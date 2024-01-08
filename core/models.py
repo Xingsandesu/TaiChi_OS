@@ -1,3 +1,4 @@
+import logging
 import os
 import secrets
 import sys
@@ -13,8 +14,38 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from core.config import DOCKER_CATEGORY, DEFAULT_LOGO_PATH, APP_LOGO_MAPPING
 
 db = SQLAlchemy()
-client = DockerClient.from_env()
 
+
+
+
+try:
+    client = DockerClient.from_env()
+except BaseException:
+    try:
+        import subprocess
+        from core.config import INSTLL_DOCKER_COMMANDS
+        logging.error("未找到Docker环境,是否自动二进制安装Docker?")
+        logging.warning("注意: 并不推荐直接使用二进制安装Docker，虽然他可以在不受官方支持的系统(例如RHEL 9等)上运行")
+        logging.warning("详细请查看: https://docs.docker.com/engine/install/")
+        user_input = input("请输入Yes/No:").lower()
+        if user_input in ['yes', 'y']:
+            process = subprocess.Popen(INSTLL_DOCKER_COMMANDS, shell=True, stdout=sys.stdout)
+            process.wait()
+            if process and process.returncode != 0:
+                logging.error("Docker安装失败! 请检查网络或者使用root权限")
+                exit()
+            else:
+                logging.info("Docker安装成功!")
+                logging.info("程序正在启动...")
+                client = DockerClient.from_env()
+        elif user_input in ['no', 'n']:
+            exit()
+        else:
+            logging.error("无效的输入!")
+            exit()
+    except KeyboardInterrupt:
+        logging.info("用户结束进程")
+        exit()
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

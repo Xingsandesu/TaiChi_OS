@@ -1,4 +1,6 @@
 import os
+import re
+import urllib.request
 
 # 全局基本配置文件
 
@@ -13,6 +15,68 @@ APP_LOGO_MAPPING = {
     'app1': 'static/img/ops.png',
     'app2': 'static/img/ops.png',
 }
+
+def get_latest_docker_url(base_url: str):
+    # 打开URL并读取内容
+    with urllib.request.urlopen(base_url) as response:
+        html = response.read().decode()
+
+    # 使用正则表达式匹配所有的docker版本链接
+    matches = re.findall(r'docker-(\d+\.\d+\.\d+)\.tgz', html)
+
+    # 对匹配到的版本进行排序，选择最大的版本
+    latest_version = sorted(matches, key=lambda version: list(map(int, version.split('.'))), reverse=True)[0]
+
+    # 拼接完整的URL
+    latest_docker_url = base_url + 'docker-' + latest_version + '.tgz'
+
+    return latest_docker_url
+
+
+DOCKER_DOWNLOAD_BASE_URL = 'https://download.docker.com/linux/static/stable/x86_64/'
+
+DOCKER_DOWNLOAD_URL = get_latest_docker_url(DOCKER_DOWNLOAD_BASE_URL)
+
+DOCKER_SERVICE_CONFIG = (
+    "[Unit]\n"
+    "Description=Docker Application Container Engine\n"
+    "Documentation=https://docs.docker.com\n"
+    "After=network-online.target firewalld.service\n"
+    "Wants=network-online.target\n"
+    "[Service]\n"
+    "Type=notify\n"
+    "ExecStart=/usr/bin/dockerd\n"
+    "ExecReload=/bin/kill -s HUP $MAINPID\n"
+    "LimitNOFILE=infinity\n"
+    "LimitNPROC=infinity\n"
+    "LimitCORE=infinity\n"
+    "TimeoutStartSec=0\n"
+    "Delegate=yes\n"
+    "KillMode=process\n"
+    "Restart=on-failure\n"
+    "StartLimitBurst=3\n"
+    "StartLimitInterval=60s\n"
+    "[Install]\n"
+    "WantedBy=multi-user.target\n"
+)
+
+INSTLL_DOCKER_COMMANDS = [
+    f'rm -rf /usr/bin/docker* && \
+    rm -rf /usr/bin/runc && \
+    rm -rf /usr/bin/ctr && \
+    rm -rf /usr/bin/containerd* && \
+    rm -rf /etc/systemd/system/docker* && \
+    rm -rf /var/lib/docker* && \
+    rm -rf /var/run/docker.sock && \
+    curl -o docker.tgz {DOCKER_DOWNLOAD_URL} && \
+    tar xzvf docker.tgz && \
+    cp docker/* /usr/bin/ && \
+    rm -rf docker && \
+    echo "{DOCKER_SERVICE_CONFIG}" > /etc/systemd/system/docker.service && \
+    chmod +x /etc/systemd/system/docker.service && \
+    systemctl daemon-reload && \
+    systemctl enable --now docker.service'
+]
 # # @/command 配置文件
 # commands = {
 #     'docker ps -a': '显示全部容器',
