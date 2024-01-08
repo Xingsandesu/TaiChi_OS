@@ -45,4 +45,4 @@ jobs:
         with:
           name: UNIVERSE_OS_DEV_${{ github.ref_name }}_${{ runner.os }}-Build
           path: |
-            build/*.bin
+            build/UNIVERSE_OS_DEV*
