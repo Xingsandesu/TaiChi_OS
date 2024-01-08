@@ -23,29 +23,40 @@ try:
 except BaseException:
     try:
         import subprocess
-        from core.config import INSTLL_DOCKER_COMMANDS
-        logging.error("未找到Docker环境,是否自动二进制安装Docker?")
-        logging.warning("注意: 并不推荐直接使用二进制安装Docker，虽然他可以在不受官方支持的系统(例如RHEL 9等)上运行")
+        from core.config import INSTLL_DOCKER_COMMANDS, GET_DOCKER_SHELL_COMMAND
+        logging.error("未找到Docker环境,是否安装Docker?")
+        logging.info("-----安装方式-----")
+        logging.info("1. 官方脚本安装")
+        logging.info("2. 官方二进制分发")
+        logging.warning("注意: 不到万不得已不要二进制安装Docker，因为无法使用包管理更新, 只在RHEL 9上测试通过!!!")
         logging.warning("详细请查看: https://docs.docker.com/engine/install/")
-        user_input = input("请输入Yes/No:").lower()
-        if user_input in ['yes', 'y']:
-            process = subprocess.Popen(INSTLL_DOCKER_COMMANDS, shell=True, stdout=sys.stdout)
+        user_input = input("请输入选项( 1, 2 ):").lower()
+        if user_input in ['1']:
+            process = subprocess.Popen(GET_DOCKER_SHELL_COMMAND, shell=True, stdout=sys.stdout)
             process.wait()
             if process and process.returncode != 0:
                 logging.error("Docker安装失败! 请检查网络或者使用root权限")
-                exit()
+                sys.exit()
             else:
                 logging.info("Docker安装成功!")
                 logging.info("程序正在启动...")
                 client = DockerClient.from_env()
-        elif user_input in ['no', 'n']:
-            exit()
+        elif user_input in ['2']:
+            process = subprocess.Popen(INSTLL_DOCKER_COMMANDS, shell=True, stdout=sys.stdout)
+            process.wait()
+            if process and process.returncode != 0:
+                logging.error("Docker安装失败! 请检查网络或者使用root权限")
+                sys.exit()
+            else:
+                logging.info("Docker安装成功!")
+                logging.info("程序正在启动...")
+                client = DockerClient.from_env()
         else:
             logging.error("无效的输入!")
-            exit()
+            sys.exit()
     except KeyboardInterrupt:
         logging.info("用户结束进程")
-        exit()
+        sys.exit()
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

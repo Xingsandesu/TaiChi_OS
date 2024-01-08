@@ -77,6 +77,11 @@ INSTLL_DOCKER_COMMANDS = [
     systemctl daemon-reload && \
     systemctl enable --now docker.service'
 ]
+
+GET_DOCKER_SHELL_COMMAND = [
+    'curl -fsSL https://get.docker.com -o get-docker.sh && \
+    sh get-docker.sh'
+]
 # # @/command 配置文件
 # commands = {
 #     'docker ps -a': '显示全部容器',
