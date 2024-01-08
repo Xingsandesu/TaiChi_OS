@@ -15,9 +15,6 @@ from core.config import DOCKER_CATEGORY, DEFAULT_LOGO_PATH, APP_LOGO_MAPPING
 
 db = SQLAlchemy()
 
-
-
-
 try:
     client = DockerClient.from_env()
 except BaseException:
@@ -25,9 +22,9 @@ except BaseException:
         import subprocess
         from core.config import INSTLL_DOCKER_COMMANDS, GET_DOCKER_SHELL_COMMAND
         logging.error("未找到Docker环境,是否安装Docker?")
-        logging.info("-----安装方式-----")
-        logging.info("1. 官方脚本安装")
-        logging.info("2. 官方二进制分发")
+        logging.warning("-----安装方式-----")
+        logging.warning("1. 官方脚本安装")
+        logging.warning("2. 官方二进制分发")
         logging.warning("注意: 不到万不得已不要二进制安装Docker，因为无法使用包管理更新, 只在RHEL 9上测试通过!!!")
         logging.warning("详细请查看: https://docs.docker.com/engine/install/")
         user_input = input("请输入选项( 1, 2 ):").lower()
