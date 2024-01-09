@@ -36,6 +36,10 @@ jobs:
           nuitka-version: main
           script-name: run.py
           onefile: true
+          company-name: KooKoo.top
+          product-name: UNIVERSE_OS
+          file-version: ${{ github.ref_name }}
+          product-version: ${{ github.ref_name }}
           include-data-dir: core/html=core/html
           output-file: UNIVERSE_OS_DEV_${{ github.ref_name }}
 
