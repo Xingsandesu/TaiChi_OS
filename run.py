@@ -8,7 +8,7 @@ import tornado.wsgi
 from tornado.options import options
 
 # 引入Flask应用
-from core import create_app as make_core_app
+from core.main import create_app as make_core_app
 from settings import get_server_settings, check_encoding_setting
 # 引入WebSocket-Monitor应用
 from websocket.system_usage import monitor_app

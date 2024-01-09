@@ -13,12 +13,12 @@ from tornado.ioloop import IOLoop
 from tornado.options import options
 from tornado.process import cpu_count
 
-from .utils import (
+from webssh.utils import (
     is_valid_ip_address, is_valid_port, is_valid_hostname, to_bytes, to_str,
     to_int, to_ip_address, UnicodeType, is_ip_hostname, is_same_primary_domain,
     is_valid_encoding
 )
-from .worker import Worker, recycle_worker, clients
+from webssh.worker import Worker, recycle_worker, clients
 
 try:
     from json.decoder import JSONDecodeError
