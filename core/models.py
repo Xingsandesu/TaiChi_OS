@@ -21,6 +21,7 @@ except BaseException:
     try:
         import subprocess
         from core.config import INSTLL_DOCKER_COMMANDS, GET_DOCKER_SHELL_COMMAND
+
         logging.error("未找到Docker环境,是否安装Docker?")
         logging.warning("-----安装方式-----")
         logging.warning("1. 官方脚本安装")
@@ -54,6 +55,7 @@ except BaseException:
     except KeyboardInterrupt:
         logging.info("用户结束进程")
         sys.exit()
+
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

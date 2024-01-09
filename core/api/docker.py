@@ -7,6 +7,8 @@ try:
     from core.models import client
 except ImportError:
     logging.error("api/docker.py: 找不到Docker对象")
+
+
 # 获取所有容器的列表
 @bp.route('/containers', methods=['GET'])
 def get_containers():

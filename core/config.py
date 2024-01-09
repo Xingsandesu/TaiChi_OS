@@ -16,6 +16,7 @@ APP_LOGO_MAPPING = {
     'app2': 'static/img/ops.png',
 }
 
+
 def get_latest_docker_url(base_url: str):
     # 打开URL并读取内容
     with urllib.request.urlopen(base_url) as response:

@@ -276,7 +276,7 @@ window.onload = function () {
                 } else {
                     alert(response['errmsg']);
                 }
-            }).fail(function(jqXHR, textStatus, errorThrown) { // 添加错误处理函数
+            }).fail(function (jqXHR, textStatus, errorThrown) { // 添加错误处理函数
                 console.error("Request failed: ", textStatus, ", ", errorThrown);
                 alert('请求失败!');
             });
