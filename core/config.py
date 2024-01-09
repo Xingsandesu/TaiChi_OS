@@ -1,6 +1,4 @@
 import os
-import re
-import urllib.request
 
 # 全局基本配置文件
 
@@ -16,27 +14,7 @@ APP_LOGO_MAPPING = {
     'app2': 'static/img/ops.png',
 }
 
-
-def get_latest_docker_url(base_url: str):
-    # 打开URL并读取内容
-    with urllib.request.urlopen(base_url) as response:
-        html = response.read().decode()
-
-    # 使用正则表达式匹配所有的docker版本链接
-    matches = re.findall(r'docker-(\d+\.\d+\.\d+)\.tgz', html)
-
-    # 对匹配到的版本进行排序，选择最大的版本
-    latest_version = sorted(matches, key=lambda version: list(map(int, version.split('.'))), reverse=True)[0]
-
-    # 拼接完整的URL
-    latest_docker_url = base_url + 'docker-' + latest_version + '.tgz'
-
-    return latest_docker_url
-
-
-DOCKER_DOWNLOAD_BASE_URL = 'https://download.docker.com/linux/static/stable/x86_64/'
-
-DOCKER_DOWNLOAD_URL = get_latest_docker_url(DOCKER_DOWNLOAD_BASE_URL)
+DOCKER_DOWNLOAD_URL = 'https://download.docker.com/linux/static/stable/x86_64/docker-24.0.7.tgz'
 
 DOCKER_SERVICE_CONFIG = (
     "[Unit]\n"
@@ -89,3 +67,19 @@ GET_DOCKER_SHELL_COMMAND = [
 #     'dir': '显示路径',
 #     'echo hello word': '测试输出',
 # }
+
+# def get_latest_docker_url(base_url: str):
+#     # 打开URL并读取内容
+#     with urllib.request.urlopen(base_url) as response:
+#         html = response.read().decode()
+#
+#     # 使用正则表达式匹配所有的docker版本链接
+#     matches = re.findall(r'docker-(\d+\.\d+\.\d+)\.tgz', html)
+#
+#     # 对匹配到的版本进行排序，选择最大的版本
+#     latest_version = sorted(matches, key=lambda version: list(map(int, version.split('.'))), reverse=True)[0]
+#
+#     # 拼接完整的URL
+#     latest_docker_url = base_url + 'docker-' + latest_version + '.tgz'
+#
+#     return latest_docker_url
