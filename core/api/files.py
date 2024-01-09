@@ -1,3 +1,4 @@
+import logging
 import mimetypes
 import os
 import shutil
@@ -76,8 +77,8 @@ def api_upload():
                 success_lst.append(abs_path)
             else:
                 raise Exception()
-        except Exception:
-            print(Exception)
+        except Exception as e:
+            logging.error(e)
 
     if success_lst:
         return create_api_response(CODE_YES, data=success_lst)

@@ -1,5 +1,5 @@
 import logging
-
+import sys
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
@@ -36,7 +36,7 @@ def main():
         options.parse_command_line()
     except tornado.options.Error:
         logging.error('命令行参数解析失败')
-        exit(1)
+        sys.exit(1)
 
     # 检查编码设置
     check_encoding_setting(options.encoding)
@@ -63,15 +63,14 @@ def main():
     try:
         # 获取服务器设置
         server_settings = get_server_settings(options)
-
         # 启动服务器
         main_app.listen(options.port, options.address, **server_settings)
         logging.info(f"服务器启动成功! 运行在 {options.address}:{options.port}")
         loop.start()
     except KeyboardInterrupt:
         logging.info('服务器已停止')
-    except OSError:
-        logging.error('服务器启动失败,请检查端口是否被占用，或者地址是否正确')
+    except OSError as e:
+        logging.error('服务器启动失败, 请检查端口是否被占用, 或者地址是否正确, 然后使用root账户启动程序')
     except Exception as e:
         logging.error('服务器启动失败,请检查错误日志')
         logging.exception(e)

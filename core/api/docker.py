@@ -31,7 +31,7 @@ def create_container():
 # 删除一个容器
 # noinspection PyShadowingBuiltins
 @bp.route('/containers/<id>/delete', methods=['DELETE'])
-def delete_container(id):
+def delete_container(id: str):
     try:
         container = client.containers.get(id)
         container.remove()
@@ -43,7 +43,7 @@ def delete_container(id):
 # 删除一个镜像
 # noinspection PyShadowingBuiltins
 @bp.route('/images/<id>/delete', methods=['DELETE'])
-def delete_image(id):
+def delete_image(id: str):
     try:
         client.images.remove(id)
         return create_api_response(CODE_YES, '', {'result': 'success'})
@@ -54,7 +54,7 @@ def delete_image(id):
 # 停止一个容器
 # noinspection PyShadowingBuiltins
 @bp.route('/containers/<id>/stop', methods=['POST'])
-def stop_container(id):
+def stop_container(id: str):
     try:
         container = client.containers.get(id)
         container.stop()
@@ -66,7 +66,7 @@ def stop_container(id):
 # 获取一个容器的日志
 # noinspection PyShadowingBuiltins
 @bp.route('/containers/<id>/logs', methods=['GET'])
-def get_logs(id):
+def get_logs(id: str):
     try:
         container = client.containers.get(id)
         logs = container.logs()

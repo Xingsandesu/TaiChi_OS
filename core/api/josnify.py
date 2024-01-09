@@ -8,7 +8,7 @@ CODE_ERROR = 500  # 服务器错误的响应码
 CODE_NOT_FOUND = 404  # 未找到的响应码
 
 
-def create_api_response(code, errmsg='', data=None):
+def create_api_response(code: int, errmsg: any = '', data: any = None):
     """
     返回一个josnify后的对象
     :param code: 响应码
