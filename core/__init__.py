@@ -1,10 +1,10 @@
 from flask import Flask
 from flask_login import LoginManager
 
+from core.api.blueprint import bp as api_bp
+from core.index.views import bp as index_bp
+from core.login.views import bp as login_bp
 from core.models import db, User, Config
-from .api import *
-from .index import bp as index_bp
-from .login.views import bp as login_bp
 
 app = Flask(__name__, template_folder='html/templates', static_folder='html/static')
 app.config.from_object(Config)
@@ -23,7 +23,7 @@ def load_user(user_id):  # 创建用户加载回调函数，接受用户 ID 作�
 def create_app():
     with app.app_context():
         db.create_all()
-    app.register_blueprint(api.bp)
+    app.register_blueprint(api_bp)
     app.register_blueprint(index_bp)
     app.register_blueprint(login_bp)
 

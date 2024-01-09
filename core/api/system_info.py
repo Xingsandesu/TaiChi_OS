@@ -6,8 +6,8 @@ import platform
 import psutil
 from flask_login import login_required
 
-from .blueprint import bp
-from .josnify import create_api_response, CODE_YES
+from core.api.blueprint import bp
+from core.api.josnify import create_api_response, CODE_YES
 
 
 @bp.route('/info', methods=['GET'])

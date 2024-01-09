@@ -1,7 +1,7 @@
 import logging
 
-from .blueprint import bp
-from .josnify import create_api_response, CODE_YES, CODE_NO
+from core.api.blueprint import bp
+from core.api.josnify import create_api_response, CODE_YES, CODE_NO
 
 try:
     from core.models import client

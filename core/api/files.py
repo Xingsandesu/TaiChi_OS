@@ -8,10 +8,10 @@ import chardet
 from flask import request, send_file
 from flask_login import login_required
 
+from core.api.blueprint import bp
+from core.api.josnify import create_api_response, CODE_YES, CODE_NO
 from core.config import HOME_PATH
 from core.models import listdir, get_abs_path
-from .blueprint import bp
-from .josnify import create_api_response, CODE_YES, CODE_NO
 
 
 @bp.route('/remove/', methods=['POST'])
