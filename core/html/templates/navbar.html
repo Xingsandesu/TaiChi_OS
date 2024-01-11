@@ -12,8 +12,10 @@
 <!-- Navbar -->
 <nav class="navbar navbar-light bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand d-none d-lg-block" href="#"><img src="{{ url_for('static', filename='img/logo.png') }}"
-                                                                alt="Logo" style="width: 2rem; height: auto;"></a>
+        <a class="navbar-brand d-none d-lg-block" href="#">
+            {% block navbar_brand %}{% endblock %}
+        </a>
+        {% block navbar_plus %}{% endblock %}
         <div class="d-flex justify-content-end">
             <!-- 主页图标链接 -->
             <a class="nav-link" href="/">

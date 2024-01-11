@@ -75,3 +75,45 @@ def get_logs(id: str):
         return create_api_response(CODE_YES, '', {'logs': logs.decode('utf-8')})
     except Exception as e:
         return create_api_response(CODE_NO, str(e))
+
+
+# 重启一个容器
+@bp.route('/containers/<id>/restart', methods=['POST'])
+def restart_container(id: str):
+    try:
+        container = client.containers.get(id)
+        container.restart()
+        return create_api_response(CODE_YES, '', {'result': 'success'})
+    except Exception as e:
+        return create_api_response(CODE_NO, str(e))
+
+# 强制停止一个容器
+@bp.route('/containers/<id>/force_stop', methods=['POST'])
+def force_stop_container(id: str):
+    try:
+        container = client.containers.get(id)
+        container.stop(timeout=0)
+        return create_api_response(CODE_YES, '', {'result': 'success'})
+    except Exception as e:
+        return create_api_response(CODE_NO, str(e))
+
+# 启动一个容器
+@bp.route('/containers/<id>/start', methods=['POST'])
+def start_container(id: str):
+    try:
+        container = client.containers.get(id)
+        container.start()
+        return create_api_response(CODE_YES, '', {'result': 'success'})
+    except Exception as e:
+        return create_api_response(CODE_NO, str(e))
+
+# 停止并删除一个容器
+@bp.route('/containers/<id>/stop_and_delete', methods=['DELETE'])
+def stop_and_delete_container(id: str):
+    try:
+        container = client.containers.get(id)
+        container.stop(timeout=0)
+        container.remove()
+        return create_api_response(CODE_YES, '', {'result': 'success'})
+    except Exception as e:
+        return create_api_response(CODE_NO, str(e))

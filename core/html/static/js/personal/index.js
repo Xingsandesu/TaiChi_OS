@@ -490,3 +490,168 @@ function updateTime() {
 updateTime();
 // 每秒更新一次时间
 setInterval(updateTime, 1000);
+
+var refreshIntervalId;
+
+$(document).ready(function () {
+    function refresh() {
+        loadContainers();
+        $("#outer").load(location.href + " #outer>*", "");
+        setTimeout(refresh, 5000);  // 每5秒刷新一次
+    }
+    refresh();
+});
+
+function loadContainers() {
+    $.get("/api/containers", function (data) {
+        if (data.code === 200) {
+            var rows = "";
+            data.data.forEach(function (container) {
+                var name = container.Name.substring(1);  // 去掉名称前面的"/"
+                var row = "<tr>";
+                row += "<td>" + name + "</td>";
+                row += "<td>" + container.Config.Image + "</td>";
+                var portMappings = formatPortMappings(container);  // 更改了这里
+                row += "<td>" + portMappings.hostPort + "</td>";
+                row += "<td>" + container.State.Status + "</td>";
+                if (container.State.Status === "running") {
+                    row += "<td>";
+                    row += "<div class='btn-grid'>";
+                    row += "<button class='btn btn-custom btn-sm m-1' onclick='stopContainer(\"" + name + "\")'>停止</button>";
+                    row += "<button class='btn btn-custom btn-sm m-1' onclick='forceStopContainer(\"" + name + "\")'>强制停止</button>";
+                    row += "<button class='btn btn-custom btn-sm m-1' onclick='stopAndDeleteContainer(\"" + name + "\")'>停止并删除</button>";
+                    row += "<button class='btn btn-custom btn-sm m-1' onclick='restartContainer(\"" + name + "\")'>重启</button>";
+                    row += "</div>";
+                    row += "</td>";
+                } else {
+                    row += "<td>";
+                    row += "<div class='btn-grid'>";
+                    row += "<button class='btn btn-custom btn-sm m-1' onclick='startContainer(\"" + name + "\")'>启动</button>";
+                    row += "<button class='btn btn-custom btn-sm m-1' onclick='deleteContainer(\"" + name + "\")'>删除</button>";
+                    row += "</div>";
+                    row += "</td>";
+                }
+                rows += row;
+            });
+            $("#containersTable tbody").html(rows);
+        }
+    });
+}
+
+
+function formatPortMappings(container) {
+    if (container.HostConfig && container.HostConfig.NetworkMode === "host") {
+        return {containerPort: "Host网络", hostPort: "Host网络"};
+    } else if (container.HostConfig.NetworkMode.startsWith("macvlan")) {
+        return {containerPort: "Macvlan网络", hostPort: "Macvlan网络"};
+    } else if (!container.HostConfig.PortBindings || Object.keys(container.HostConfig.PortBindings).length === 0) {
+        return {containerPort: "无映射", hostPort: "无映射"};
+    }
+    var result = {containerPort: "", hostPort: ""};
+    for (var key in container.HostConfig.PortBindings) {
+        var containerPort = key;
+        var hostPort = container.HostConfig.PortBindings[key][0].HostPort;
+        result.containerPort += containerPort;
+        result.hostPort += hostPort;
+    }
+    return result;
+}
+
+
+function stopContainer(name) {
+    clearInterval(refreshIntervalId);  // 停止自动刷新
+    var button = $("button[onclick='stopContainer(\"" + name + "\")']");
+    button.text('停止中...');  // 更改按钮文本
+
+    $.post("/api/containers/" + name + "/stop", function (data) {
+        if (data.code === 200) {
+            loadContainers();
+            $("#outer").load(location.href + " #outer>*", "");
+        }
+        button.text('停止');  // 将按钮文本更改回来
+        refreshIntervalId = setInterval(loadContainers, 5000);  // 重新开始自动刷新
+    });
+}
+
+function deleteContainer(name) {
+    clearInterval(refreshIntervalId);  // 停止自动刷新
+    var button = $("button[onclick='deleteContainer(\"" + name + "\")']");
+    button.text('删除中...');  // 更改按钮文本
+
+    $.ajax({
+        url: "/api/containers/" + name + "/delete",
+        type: 'DELETE',
+        success: function (data) {
+            if (data.code === 200) {
+                loadContainers();
+                $("#outer").load(location.href + " #outer>*", "");
+            }
+            button.text('删除');  // 将按钮文本更改回来
+            refreshIntervalId = setInterval(loadContainers, 5000);  // 重新开始自动刷新
+        }
+    });
+}
+
+function restartContainer(name) {
+    clearInterval(refreshIntervalId);  // 停止自动刷新
+    var button = $("button[onclick='restartContainer(\"" + name + "\")']");
+    button.text('重启中...');  // 更改按钮文本
+
+    $.post("/api/containers/" + name + "/restart", function (data) {
+        if (data.code === 200) {
+            loadContainers();
+            $("#outer").load(location.href + " #outer>*", "");
+        }
+        button.text('重启');  // 将按钮文本更改回来
+        refreshIntervalId = setInterval(loadContainers, 5000);  // 重新开始自动刷新
+    });
+}
+
+function forceStopContainer(name) {
+    clearInterval(refreshIntervalId);
+    var button = $("button[onclick='forceStopContainer(\"" + name + "\")']");
+    button.text('进行中...');
+
+    $.post("/api/containers/" + name + "/force_stop", function (data) {
+        if (data.code === 200) {
+            loadContainers();
+            $("#outer").load(location.href + " #outer>*", "");
+        }
+        button.text('强制停止');
+        refreshIntervalId = setInterval(loadContainers, 5000);
+    });
+}
+
+function startContainer(name) {
+    clearInterval(refreshIntervalId);
+    var button = $("button[onclick='startContainer(\"" + name + "\")']");
+    button.text('启动中...');
+
+    $.post("/api/containers/" + name + "/start", function (data) {
+        if (data.code === 200) {
+            loadContainers();
+            $("#outer").load(location.href + " #outer>*", "");
+        }
+        button.text('启动');
+        refreshIntervalId = setInterval(loadContainers, 5000);
+    });
+}
+
+function stopAndDeleteContainer(name) {
+    clearInterval(refreshIntervalId);
+    var button = $("button[onclick='stopAndDeleteContainer(\"" + name + "\")']");
+    button.text('进行中...');
+
+    $.ajax({
+        url: "/api/containers/" + name + "/stop_and_delete",
+        type: 'DELETE',
+        success: function (data) {
+            if (data.code === 200) {
+                loadContainers();
+                $("#outer").load(location.href + " #outer>*", "");
+            }
+            button.text('停止并删除');
+            refreshIntervalId = setInterval(loadContainers, 5000);
+        }
+    });
+}

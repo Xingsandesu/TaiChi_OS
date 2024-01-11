@@ -143,23 +143,23 @@ a:visited {
 }
 
 /* 定义滚动条的宽度 */
-#md-3::-webkit-scrollbar, #md-9::-webkit-scrollbar {
+::-webkit-scrollbar {
     width: 8px;
 }
 
 /* 定义滚动条的背景 */
-#md-3::-webkit-scrollbar-track, #md-9::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
     background: transparent;
 }
 
 /* 定义滚动条的滑块 */
-#md-3::-webkit-scrollbar-thumb, #md-9::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 4px;
 }
 
 /* 定义滚动条的滑块：鼠标悬停 */
-#md-3::-webkit-scrollbar-thumb:hover, #md-9::-webkit-scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 0, 0, 0.4);
 }
 
@@ -356,5 +356,49 @@ a:visited {
 #timeLabel {
     font-size: 2.5rem;
 }
+/* 按钮样式 */
+.btn-custom {
+    background-color: #DDDDDD;
+    color: #262626;
+    width: 90px;
+    height: 30px;
+    border-radius: 25px;  /* 增大按钮的圆角 */
+}
+.btn-custom:hover {
+    background-color: #8a8a8a;
+}
 
+/* 按钮组样式 */
+.btn-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.btn-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    justify-items: center;
+    padding: 5px;  /* 增加内边距 */
+}
+#containers {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
+#containersTable {
+    width: 100%;
+    text-align: center;
+    background-color: transparent;
+}
+
+#containersTable th,
+#containersTable td {
+    padding: 10px;
+    text-align: center;
+    background-color: transparent;
+    border: none;
+    color: inherit;
+}

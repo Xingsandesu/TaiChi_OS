@@ -12,8 +12,7 @@
 <!-- Navbar -->
 <nav class="navbar navbar-light bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand d-none d-lg-block" href="#"><img src="{{ url_for('static', filename='img/logo.png') }}"
-                                                                alt="Logo" style="width: 2rem; height: auto;"></a>
+        <a class="navbar-brand" href="#">Universe OS</a>
 
         <div class="d-flex flex-row">
             <!-- 系统状态信息，仅在宽屏下显示 -->
@@ -200,8 +199,26 @@
                         </div>
                     </div>
                     <div class="row">
+                        <!-- 容器管理区域 -->
+                        <div class="col table-responsive" id="containers">
+                                <table id="containersTable">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-nowrap">容器名称</th>
+                                        <th class="text-nowrap">容器镜像</th>
+                                        <th class="text-nowrap">主机端口</th>
+                                        <th class="text-nowrap">容器状态</th>
+                                        <th class="text-nowrap">操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                    </div>
+                    <div class="row">
+                        <!-- 监控图表显示区域 -->
                         <div class="col" id="tubiao1">
-                            <!-- 监控图表显示区域 -->
                             <div class="col-12">
                                 <div id="CPUchart"></div>
                             </div>
