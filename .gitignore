@@ -157,3 +157,4 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 /app.py
+/get-docker.sh

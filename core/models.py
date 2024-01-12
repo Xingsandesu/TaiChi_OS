@@ -3,26 +3,31 @@ import os
 import secrets
 import sys
 import time
+import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from os.path import join, isdir, abspath, pardir, basename, getmtime
 
 from docker import DockerClient
 from flask import request
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
+from lxml import html
+from requests import Session
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from core.config import DOCKER_CATEGORY, DEFAULT_LOGO_PATH, APP_LOGO_MAPPING
+from core.config import DOCKER_CATEGORY, DEFAULT_LOGO_PATH
 
 db = SQLAlchemy()
 
 try:
     client = DockerClient.from_env()
-except BaseException:
+except Exception as e:
+    logging.error(e)
     try:
         import subprocess
         from core.config import INSTLL_DOCKER_COMMANDS, GET_DOCKER_SHELL_COMMAND
 
-        logging.error("未找到Docker环境,是否安装Docker?")
+        logging.error("未找到DockerSocket,可能是未安装Docker,是否安装Docker?")
         logging.warning("-----安装方式-----")
         logging.warning("1. 官方脚本安装")
         logging.warning("2. 官方二进制分发")
@@ -57,6 +62,7 @@ except BaseException:
         sys.exit()
 
 
+######################### 数据库相关Class #########################
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_type = db.Column(db.String(255))
@@ -74,7 +80,6 @@ class User(db.Model, UserMixin):
         return cls.query.filter_by(username=username).first() is not None
 
 
-### 配置相关Class
 class Config:
     SECRET_KEY = secrets.token_hex(16)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -82,6 +87,9 @@ class Config:
     SQLALCHEMY_DATABASE_URI = prefix + os.path.join(os.path.dirname(sys.argv[0]), 'data.db')
 
 
+######################### 数据库相关Class结束 #########################
+
+######################### 主页相关Class #########################
 # @/ 配置文件
 class Items:
     def __init__(self):
@@ -119,7 +127,131 @@ class Items:
             self.items_dict[category_name] = [item for item in self.items_dict[category_name] if item in existing_items]
 
 
-### files相关def
+### index docker相关
+items = Items()
+
+
+def get_url_content(url: str, timeout=1.0):
+    """
+    获取指定URL的内容。
+
+    参数:
+    url (str): 要获取内容的URL。
+    timeout (float, 可选): 请求超时时间，默认为1.0秒。
+
+    返回:
+    str: 如果请求成功，返回URL的内容。否则，返回None。
+    """
+    session = Session()
+    try:
+        response = session.get(url, timeout=timeout)
+        if response.status_code == 200:
+            return response.text
+    except Exception as error:
+        logging.warning(f"获取URL时出错: {url}: {error}")
+        return None
+
+
+def get_favicon_url(base_url: str):
+    """
+    获取指定URL的favicon图标的URL。
+
+    参数:
+    base_url (str): 要获取favicon的URL。
+
+    返回:
+    str: favicon的URL。如果没有找到favicon，返回默认的logo路径。
+    """
+    max_icon_size = 0
+    icon_url = None
+    single_icon_without_size = None
+
+    # 获取所有的图标链接和它们的尺寸
+    html_content = get_url_content(base_url)
+    if html_content:
+        tree = html.fromstring(html_content)
+        icons = tree.xpath(
+            '//link[@rel="icon" or @rel="shortcut icon" or @type="image/png" or @type="image/svg+xml" or @type="image/jpeg"]')
+
+        # 如果只有一个图标，直接返回
+        if len(icons) == 1:
+            return urllib.parse.urljoin(base_url, icons[0].get('href'))
+
+        # 如果没有找到带尺寸的图标，但找到了一个没有尺寸的图标，返回这个图标
+        if icon_url is None:
+            icon_url = single_icon_without_size if single_icon_without_size else DEFAULT_LOGO_PATH
+
+        # 遍历图标 找到最大的
+        for icon in icons:
+            size = icon.get('sizes')
+            if size:
+                try:
+                    # 尺寸可能是像 "16x16" 这样的格式，我们只需要其中的一个数字
+                    icon_size = int(size.split('x')[0])
+                    if icon_size > max_icon_size:
+                        max_icon_size = icon_size
+                        icon_url = urllib.parse.urljoin(base_url, icon.get('href'))
+                except ValueError as error:
+                    logging.warning(f"应用容器图标错误: {error}")
+            elif single_icon_without_size is None:
+                single_icon_without_size = urllib.parse.urljoin(base_url, icon.get('href'))
+
+    else:
+        icon_url = DEFAULT_LOGO_PATH
+    return icon_url
+
+
+def get_docker_info(container: str, server_ip: str):
+    """
+    获取Docker容器的信息。
+
+    参数:
+    container (str): Docker容器。
+    server_ip (str): 服务器IP。
+
+    返回:
+    dict: 包含容器的标题、链接和logo的字典，如果没有映射端口则返回None。
+    """
+    app_name = container.name
+    ports = container.ports
+    mapped_ports = [port_info[0]['HostPort'] for port_info in ports.values() if port_info]
+    if not mapped_ports: # 选择host网络和macvlan网络的容器返回None
+        return None
+
+    base_link = f'http://{server_ip}'
+    link = f'{base_link}:{mapped_ports[0]}' if mapped_ports else base_link
+
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        logo_path = executor.submit(get_favicon_url, link).result()
+
+    return {'title': app_name, 'link': link, 'logo': logo_path}
+
+
+def update_docker():
+    """
+    更新Docker容器的信息。
+
+    该函数会获取所有Docker容器的信息，并将新的容器添加到items中，同时删除不再存在的容器。
+    """
+    dockers = client.containers.list()
+    server_ip = request.host.split(':')[0]
+
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        existing_items = list(filter(None, executor.map(lambda container: get_docker_info(container, server_ip), dockers))) #过滤掉host网络和macvlan网络的容器(None)
+
+    if DOCKER_CATEGORY not in items.items_dict:
+        items.add_category(DOCKER_CATEGORY, existing_items)
+    else:
+        for item in existing_items:
+            if not items.item_exists_in_category(DOCKER_CATEGORY, item):
+                items.add_item_to_category(DOCKER_CATEGORY, item)
+        items.remove_nonexistent_items(DOCKER_CATEGORY, existing_items)
+
+
+######################### 主页相关Class结束 #########################
+
+
+######################### files相关def #########################
 # noinspection PyShadowingBuiltins,PyShadowingNames
 def listdir(dir):
     """遍历dir文件夹，返回目录列表和文件列表"""
@@ -187,55 +319,9 @@ def get_abs_path(start, path):
             return abs_path
     return None
 
+######################### files相关def结束 #########################
 
-### index docker相关def
-items = Items()
-
-
-# 定义一个函数，根据应用名称获取对应的logo路径
-def get_logo_path(app_name):
-    # 从app_logo_mapping字典中获取应用名称对应的logo路径，如果没有找到，则返回默认的logo路径
-    return APP_LOGO_MAPPING.get(app_name, DEFAULT_LOGO_PATH)
-
-
-# 定义一个函数，获取Docker容器的信息
-def get_docker_info(container):
-    # 获取容器的名称
-    app_name = container.name
-    # 获取容器的端口信息
-    ports = container.ports
-    # 获取映射的端口信息
-    mapped_ports = [port_info[0]['HostPort'] for port_info in ports.values() if port_info]
-    # 获取应用的logo路径
-    logo_path = get_logo_path(app_name)
-    # 获取访问者的IP地址
-    server_ip = request.host.split(':')[0]
-    # 构造基础链接
-    base_link = f'http://{server_ip}'
-    # 如果有映射的端口，链接中加入端口信息，否则只使用基础链接
-    link = f'{base_link}:{mapped_ports[0]}' if mapped_ports else base_link
-    # 返回一个字典，包含应用名称、链接和logo路径
-    return {'title': app_name, 'link': link, 'logo': logo_path}
-
-
-# 定义一个函数，更新Docker信息
-def update_docker():
-    # 列出所有的Docker容器
-    dockers = client.containers.list()
-    # 获取所有容器的信息
-    existing_items = [get_docker_info(container) for container in dockers]
-    # 如果Docker类别不在items字典中，添加该类别和对应的容器信息
-    if DOCKER_CATEGORY not in items.items_dict:
-        items.add_category(DOCKER_CATEGORY, existing_items)
-    else:
-        # 如果Docker类别已经存在，对于每一个容器信息，如果它不在类别中，就添加进去
-        for item in existing_items:
-            if not items.item_exists_in_category(DOCKER_CATEGORY, item):
-                items.add_item_to_category(DOCKER_CATEGORY, item)
-        # 移除类别中已经不存在的容器信息
-        items.remove_nonexistent_items(DOCKER_CATEGORY, existing_items)
-
-
+######################### 废弃代码 #########################
 #
 # class Category(db.Model):
 #     id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # 主键，自动递增
@@ -312,41 +398,42 @@ def update_docker():
 #         items = cls.query.filter_by(category_id=category_id).all()
 #         return [{'title': item.title, 'link': item.link, 'logo': item.logo} for item in items]
 #
-'''
-from models import Category, Item
-
-# 获取所有的数据
-data = Category.get_all()
-
-# 添加一个新的类别
-Category.add_category('新类别')
-
-# 删除一个类别
-Category.delete_category('新类别')
-
-# 获取所有类别及其下的所有项目
-categories = Category.get_all()
-for category_title, items in categories.items():
-    print(f'类别: {category_title}')
-    for item in items:
-        print(f'项目: {item["title"]}, 链接: {item["link"]}, logo: {item["logo"]}')
-
-# 添加一个新的项目
-Item.add_item('新类别', '新项目', 'http://example.com', 'http://example.com/logo.png')
-
-# 删除一个项目
-Item.delete_item('新项目')
-
-# 更新一个项目
-Item.update_item('新项目', '新项目2', 'http://example2.com', 'http://example2.com/logo.png')
-
-# 获取一个项目
-item = Item.get_item('新项目2')
-if item:
-    print(f'项目: {item.title}, 链接: {item.link}, logo: {item.logo}')
-
-# 获取一个类别下的所有项目
-items = Item.get_all(1)  # 假设类别ID为1
-for item in items:
-    print(f'项目: {item["title"]}, 链接: {item["link"]}, logo: {item["logo"]}')
-'''
+# '''
+# from models import Category, Item
+#
+# # 获取所有的数据
+# data = Category.get_all()
+#
+# # 添加一个新的类别
+# Category.add_category('新类别')
+#
+# # 删除一个类别
+# Category.delete_category('新类别')
+#
+# # 获取所有类别及其下的所有项目
+# categories = Category.get_all()
+# for category_title, items in categories.items():
+#     print(f'类别: {category_title}')
+#     for item in items:
+#         print(f'项目: {item["title"]}, 链接: {item["link"]}, logo: {item["logo"]}')
+#
+# # 添加一个新的项目
+# Item.add_item('新类别', '新项目', 'http://example.com', 'http://example.com/logo.png')
+#
+# # 删除一个项目
+# Item.delete_item('新项目')
+#
+# # 更新一个项目
+# Item.update_item('新项目', '新项目2', 'http://example2.com', 'http://example2.com/logo.png')
+#
+# # 获取一个项目
+# item = Item.get_item('新项目2')
+# if item:
+#     print(f'项目: {item.title}, 链接: {item.link}, logo: {item.logo}')
+#
+# # 获取一个类别下的所有项目
+# items = Item.get_all(1)  # 假设类别ID为1
+# for item in items:
+#     print(f'项目: {item["title"]}, 链接: {item["link"]}, logo: {item["logo"]}')
+# '''
+######################### 废弃代码结束 #########################

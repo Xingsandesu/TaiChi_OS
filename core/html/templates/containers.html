@@ -38,10 +38,64 @@
         .table td {
             white-space: nowrap; /* 防止文本换行 */
         }
-    </style>
+        
+        caption {
+            caption-side: top;
+            text-align: left;
+        }
+        .tablename {
+            margin-left: 20px;
+            margin-right: auto;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        /* 模态框的样式 */
+        .modal {
+            display: none;  /* 默认隐藏 */
+            position: fixed;  /* 固定位置 */
+            z-index: 1;  /* 在其他元素之上 */
+            left: 0;
+            top: 0;
+            width: 100%;  /* 宽度和高度覆盖整个屏幕 */
+            height: auto;
+            overflow: auto;  /* 启用滚动条 */
+            background-color: rgba(0,0,0,0.4);  /* 半透明背景 */
+        }
 
+        /* 模态框内容的样式 */
+        .modal-content {
+            background-color: #000;  /* 黑色背景 */
+            margin: auto;  /* 自动外边距 */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;  /* 固定宽度 */
+            height: 80%;  /* 固定高度 */
+            color: #fff;  /* 白色字体 */
+            position: fixed;  /* 固定位置 */
+            top: 50%;  /* 顶部位置为50% */
+            left: 50%;  /* 左侧位置为50% */
+            transform: translate(-50%, -50%);  /* 使用transform属性将元素的中心点移动到其父元素的中心 */
+        }
+
+        /* 关闭按钮的样式 */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
     <div class="card table-responsive">
         <table id="containersTable" class="table table-striped table-hover text-center striped">
+            <caption><h3 class="tablename">容器</h3><hr></caption>
         <thead>
         <tr>
             <th class="text-nowrap">名称</th>
@@ -62,9 +116,9 @@
         </tbody>
     </table>
 </div>
-
     <div class="card table-responsive">
         <table id="imagesTable" class="table table-striped table-hover text-center striped">
+            <caption><h3 class="tablename">镜像</h3><hr></caption>
         <thead>
         <tr>
             <th class="text-nowrap">镜像名称</th>
@@ -78,8 +132,16 @@
         </tbody>
     </table>
 </div>
+<!-- 模态框 -->
+<div id="logModal" class="modal">
+    <div class="modal-content">
+        <span id="closeModal" class="close">&times;</span>
+        <pre id="logElement"></pre>
+    </div>
+</div>
     <script src="{{ url_for('static', filename='js/public/jquery.min.js') }}"></script>
     <script>
+        
         var refreshIntervalId;
 
         $(document).ready(function () {
@@ -116,9 +178,8 @@
                             row += "<td>";
                             row += "<div class='button-group'>";
                             row += "<button class='btn btn-custom btn-sm m-1' onclick='stopContainer(\"" + name + "\")'>停止</button>";
-                            row += "<button class='btn btn-custom btn-sm m-1' onclick='forceStopContainer(\"" + name + "\")'>强制停止</button>";
                             row += "<button class='btn btn-custom btn-sm m-1' onclick='stopAndDeleteContainer(\"" + name + "\")'>停止并删除</button>";
-                            row += "<button class='btn btn-custom btn-sm m-1' onclick='restartContainer(\"" + name + "\")'>重启</button>";
+                            row += "<button id='logButton' class='btn btn-custom btn-sm m-1' onclick='viewLogs(\"" + name + "\")'>日志</button>";
                             row += "</div>";
                             row += "</td>";
                         } else {
@@ -135,40 +196,41 @@
                 }
             });
         }
+            // 获取模态框元素
+    var logModal = document.getElementById("logModal");
+    // 获取关闭模态框的元素
+    var closeModal = document.getElementById("closeModal");
+    // 获取显示日志的元素
+    var logElement = document.getElementById("logElement");
 
-        function formatVolumeMappings(binds) {
-            if (!binds || binds.length === 0) {
-                return {containerPath: "无映射", hostPath: "无映射"};
+    function viewLogs(name) {
+        // 创建一个新的WebSocket连接
+        var ws = new WebSocket("ws://" + location.host + "/containers/" + name + "/logs");
+        // 当接收到一个新的日志条目时，将其添加到日志元素
+        ws.onmessage = function(event) {
+            logElement.textContent += event.data + "\n";
+        };
+        // 打开模态框
+        logModal.style.display = "block";
+        // 当 WebSocket 连接关闭时，清空日志
+        ws.onclose = function() {
+            logElement.textContent = "";
+        };
+        // 当用户点击关闭元素时，关闭模态框并关闭 WebSocket 连接
+        closeModal.onclick = function() {
+            logModal.style.display = "none";
+            logElement.textContent = "";  // 清空日志
+            ws.close();  // 关闭 WebSocket 连接
+        };
+        // 当用户点击模态框外部时，关闭模态框并关闭 WebSocket 连接
+        window.onclick = function(event) {
+            if (event.target == logModal) {
+                logModal.style.display = "none";
+                logElement.textContent = "";  // 清空日志
+                ws.close();  // 关闭 WebSocket 连接
             }
-            var result = {containerPath: "", hostPath: ""};
-            for (var i = 0; i < binds.length; i++) {
-                var parts = binds[i].split(":");
-                var hostPath = parts[0];
-                var containerPath = parts[1];
-
-                result.containerPath += containerPath;
-                result.hostPath += hostPath;
-            }
-            return result;
-        }
-
-        function formatPortMappings(container) {
-            if (container.HostConfig && container.HostConfig.NetworkMode === "host") {
-                return {containerPort: "Host网络", hostPort: "Host网络"};
-            } else if (container.HostConfig.NetworkMode.startsWith("macvlan")) {
-                return {containerPort: "Macvlan网络", hostPort: "Macvlan网络"};
-            } else if (!container.HostConfig.PortBindings || Object.keys(container.HostConfig.PortBindings).length === 0) {
-                return {containerPort: "无映射", hostPort: "无映射"};
-            }
-            var result = {containerPort: "", hostPort: ""};
-            for (var key in container.HostConfig.PortBindings) {
-                var containerPort = key;
-                var hostPort = container.HostConfig.PortBindings[key][0].HostPort;
-                result.containerPort += containerPort;
-                result.hostPort += hostPort;
-            }
-            return result;
-        }
+        };
+    }
 
 
         function stopContainer(name) {
@@ -203,32 +265,6 @@
             });
         }
 
-        function restartContainer(name) {
-            clearInterval(refreshIntervalId);  // 停止自动刷新
-            var button = $("button[onclick='restartContainer(\"" + name + "\")']");
-            button.text('重启中...');  // 更改按钮文本
-
-            $.post("/api/containers/" + name + "/restart", function (data) {
-                if (data.code === 200) {
-                    loadContainers();
-                }
-                button.text('重启');  // 将按钮文本更改回来
-                refreshIntervalId = setInterval(loadContainers, 5000);  // 重新开始自动刷新
-            });
-        }
-
-        function forceStopContainer(name) {
-            clearInterval(refreshIntervalId);
-            var button = $("button[onclick='forceStopContainer(\"" + name + "\")']");
-            button.text('进行中...');
-            $.post("/api/containers/" + name + "/force_stop", function (data) {
-                if (data.code === 200) {
-                    loadContainers();
-                }
-                button.text('强制停止');
-                refreshIntervalId = setInterval(loadContainers, 5000);
-            });
-        }
 
         function startContainer(name) {
             clearInterval(refreshIntervalId);
@@ -260,6 +296,39 @@
                     refreshIntervalId = setInterval(loadContainers, 5000);
                 }
             });
+        }
+        function formatVolumeMappings(binds) {
+            if (!binds || binds.length === 0) {
+                return {containerPath: "无映射", hostPath: "无映射"};
+            }
+            var result = {containerPath: "", hostPath: ""};
+            for (var i = 0; i < binds.length; i++) {
+                var parts = binds[i].split(":");
+                var hostPath = parts[0];
+                var containerPath = parts[1];
+
+                result.containerPath += containerPath;
+                result.hostPath += hostPath;
+            }
+            return result;
+        }
+
+        function formatPortMappings(container) {
+            if (container.HostConfig && container.HostConfig.NetworkMode === "host") {
+                return {containerPort: "Host网络", hostPort: "Host网络"};
+            } else if (container.HostConfig.NetworkMode.startsWith("macvlan")) {
+                return {containerPort: "Macvlan网络", hostPort: "Macvlan网络"};
+            } else if (!container.HostConfig.PortBindings || Object.keys(container.HostConfig.PortBindings).length === 0) {
+                return {containerPort: "无映射", hostPort: "无映射"};
+            }
+            var result = {containerPort: "", hostPort: ""};
+            for (var key in container.HostConfig.PortBindings) {
+                var containerPort = key;
+                var hostPort = container.HostConfig.PortBindings[key][0].HostPort;
+                result.containerPort += containerPort;
+                result.hostPort += hostPort;
+            }
+            return result;
         }
         $(document).ready(function () {
             loadImages();

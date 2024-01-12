@@ -497,7 +497,7 @@ $(document).ready(function () {
     function refresh() {
         loadContainers();
         $("#outer").load(location.href + " #outer>*", "");
-        setTimeout(refresh, 5000);  // 每5秒刷新一次
+        setTimeout(refresh, 10000);  // 每10秒刷新一次
     }
     refresh();
 });
@@ -518,9 +518,7 @@ function loadContainers() {
                     row += "<td>";
                     row += "<div class='btn-grid'>";
                     row += "<button class='btn btn-custom btn-sm m-1' onclick='stopContainer(\"" + name + "\")'>停止</button>";
-                    row += "<button class='btn btn-custom btn-sm m-1' onclick='forceStopContainer(\"" + name + "\")'>强制停止</button>";
                     row += "<button class='btn btn-custom btn-sm m-1' onclick='stopAndDeleteContainer(\"" + name + "\")'>停止并删除</button>";
-                    row += "<button class='btn btn-custom btn-sm m-1' onclick='restartContainer(\"" + name + "\")'>重启</button>";
                     row += "</div>";
                     row += "</td>";
                 } else {
@@ -592,35 +590,6 @@ function deleteContainer(name) {
     });
 }
 
-function restartContainer(name) {
-    clearInterval(refreshIntervalId);  // 停止自动刷新
-    var button = $("button[onclick='restartContainer(\"" + name + "\")']");
-    button.text('重启中...');  // 更改按钮文本
-
-    $.post("/api/containers/" + name + "/restart", function (data) {
-        if (data.code === 200) {
-            loadContainers();
-            $("#outer").load(location.href + " #outer>*", "");
-        }
-        button.text('重启');  // 将按钮文本更改回来
-        refreshIntervalId = setInterval(loadContainers, 5000);  // 重新开始自动刷新
-    });
-}
-
-function forceStopContainer(name) {
-    clearInterval(refreshIntervalId);
-    var button = $("button[onclick='forceStopContainer(\"" + name + "\")']");
-    button.text('进行中...');
-
-    $.post("/api/containers/" + name + "/force_stop", function (data) {
-        if (data.code === 200) {
-            loadContainers();
-            $("#outer").load(location.href + " #outer>*", "");
-        }
-        button.text('强制停止');
-        refreshIntervalId = setInterval(loadContainers, 5000);
-    });
-}
 
 function startContainer(name) {
     clearInterval(refreshIntervalId);

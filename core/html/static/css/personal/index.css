@@ -362,6 +362,9 @@ a:visited {
 }
 /* 按钮样式 */
 .btn-custom {
+    padding: 0;
+    margin: 0;
+    bottom: 0;
     background-color: #DDDDDD;
     color: #262626;
     width: 90px;
@@ -373,19 +376,14 @@ a:visited {
 }
 
 /* 按钮组样式 */
-.btn-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
 .btn-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
     gap: 0;
+    white-space: nowrap; /* 防止文本换行 */
     justify-items: center;
-    padding: 5px;  /* 增加内边距 */
+    padding: 0;  /* 增加内边距 */
 }
+
 #containers {
     display: flex;
     justify-content: center;

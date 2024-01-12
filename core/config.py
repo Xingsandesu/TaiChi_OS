@@ -9,10 +9,6 @@ HOME_NAME = os.path.basename(HOME_PATH)  # 根目录的名字
 DEFAULT_LOGO_PATH = 'static/img/ops.png'
 DOCKER_CATEGORY = 'Docker Apps'
 
-APP_LOGO_MAPPING = {
-    'app1': 'static/img/ops.png',
-    'app2': 'static/img/ops.png',
-}
 
 DOCKER_DOWNLOAD_URL = 'https://download.docker.com/linux/static/stable/x86_64/docker-24.0.7.tgz'
 

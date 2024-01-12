@@ -11,7 +11,7 @@ from tornado.options import options
 from core.main import create_app as make_core_app
 from settings import get_server_settings, check_encoding_setting
 # 引入WebSocket-Monitor应用
-from websocket.system_usage import monitor_app
+from websocket.websocket import websocket_app
 # 引入WebSSH应用
 from webssh.main import make_app as make_webssh_app
 
@@ -46,14 +46,14 @@ def main():
     loop = tornado.ioloop.IOLoop.current()
 
     # 创建主应用
-    main_app = tornado.web.Application()
+    main_app = tornado.web.Application(debug=True)
 
     # 添加WebSSH应用
     webssh_app = make_webssh_app(loop, options)
     add_handlers_to_app(main_app, r'/webssh/.*', webssh_app)
 
-    # 添加WebSocket-Monitor应用
-    websocket_handlers = monitor_app()
+    # 添加WebSocket应用
+    websocket_handlers = websocket_app()
     add_handlers_to_app(main_app, r'.*', websocket_handlers)
 
     # 添加Flask应用

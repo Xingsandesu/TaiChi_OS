@@ -10,9 +10,10 @@ import tornado.ioloop
 import tornado.web
 import tornado.websocket
 
+################ 系统信息Websocket ################
+
 MAXLEN = 10
 UPDATE_INTERVAL = 1  # 更新间隔，单位：秒
-
 
 class SystemMonitor:
     def __init__(self):
@@ -122,14 +123,29 @@ class MonitorHandler(tornado.websocket.WebSocketHandler):
             sleep_time = max(0.0, UPDATE_INTERVAL - elapsed_time)  # 计算需要睡眠的时间，如果实际执行时间超过了间隔时间，那么就不需要睡眠 纠正时延
             await asyncio.sleep(sleep_time)  # 使用更精确的睡眠函数
 
+################ 系统信息Websocket结束 ################
 
-def monitor_app():
+################ Docker日志和终端 ################
+# from core.models import client as docker_client
+#
+# class DockerLogs(tornado.websocket.WebSocketHandler):
+#     def open(self, container_id):
+#         self.container = docker_client.containers.get(container_id)
+#         self.logs = self.container.logs(stream=True)
+#
+#         for log in self.logs:
+#             self.write_message(log)
+#
+#     def on_message(self, message):
+#         pass
+#
+#     def on_close(self):
+#         self.logs.close()
+
+        
+def websocket_app():
     return [
         (r'/Monitor', MonitorHandler),
+        # (r"/containers/(.*)/logs", DockerLogs),
+        # (r"/containers/(.*)/bash", DockerBash),
     ]
-
-
-# 启动服务器
-if __name__ == "__main__":
-    tornado.httpserver.HTTPServer(monitor_app()).listen(8888)
-    tornado.ioloop.IOLoop.current().start()
