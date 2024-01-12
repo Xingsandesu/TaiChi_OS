@@ -22,7 +22,11 @@ body {
         display: none !important;
     }
 }
-
+@media screen and (max-width: 1243px) {
+    #systemVersion {
+        display: none;
+    }
+}
 .container {
     background-color: transparent;
 }

@@ -72,6 +72,7 @@ def main():
         logging.info('服务器已停止')
     except OSError as e:
         logging.error('服务器启动失败, 请检查端口是否被占用, 或者地址是否正确, 然后使用root账户启动程序')
+        logging.exception(e)
     except Exception as e:
         logging.error('服务器启动失败,请检查错误日志')
         logging.exception(e)
