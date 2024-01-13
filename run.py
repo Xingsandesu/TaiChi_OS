@@ -7,6 +7,7 @@ import tornado.web
 import tornado.wsgi
 from tornado.options import options
 
+from core.config import TAICHI_OS_LOGO, TAICHI_OS_WELCOME_MESSAGE
 # 引入Flask应用
 from core.main import create_app as make_core_app
 from settings import get_server_settings, check_encoding_setting
@@ -46,7 +47,7 @@ def main():
     loop = tornado.ioloop.IOLoop.current()
 
     # 创建主应用
-    main_app = tornado.web.Application(debug=True)
+    main_app = tornado.web.Application()
 
     # 添加WebSSH应用
     webssh_app = make_webssh_app(loop, options)
@@ -66,6 +67,8 @@ def main():
         server_settings = get_server_settings(options)
         # 启动服务器
         main_app.listen(options.port, options.address, **server_settings)
+        logging.info(TAICHI_OS_LOGO)
+        logging.info(TAICHI_OS_WELCOME_MESSAGE)
         logging.info(f"服务器启动成功! 运行在 {options.address}:{options.port}")
         loop.start()
     except KeyboardInterrupt:

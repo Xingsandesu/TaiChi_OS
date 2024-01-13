@@ -68,6 +68,8 @@
 
         /* 模态框内容的样式 */
         .modal-content {
+            display: flex;
+            flex-direction: column;
             background-color: #000; /* 黑色背景 */
             margin: auto; /* 自动外边距 */
             padding: 20px;
@@ -79,6 +81,17 @@
             top: 50%; /* 顶部位置为50% */
             left: 50%; /* 左侧位置为50% */
             transform: translate(-50%, -50%); /* 使用transform属性将元素的中心点移动到其父元素的中心 */
+            border-radius: 20px; /* 添加圆角 */
+        }
+
+        #commandInput {
+            margin-top: auto;
+            margin-bottom: 10px;
+            border: 1px solid #aaa; /* 设置边框样式 */
+            padding: 5px; /* 添加内边距 */
+            background-color: #333; /* 设置背景颜色 */
+            color: #fff; /* 设置字体颜色 */
+            border-radius: 20px; /* 添加圆角 */
         }
 
         /* 关闭按钮的样式 */
@@ -91,7 +104,7 @@
 
         .close:hover,
         .close:focus {
-            color: #000;
+            color: #fff;
             text-decoration: none;
             cursor: pointer;
         }
@@ -139,13 +152,41 @@
             </tbody>
         </table>
     </div>
-    <!-- 模态框 -->
+    <div class="card table-responsive">
+        <table id="volumesTable" class="table table-striped table-hover text-center striped">
+            <caption><h3 class="tablename">存储卷</h3>
+                <hr>
+            </caption>
+            <thead>
+            <tr>
+                <th>存储卷名称</th>
+                <th>存储类型</th>
+                <th>挂载点</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <!-- 日志模态框 -->
     <div id="logModal" class="modal">
         <div class="modal-content">
-            <span id="closeModal" class="close">&times;</span>
+            <span id="closeLogModal" class="close">&times;</span>
             <pre id="logElement"></pre>
         </div>
     </div>
+
+    <!-- 运行命令模态框 -->
+    <div id="commandModal" class="modal">
+        <div class="modal-content">
+            <span id="closeCommandModal" class="close">&times;</span>
+            <pre id="commandElement"></pre>
+            <input id="commandInput" type="text" placeholder="    输入命令并按回车键发送">
+        </div>
+    </div>
+
+
     <script src="{{ url_for('static', filename='js/public/jquery.min.js') }}"></script>
     <script>
 
@@ -169,7 +210,7 @@
                         var portMappings = formatPortMappings(container);  // 更改了这里
                         row += "<td>" + portMappings.containerPort + "</td>";
                         row += "<td>" + portMappings.hostPort + "</td>";
-                        var volumeMappings = formatVolumeMappings(container.HostConfig.Binds);  // 新增的列
+                        var volumeMappings = formatVolumeMappings(container.HostConfig.Binds);
                         if (volumeMappings !== "") {
                             row += "<td>" + volumeMappings.containerPath + "</td>";
                             row += "<td>" + volumeMappings.hostPath + "</td>";
@@ -187,6 +228,7 @@
                             row += "<button class='btn btn-custom btn-sm m-1' onclick='stopContainer(\"" + name + "\")'>停止</button>";
                             row += "<button class='btn btn-custom btn-sm m-1' onclick='stopAndDeleteContainer(\"" + name + "\")'>停止并删除</button>";
                             row += "<button id='logButton' class='btn btn-custom btn-sm m-1' onclick='viewLogs(\"" + name + "\")'>日志</button>";
+                            row += "<button id='commandButton' class='btn btn-custom btn-sm m-1' onclick='runCommand(\"" + name + "\")'>运行命令</button>";
                             row += "</div>";
                             row += "</td>";
                         } else {
@@ -206,14 +248,18 @@
 
         // 获取模态框元素
         var logModal = document.getElementById("logModal");
+        var commandModal = document.getElementById("commandModal");
         // 获取关闭模态框的元素
-        var closeModal = document.getElementById("closeModal");
-        // 获取显示日志的元素
+        var closeLogModal = document.getElementById("closeLogModal");
+        var closeCommandModal = document.getElementById("closeCommandModal");
+        // 获取显示日志和命令的元素
         var logElement = document.getElementById("logElement");
+        var commandElement = document.getElementById("commandElement");
 
         function viewLogs(name) {
-            // 创建一个新的WebSocket连接
-            var ws = new WebSocket("ws://" + location.host + "/containers/" + name + "/logs");
+            // 根据当前页面是http还是https，自动选择ws或wss进行WebSocket连接
+            var wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            var ws = new WebSocket(wsProtocol + "//" + location.host + "/containers/" + name + "/logs");
             // 当接收到一个新的日志条目时，将其添加到日志元素
             ws.onmessage = function (event) {
                 logElement.textContent += event.data + "\n";
@@ -225,7 +271,7 @@
                 logElement.textContent = "";
             };
             // 当用户点击关闭元素时，关闭模态框并关闭 WebSocket 连接
-            closeModal.onclick = function () {
+            closeLogModal.onclick = function () {
                 logModal.style.display = "none";
                 logElement.textContent = "";  // 清空日志
                 ws.close();  // 关闭 WebSocket 连接
@@ -238,8 +284,56 @@
                     ws.close();  // 关闭 WebSocket 连接
                 }
             };
+            ws.onmessage = function (event) {
+                logElement.textContent += event.data + "\n";
+                logElement.scrollTop = logElement.scrollHeight;  // 滚动到底部
+            };
         }
 
+        function runCommand(name) {
+            // 根据当前页面是http还是https，自动选择ws或wss进行WebSocket连接
+            var wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            var ws = new WebSocket(wsProtocol + "//" + location.host + "/containers/" + name + "/bash");
+            // 当接收到一个新的消息时，将其添加到命令元素
+            ws.onmessage = function (event) {
+                commandElement.textContent += event.data + "\n";
+            };
+            // 打开模态框
+            commandModal.style.display = "block";
+            // 当 WebSocket 连接关闭时，清空命令
+            ws.onclose = function () {
+                commandElement.textContent = "";
+            };
+            // 当用户点击关闭元素时，关闭模态框并关闭 WebSocket 连接
+            closeCommandModal.onclick = function () {
+                commandModal.style.display = "none";
+                commandElement.textContent = "";  // 清空命令
+                ws.close();  // 关闭 WebSocket 连接
+            };
+            // 当用户点击模态框外部时，关闭模态框并关闭 WebSocket 连接
+            window.onclick = function (event) {
+                if (event.target == commandModal) {
+                    commandModal.style.display = "none";
+                    commandElement.textContent = "";  // 清空命令
+                    ws.close();  // 关闭 WebSocket 连接
+                }
+            };
+            // 当用户在文本框中按下回车键时，发送消息
+            document.getElementById("commandInput").onkeydown = function (event) {
+                if (event.key === "Enter") {
+                    // 如果文本框为空，不发送消息
+                    if (!event.target.value.trim()) {
+                        return;
+                    }
+                    ws.send(event.target.value);
+                    event.target.value = "";  // 清空文本框
+                }
+            };
+            ws.onmessage = function (event) {
+                commandElement.textContent += event.data + "\n";
+                commandElement.scrollTop = commandElement.scrollHeight;  // 滚动到底部
+            };
+        }
 
         function stopContainer(name) {
             clearInterval(refreshIntervalId);  // 停止自动刷新
@@ -330,19 +424,21 @@
             } else if (!container.HostConfig.PortBindings || Object.keys(container.HostConfig.PortBindings).length === 0) {
                 return {containerPort: "无映射", hostPort: "无映射"};
             }
-            var result = {containerPort: "", hostPort: ""};
+            var result = {containerPort: [], hostPort: []};
             for (var key in container.HostConfig.PortBindings) {
                 var containerPort = key;
                 var hostPort = container.HostConfig.PortBindings[key][0].HostPort;
-                result.containerPort += containerPort;
-                result.hostPort += hostPort;
+                result.containerPort.push(containerPort);
+                result.hostPort.push(hostPort);
             }
-            return result;
+            return {containerPort: result.containerPort.join(", "), hostPort: result.hostPort.join(", ")};
         }
 
         $(document).ready(function () {
             loadImages();
-            setInterval(loadImages, 10000);  // 每10秒刷新一次
+            getVolumes();  // 加载存储卷的列表
+            setInterval(loadImages, 10000);  // 每10秒刷新一次镜像列表
+            setInterval(getVolumes, 10000);  // 每10秒刷新一次存储卷列表
         });
 
         function loadImages() {
@@ -372,6 +468,42 @@
                 success: function (data) {
                     if (data.code === 200) {
                         loadImages();
+                    }
+                }
+            });
+        }
+
+        // 获取存储卷的列表并显示在表格中
+        function getVolumes() {
+            $.get('/api/volumes', function (response) {
+                if (response.code === 200 && Array.isArray(response.data)) {
+                    var rows = "";
+                    response.data.forEach(function (volume) {
+                        var row = "<tr>";
+                        row += "<td>" + volume.Name + "</td>";
+                        row += "<td>" + volume.Driver + "</td>";  // 存储类型
+                        row += "<td>" + volume.Mountpoint + "</td>";  // 挂载点
+                        row += "<td>";
+                        row += "<button class='btn btn-custom btn-sm m-1' onclick='deleteVolume(\"" + volume.Name + "\")'>删除</button>";
+                        row += "</td>";
+                        rows += row;
+                    });
+                    $("#volumesTable tbody").html(rows);
+                } else {
+                    console.error('Expected an array but got', typeof response.data);
+                }
+            });
+        }
+
+        // 删除指定的存储卷
+        function deleteVolume(id) {
+            $.ajax({
+                url: '/api/volumes/' + id + '/delete',
+                type: 'DELETE',
+                success: function (response) {
+                    if (response.code === 200) {
+                        // 删除成功后，重新获取存储卷的列表
+                        getVolumes();
                     }
                 }
             });

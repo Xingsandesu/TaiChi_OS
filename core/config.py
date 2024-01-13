@@ -56,6 +56,28 @@ GET_DOCKER_SHELL_COMMAND = [
     'curl -fsSL https://get.docker.com -o get-docker.sh && \
     sh get-docker.sh'
 ]
+
+UNSUPPORTED_COMMANDS = [
+    'top', 'vim', 'ping', 'vi', 'htop', 'nano', 'emacs', 'ssh', 'telnet',
+    'ftp', 'sftp', 'scp', 'less', 'more', 'man', 'lynx', 'nc', 'netcat',
+    'telnet', 'watch', 'screen', 'tmux', 'w3m', 'links', 'elinks', 'mysql',
+    'psql', 'sqlite3'
+]
+
+TAICHI_OS_LOGO = """
+ ███████████            ███    █████████  █████       ███        ███████     █████████ 
+░█░░░███░░░█           ░░░    ███░░░░░███░░███       ░░░       ███░░░░░███  ███░░░░░███
+░   ░███  ░   ██████   ████  ███     ░░░  ░███████   ████     ███     ░░███░███    ░░░ 
+    ░███     ░░░░░███ ░░███ ░███          ░███░░███ ░░███    ░███      ░███░░█████████ 
+    ░███      ███████  ░███ ░███          ░███ ░███  ░███    ░███      ░███ ░░░░░░░░███
+    ░███     ███░░███  ░███ ░░███     ███ ░███ ░███  ░███    ░░███     ███  ███    ░███
+    █████   ░░████████ █████ ░░█████████  ████ █████ █████    ░░░███████░  ░░█████████ 
+   ░░░░░     ░░░░░░░░ ░░░░░   ░░░░░░░░░  ░░░░ ░░░░░ ░░░░░       ░░░░░░░     ░░░░░░░░░                                                                                                                                                             
+"""
+
+TAICHI_OS_WELCOME_MESSAGE = ("\n"
+                             "版本 : 0.9.0-DEV\n"
+                             "GITHUB : https://github.com/Xingsandesu\n")
 # # @/command 配置文件
 # commands = {
 #     'docker ps -a': '显示全部容器',

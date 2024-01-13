@@ -508,11 +508,11 @@ function loadContainers() {
         if (data.code === 200) {
             var rows = "";
             data.data.forEach(function (container) {
-                var name = container.Name.substring(1);  // 去掉名称前面的"/"
+                var name = container.Name.substring(1);
                 var row = "<tr>";
                 row += "<td>" + name + "</td>";
                 row += "<td>" + container.Config.Image + "</td>";
-                var portMappings = formatPortMappings(container);  // 更改了这里
+                var portMappings = formatPortMappings(container);
                 row += "<td>" + portMappings.hostPort + "</td>";
                 row += "<td>" + container.State.Status + "</td>";
                 if (container.State.Status === "running") {
@@ -546,14 +546,14 @@ function formatPortMappings(container) {
     } else if (!container.HostConfig.PortBindings || Object.keys(container.HostConfig.PortBindings).length === 0) {
         return {containerPort: "无映射", hostPort: "无映射"};
     }
-    var result = {containerPort: "", hostPort: ""};
+    var result = {containerPort: [], hostPort: []};
     for (var key in container.HostConfig.PortBindings) {
         var containerPort = key;
         var hostPort = container.HostConfig.PortBindings[key][0].HostPort;
-        result.containerPort += containerPort;
-        result.hostPort += hostPort;
+        result.containerPort.push(containerPort);
+        result.hostPort.push(hostPort);
     }
-    return result;
+    return {containerPort: result.containerPort.join(", "), hostPort: result.hostPort.join(", ")};
 }
 
 

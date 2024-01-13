@@ -1,5 +1,8 @@
 import asyncio
+import concurrent.futures
 import logging
+import multiprocessing
+import queue
 import time
 from collections import deque
 from datetime import datetime
@@ -9,6 +12,8 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.web
 import tornado.websocket
+
+from core.config import UNSUPPORTED_COMMANDS, TAICHI_OS_LOGO
 
 ################ 系统信息Websocket ################
 
@@ -92,10 +97,10 @@ class MonitorHandler(tornado.websocket.WebSocketHandler):
             self.monitor.data_table["disk_read_speed"].append(disk_read_speed_value)
             self.monitor.data_table["disk_write_speed"].append(disk_write_speed_value)
 
-            for client in self.monitor.clients:  # 遍历所有打开的 WebSocket 连接
+            for info_client in self.monitor.clients:  # 遍历所有打开的 WebSocket 连接
                 try:
-                    if client.ws_connection:  # 检查 WebSocket 连接是否仍然打开
-                        client.write_message({
+                    if info_client.ws_connection:  # 检查 WebSocket 连接是否仍然打开
+                        info_client.write_message({
                             "datetime": list(self.monitor.data_table["local_time"]),
                             "cpu": {
                                 "load1": list(self.monitor.data_table["cpu_load"][0]),
@@ -128,26 +133,92 @@ class MonitorHandler(tornado.websocket.WebSocketHandler):
 ################ 系统信息Websocket结束 ################
 
 ################ Docker日志和终端 ################
-    # from docker import from_env
-    # import asyncio
-
-    # client = from_env()
-    # container = client.containers.get('metaweb')
-    # logs = container.logs(stream=True, tail=50)  # 只获取最后的50条日志
+from core.models import client as docker_client
 
 
-    # async def handle_logs(logs):
-    #     for log in logs:
-    #         print(log.decode('utf-8'), end='')
+def fetch_logs(container_id, logs_queue, event):
+    """从指定的 Docker 容器获取日志，并将其放入队列中"""
+    container = docker_client.containers.get(container_id)
+    for log in container.logs(stream=True, tail=50):
+        logs_queue.put(log.decode('utf-8'))
+        event.set()
 
 
-    # # 在主程序中调用异步函数
-    # asyncio.run(handle_logs(logs))
+class DockerLogsHandler(tornado.websocket.WebSocketHandler):
+    """处理 Docker 容器日志的 WebSocket 处理器"""
+
+    def open(self, container_id):
+        """WebSocket 连接打开时的操作"""
+        logging.info(f"{container_id} 容器日志输出Websocket连接建立成功..")
+        self.write_message(TAICHI_OS_LOGO)
+        self.logs_queue = multiprocessing.Queue()
+        self.event = multiprocessing.Event()
+        self.process = multiprocessing.Process(target=fetch_logs, args=(container_id, self.logs_queue, self.event))
+        self.process.start()
+        tornado.ioloop.IOLoop.current().spawn_callback(self.send_logs)
+
+    async def send_logs(self):
+        """从队列中获取日志并发送"""
+        while True:
+            try:
+                log = self.logs_queue.get_nowait()
+                await self.write_message(log)
+                self.event.clear()
+            except queue.Empty:
+                await asyncio.sleep(1)  # sleep for a while before trying again
+                continue
+
+    async def on_message(self, message):
+        """处理接收到的消息"""
+        pass
+
+    def on_close(self):
+        """WebSocket 连接关闭时的操作"""
+        self.process.terminate()
+        self.process.join()  # 等待子进程结束
+        logging.info(f"容器日志输出Websocket连接建立关闭..")
+
+        # 清空队列中的日志
+        while not self.logs_queue.empty():
+            try:
+                self.logs_queue.get_nowait()
+            except queue.Empty:
+                break
+
+
+class DockerBashHandler(tornado.websocket.WebSocketHandler):
+    def open(self, container_id):
+        logging.info(f"{container_id} 容器运行命令Websocket连接建立成功..")
+        self.container = docker_client.containers.get(container_id)
+        self.write_message(TAICHI_OS_LOGO)
+        self.write_message("容器终端连接成功，请不要输入可交互命令")
+
+    def on_message(self, message):
+        if any(command in message for command in UNSUPPORTED_COMMANDS):
+            error_message = f"不支持的命令: {message}"
+            self.write_message(error_message)
+            logging.info(error_message)
+        else:
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(self.container.exec_run, cmd=message, stdout=True, stderr=True, stdin=True,
+                                         tty=False)
+                try:
+                    exec_id = future.result(timeout=2)
+                    self.write_message(exec_id.output)
+                    logging.info(f"容器运行命令:{message}")
+                    logging.info(f"回复:{exec_id.output}")
+                except concurrent.futures.TimeoutError:
+                    self.write_message("命令执行超时，已被强制终止。")
+                    logging.info("命令执行超时，已被强制终止。")
+
+    def on_close(self):
+        docker_client.close()
+        logging.info(f"容器运行命令Websocket连接建立关闭..")
 
 
 def websocket_app():
-    return [
+    return ([
         (r'/Monitor', MonitorHandler),
-        # (r"/containers/(.*)/logs", DockerLogs),
-        # (r"/containers/(.*)/bash", DockerBash),
-    ]
+        (r"/containers/(.*)/logs", DockerLogsHandler),
+        (r"/containers/(.*)/bash", DockerBashHandler),
+    ])
