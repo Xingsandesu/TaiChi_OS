@@ -499,6 +499,7 @@ $(document).ready(function () {
         $("#outer").load(location.href + " #outer>*", "");
         setTimeout(refresh, 10000);  // 每10秒刷新一次
     }
+
     refresh();
 });
 

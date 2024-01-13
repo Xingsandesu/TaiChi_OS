@@ -1,5 +1,5 @@
 import logging
-import sys
+from sys import exit
 
 import tornado.httpserver
 import tornado.ioloop
@@ -37,7 +37,7 @@ def main():
         options.parse_command_line()
     except tornado.options.Error:
         logging.error('命令行参数解析失败')
-        sys.exit(1)
+        exit(1)
 
     # 检查编码设置
     check_encoding_setting(options.encoding)

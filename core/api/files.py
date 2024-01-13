@@ -1,10 +1,10 @@
 import logging
-import mimetypes
 import os
-import shutil
+from mimetypes import guess_type
 from os.path import exists, isfile, dirname, join, isdir, basename
+from shutil import move, copytree, rmtree, copy
 
-import chardet
+from chardet import detect
 from flask import request, send_file
 from flask_login import login_required
 
@@ -30,7 +30,7 @@ def api_remove():
             if isfile(abs_path):
                 os.remove(abs_path)  # 删除文件
             else:
-                shutil.rmtree(abs_path)
+                rmtree(abs_path)
 
             return create_api_response(CODE_YES)
         else:
@@ -126,10 +126,10 @@ def api_copy():
                     dir_name = basename(abs_src)  # 获取源目录的目录名
                     abs_dst = join(abs_dst, dir_name)  # 拼接实际目标路径(因为前端传来的dst是已经存在的目录)
 
-                    shutil.copytree(abs_src, abs_dst)
+                    copytree(abs_src, abs_dst)
                 elif isfile(abs_src):
                     # 文件复制用copy
-                    shutil.copy(abs_src, abs_dst)
+                    copy(abs_src, abs_dst)
                 else:
                     # 不存在abs_src文件或目录
                     raise Exception('%s 找不到' % abs_src)
@@ -160,7 +160,7 @@ def api_move():
 
             if abs_src and abs_dst:
                 # 无论目录还是文件直接用move即可
-                shutil.move(abs_src, abs_dst)
+                move(abs_src, abs_dst)
                 return create_api_response(CODE_YES)
             else:
                 # 路径不在HOME_PATH里
@@ -259,13 +259,13 @@ def api_view():
                 return create_api_response(CODE_NO, errmsg='文件过大')
 
             # 使用mimetypes库猜测文件的MIME类型
-            mime_type, encoding = mimetypes.guess_type(abs_path)
+            mime_type, encoding = guess_type(abs_path)
             if mime_type and mime_type not in supported_mime_types:
                 return create_api_response(CODE_NO, errmsg='不支持的文件类型')
 
             # 尝试使用chardet检测文件编码，只读取文件的前1MB
             with open(abs_path, 'rb') as f:
-                result = chardet.detect(f.read(1024 * 1024))
+                result = detect(f.read(1024 * 1024))
 
             # 如果检测到的编码的置信度太低，我们认为文件不能被文本编辑器打开
             if result['confidence'] < 0.5:

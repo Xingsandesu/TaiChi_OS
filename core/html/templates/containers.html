@@ -1,6 +1,6 @@
 {% extends "navbar.html" %}
 {% block title %}
-    Universe OS
+    TaiChi OS 容器
 {% endblock %}
 {% block navbar_brand %}
     Docker管理
@@ -18,6 +18,7 @@
         .card:hover {
             box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
         }
+
         /* 添加样式以确保表格适应页面宽度 */
         .card.table-responsive {
             overflow-x: auto;
@@ -38,11 +39,12 @@
         .table td {
             white-space: nowrap; /* 防止文本换行 */
         }
-        
+
         caption {
             caption-side: top;
             text-align: left;
         }
+
         .tablename {
             margin-left: 20px;
             margin-right: auto;
@@ -50,32 +52,33 @@
             margin-bottom: 20px;
             display: block;
         }
+
         /* 模态框的样式 */
         .modal {
-            display: none;  /* 默认隐藏 */
-            position: fixed;  /* 固定位置 */
-            z-index: 1;  /* 在其他元素之上 */
+            display: none; /* 默认隐藏 */
+            position: fixed; /* 固定位置 */
+            z-index: 1; /* 在其他元素之上 */
             left: 0;
             top: 0;
-            width: 100%;  /* 宽度和高度覆盖整个屏幕 */
+            width: 100%; /* 宽度和高度覆盖整个屏幕 */
             height: auto;
-            overflow: auto;  /* 启用滚动条 */
-            background-color: rgba(0,0,0,0.4);  /* 半透明背景 */
+            overflow: auto; /* 启用滚动条 */
+            background-color: rgba(0, 0, 0, 0.4); /* 半透明背景 */
         }
 
         /* 模态框内容的样式 */
         .modal-content {
-            background-color: #000;  /* 黑色背景 */
-            margin: auto;  /* 自动外边距 */
+            background-color: #000; /* 黑色背景 */
+            margin: auto; /* 自动外边距 */
             padding: 20px;
             border: 1px solid #888;
-            width: 80%;  /* 固定宽度 */
-            height: 80%;  /* 固定高度 */
-            color: #fff;  /* 白色字体 */
-            position: fixed;  /* 固定位置 */
-            top: 50%;  /* 顶部位置为50% */
-            left: 50%;  /* 左侧位置为50% */
-            transform: translate(-50%, -50%);  /* 使用transform属性将元素的中心点移动到其父元素的中心 */
+            width: 80%; /* 固定宽度 */
+            height: 80%; /* 固定高度 */
+            color: #fff; /* 白色字体 */
+            position: fixed; /* 固定位置 */
+            top: 50%; /* 顶部位置为50% */
+            left: 50%; /* 左侧位置为50% */
+            transform: translate(-50%, -50%); /* 使用transform属性将元素的中心点移动到其父元素的中心 */
         }
 
         /* 关闭按钮的样式 */
@@ -95,53 +98,57 @@
     </style>
     <div class="card table-responsive">
         <table id="containersTable" class="table table-striped table-hover text-center striped">
-            <caption><h3 class="tablename">容器</h3><hr></caption>
-        <thead>
-        <tr>
-            <th class="text-nowrap">名称</th>
-            <th class="text-nowrap">镜像</th>
-            <th class="text-nowrap">命令</th>
-            <th class="text-nowrap">容器端口</th>
-            <th class="text-nowrap">主机端口</th>
-            <th class="text-nowrap">容器路径</th>
-            <th class="text-nowrap">主机路径</th>
-            <th class="text-nowrap">运行时间</th>
-            <th class="text-nowrap">状态</th>
-            <th class="text-nowrap">CPU</th>
-            <th class="text-nowrap">RAM</th>
-            <th class="text-nowrap">操作</th>
-        </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-</div>
+            <caption><h3 class="tablename">容器</h3>
+                <hr>
+            </caption>
+            <thead>
+            <tr>
+                <th class="text-nowrap">名称</th>
+                <th class="text-nowrap">镜像</th>
+                <th class="text-nowrap">命令</th>
+                <th class="text-nowrap">容器端口</th>
+                <th class="text-nowrap">主机端口</th>
+                <th class="text-nowrap">容器路径</th>
+                <th class="text-nowrap">主机路径</th>
+                <th class="text-nowrap">运行时间</th>
+                <th class="text-nowrap">状态</th>
+                <th class="text-nowrap">CPU</th>
+                <th class="text-nowrap">RAM</th>
+                <th class="text-nowrap">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
     <div class="card table-responsive">
         <table id="imagesTable" class="table table-striped table-hover text-center striped">
-            <caption><h3 class="tablename">镜像</h3><hr></caption>
-        <thead>
-        <tr>
-            <th class="text-nowrap">镜像名称</th>
-            <th class="text-nowrap">TAG</th>
-            <th class="text-nowrap">镜像ID</th>
-            <th class="text-nowrap">镜像大小</th>
-            <th class="text-nowrap">操作</th>
-        </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-</div>
-<!-- 模态框 -->
-<div id="logModal" class="modal">
-    <div class="modal-content">
-        <span id="closeModal" class="close">&times;</span>
-        <pre id="logElement"></pre>
+            <caption><h3 class="tablename">镜像</h3>
+                <hr>
+            </caption>
+            <thead>
+            <tr>
+                <th class="text-nowrap">镜像名称</th>
+                <th class="text-nowrap">TAG</th>
+                <th class="text-nowrap">镜像ID</th>
+                <th class="text-nowrap">镜像大小</th>
+                <th class="text-nowrap">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
     </div>
-</div>
+    <!-- 模态框 -->
+    <div id="logModal" class="modal">
+        <div class="modal-content">
+            <span id="closeModal" class="close">&times;</span>
+            <pre id="logElement"></pre>
+        </div>
+    </div>
     <script src="{{ url_for('static', filename='js/public/jquery.min.js') }}"></script>
     <script>
-        
+
         var refreshIntervalId;
 
         $(document).ready(function () {
@@ -196,41 +203,42 @@
                 }
             });
         }
-            // 获取模态框元素
-    var logModal = document.getElementById("logModal");
-    // 获取关闭模态框的元素
-    var closeModal = document.getElementById("closeModal");
-    // 获取显示日志的元素
-    var logElement = document.getElementById("logElement");
 
-    function viewLogs(name) {
-        // 创建一个新的WebSocket连接
-        var ws = new WebSocket("ws://" + location.host + "/containers/" + name + "/logs");
-        // 当接收到一个新的日志条目时，将其添加到日志元素
-        ws.onmessage = function(event) {
-            logElement.textContent += event.data + "\n";
-        };
-        // 打开模态框
-        logModal.style.display = "block";
-        // 当 WebSocket 连接关闭时，清空日志
-        ws.onclose = function() {
-            logElement.textContent = "";
-        };
-        // 当用户点击关闭元素时，关闭模态框并关闭 WebSocket 连接
-        closeModal.onclick = function() {
-            logModal.style.display = "none";
-            logElement.textContent = "";  // 清空日志
-            ws.close();  // 关闭 WebSocket 连接
-        };
-        // 当用户点击模态框外部时，关闭模态框并关闭 WebSocket 连接
-        window.onclick = function(event) {
-            if (event.target == logModal) {
+        // 获取模态框元素
+        var logModal = document.getElementById("logModal");
+        // 获取关闭模态框的元素
+        var closeModal = document.getElementById("closeModal");
+        // 获取显示日志的元素
+        var logElement = document.getElementById("logElement");
+
+        function viewLogs(name) {
+            // 创建一个新的WebSocket连接
+            var ws = new WebSocket("ws://" + location.host + "/containers/" + name + "/logs");
+            // 当接收到一个新的日志条目时，将其添加到日志元素
+            ws.onmessage = function (event) {
+                logElement.textContent += event.data + "\n";
+            };
+            // 打开模态框
+            logModal.style.display = "block";
+            // 当 WebSocket 连接关闭时，清空日志
+            ws.onclose = function () {
+                logElement.textContent = "";
+            };
+            // 当用户点击关闭元素时，关闭模态框并关闭 WebSocket 连接
+            closeModal.onclick = function () {
                 logModal.style.display = "none";
                 logElement.textContent = "";  // 清空日志
                 ws.close();  // 关闭 WebSocket 连接
-            }
-        };
-    }
+            };
+            // 当用户点击模态框外部时，关闭模态框并关闭 WebSocket 连接
+            window.onclick = function (event) {
+                if (event.target == logModal) {
+                    logModal.style.display = "none";
+                    logElement.textContent = "";  // 清空日志
+                    ws.close();  // 关闭 WebSocket 连接
+                }
+            };
+        }
 
 
         function stopContainer(name) {
@@ -297,6 +305,7 @@
                 }
             });
         }
+
         function formatVolumeMappings(binds) {
             if (!binds || binds.length === 0) {
                 return {containerPath: "无映射", hostPath: "无映射"};
@@ -330,11 +339,12 @@
             }
             return result;
         }
+
         $(document).ready(function () {
             loadImages();
             setInterval(loadImages, 10000);  // 每10秒刷新一次
         });
-    
+
         function loadImages() {
             $.get("/api/images", function (data) {
                 if (data.code === 200) {
@@ -354,7 +364,7 @@
                 }
             });
         }
-    
+
         function deleteImage(id) {
             $.ajax({
                 url: "/api/images/" + id + "/delete",

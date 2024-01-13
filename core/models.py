@@ -1,13 +1,13 @@
 import logging
 import os
-import secrets
-import sys
-import time
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from os.path import join, isdir, abspath, pardir, basename, getmtime
+from secrets import token_hex
+from sys import exit, stdout, argv
+from time import localtime, asctime
 
-from docker import DockerClient
+from docker import from_env
 from flask import request
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
@@ -20,7 +20,7 @@ from core.config import DOCKER_CATEGORY, DEFAULT_LOGO_PATH
 db = SQLAlchemy()
 
 try:
-    client = DockerClient.from_env()
+    client = from_env()
 except Exception as e:
     logging.error(e)
     try:
@@ -35,31 +35,31 @@ except Exception as e:
         logging.warning("详细请查看: https://docs.docker.com/engine/install/")
         user_input = input("请输入选项( 1, 2 ):").lower()
         if user_input in ['1']:
-            process = subprocess.Popen(GET_DOCKER_SHELL_COMMAND, shell=True, stdout=sys.stdout)
+            process = subprocess.Popen(GET_DOCKER_SHELL_COMMAND, shell=True, stdout=stdout)
             process.wait()
             if process and process.returncode != 0:
                 logging.error("Docker安装失败! 请检查网络或者使用root权限")
-                sys.exit()
+                exit()
             else:
                 logging.info("Docker安装成功!")
                 logging.info("程序正在启动...")
                 client = DockerClient.from_env()
         elif user_input in ['2']:
-            process = subprocess.Popen(INSTLL_DOCKER_COMMANDS, shell=True, stdout=sys.stdout)
+            process = subprocess.Popen(INSTLL_DOCKER_COMMANDS, shell=True, stdout=stdout)
             process.wait()
             if process and process.returncode != 0:
                 logging.error("Docker安装失败! 请检查网络或者使用root权限")
-                sys.exit()
+                exit()
             else:
                 logging.info("Docker安装成功!")
                 logging.info("程序正在启动...")
                 client = DockerClient.from_env()
         else:
             logging.error("无效的输入!")
-            sys.exit()
+            exit()
     except KeyboardInterrupt:
         logging.info("用户结束进程")
-        sys.exit()
+        exit()
 
 
 ######################### 数据库相关Class #########################
@@ -81,10 +81,10 @@ class User(db.Model, UserMixin):
 
 
 class Config:
-    SECRET_KEY = secrets.token_hex(16)
+    SECRET_KEY = token_hex(16)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     prefix = 'sqlite:///'
-    SQLALCHEMY_DATABASE_URI = prefix + os.path.join(os.path.dirname(sys.argv[0]), 'data.db')
+    SQLALCHEMY_DATABASE_URI = prefix + os.path.join(os.path.dirname(argv[0]), 'data.db')
 
 
 ######################### 数据库相关Class结束 #########################
@@ -215,7 +215,7 @@ def get_docker_info(container: str, server_ip: str):
     app_name = container.name
     ports = container.ports
     mapped_ports = [port_info[0]['HostPort'] for port_info in ports.values() if port_info]
-    if not mapped_ports: # 选择host网络和macvlan网络的容器返回None
+    if not mapped_ports:  # 选择host网络和macvlan网络的容器返回None
         return None
 
     base_link = f'http://{server_ip}'
@@ -237,7 +237,8 @@ def update_docker():
     server_ip = request.host.split(':')[0]
 
     with ThreadPoolExecutor(max_workers=10) as executor:
-        existing_items = list(filter(None, executor.map(lambda container: get_docker_info(container, server_ip), dockers))) #过滤掉host网络和macvlan网络的容器(None)
+        existing_items = list(filter(None, executor.map(lambda container: get_docker_info(container, server_ip),
+                                                        dockers)))  # 过滤掉host网络和macvlan网络的容器(None)
 
     if DOCKER_CATEGORY not in items.items_dict:
         items.add_category(DOCKER_CATEGORY, existing_items)
@@ -278,7 +279,7 @@ def get_m_time(start, paths):
     for path in paths:
         full_path = join(start, path)
         m_time = getmtime(full_path)
-        lst.append((path, time.asctime(time.localtime(m_time))))
+        lst.append((path, asctime(localtime(m_time))))
 
     return lst
 

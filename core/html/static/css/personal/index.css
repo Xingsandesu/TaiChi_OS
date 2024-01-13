@@ -22,11 +22,13 @@ body {
         display: none !important;
     }
 }
+
 @media screen and (max-width: 1243px) {
     #systemVersion {
         display: none;
     }
 }
+
 .container {
     background-color: transparent;
 }
@@ -360,6 +362,7 @@ a:visited {
 #timeLabel {
     font-size: 2.5rem;
 }
+
 /* 按钮样式 */
 .btn-custom {
     padding: 0;
@@ -369,8 +372,9 @@ a:visited {
     color: #262626;
     width: 90px;
     height: 30px;
-    border-radius: 25px;  /* 增大按钮的圆角 */
+    border-radius: 25px; /* 增大按钮的圆角 */
 }
+
 .btn-custom:hover {
     background-color: #8a8a8a;
 }
@@ -381,7 +385,7 @@ a:visited {
     gap: 0;
     white-space: nowrap; /* 防止文本换行 */
     justify-items: center;
-    padding: 0;  /* 增加内边距 */
+    padding: 0; /* 增加内边距 */
 }
 
 #containers {
