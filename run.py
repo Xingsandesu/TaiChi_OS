@@ -7,12 +7,12 @@ import tornado.web
 import tornado.wsgi
 from tornado.options import options
 
+# 引入Async应用
+from async_app.view import async_app
 from core.config import TAICHI_OS_LOGO, TAICHI_OS_WELCOME_MESSAGE
 # 引入Flask应用
 from core.main import create_app as make_core_app
 from settings import get_server_settings, check_encoding_setting
-# 引入Async应用
-from async_app.view import async_app
 # 引入WebSSH应用
 from webssh.main import make_app as make_webssh_app
 

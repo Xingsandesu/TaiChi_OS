@@ -44,6 +44,7 @@ function createChart(ctx, gradient, title) {
         }
     });
 }
+
 function getSystemInfo(diskChart) {
     fetch('/api/info')
         .then(response => response.json())

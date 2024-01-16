@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="zh" style="height: 100%; background: url('{{ url_for('static', filename='img/bg.jpg') }}') no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;">
+<html lang="zh"
+      style="height: 100%; background: url('{{ url_for('static', filename='img/bg.jpg') }}') no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;">
 <head>
     <meta charset="UTF-8">
     <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
@@ -23,12 +24,12 @@
             </div>
             <!-- 应用图标链接 -->
             <a class="nav-link" href="/install">
-                 <i class="bi bi-bag"></i>
+                <i class="bi bi-bag"></i>
             </a>
-                                    <!-- 仪表台图标链接 -->
-                                    <a class="nav-link" href="/monitor">
-                                        <i class="bi bi-arrow-down-up"></i>
-                                    </a>
+            <!-- 仪表台图标链接 -->
+            <a class="nav-link" href="/monitor">
+                <i class="bi bi-arrow-down-up"></i>
+            </a>
             <a class="nav-link" href="/containers">
                 <i class="bi bi-boxes"></i>
             </a>

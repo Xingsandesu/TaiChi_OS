@@ -240,7 +240,7 @@
                             row += "</div>";
                             row += "</td>";
                         }
-                        
+
                         rows += row;
                     });
                     $("#containersTable tbody").html(rows);
@@ -401,27 +401,28 @@
                 }
             });
         }
-function formatVolumeMappings(binds) {
-    if (!binds || binds.length === 0) {
-        return {containerPath: "无映射", hostPath: "无映射"};
-    }
-    var result = {containerPath: "", hostPath: ""};
-    for (var i = 0; i < binds.length; i++) {
-        var parts = binds[i].split(":");
-        var hostPath = parts[0].replace("/var/lib/docker/volumes/", "");
-        var containerPath = parts[1];
 
-        result.containerPath += containerPath;
-        result.hostPath += hostPath;
+        function formatVolumeMappings(binds) {
+            if (!binds || binds.length === 0) {
+                return {containerPath: "无映射", hostPath: "无映射"};
+            }
+            var result = {containerPath: "", hostPath: ""};
+            for (var i = 0; i < binds.length; i++) {
+                var parts = binds[i].split(":");
+                var hostPath = parts[0].replace("/var/lib/docker/volumes/", "");
+                var containerPath = parts[1];
+
+                result.containerPath += containerPath;
+                result.hostPath += hostPath;
 
 
-        if (i < binds.length - 1) {
-            result.containerPath += ", ";
-            result.hostPath += ", ";
+                if (i < binds.length - 1) {
+                    result.containerPath += ", ";
+                    result.hostPath += ", ";
+                }
+            }
+            return result;
         }
-    }
-    return result;
-}
 
         function formatPortMappings(container) {
             if (container.HostConfig && container.HostConfig.NetworkMode === "host") {

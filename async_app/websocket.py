@@ -135,6 +135,7 @@ class MonitorHandler(tornado.websocket.WebSocketHandler):
 ################ Docker日志和终端 ################
 from core.models import client as docker_client
 
+
 def fetch_logs(container_id, logs_queue, event):
     """从指定的 Docker 容器获取日志，并将其放入队列中"""
     container = docker_client.containers.get(container_id)
@@ -213,4 +214,3 @@ class DockerBashHandler(tornado.websocket.WebSocketHandler):
     def on_close(self):
         docker_client.close()
         logging.info(f"容器运行命令Websocket连接建立关闭..")
-

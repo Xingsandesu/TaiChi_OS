@@ -6,142 +6,152 @@
     Docker管理
 {% endblock %}
 {% block content %}
-<style>
-    body {
-        font-family: Arial, sans-serif;
-    }
-    .btn-primary {
-        background-color: rgba(200, 206, 235, 0.5); /* 天蓝色半透明背景 */
-        border: none;
-        border-radius: 25px;
-        padding: 10px 30px;
-        position: absolute;
-        right: 20px;
-        bottom: 20px;
-        color: black;
-        backdrop-filter: blur(10px);
-        transition: background-color 0.3s ease-in-out;
-        font-weight: bold;
-        font-size: 16px;
-    }
-    .btn-primary:hover {
-        background-color: rgba(135, 206, 235, 0.7); /* 鼠标悬停时背景更透明 */
-        color: white; /* 鼠标悬停时字体颜色变为白色 */
-    }
-    .row {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: center;
-        margin: 0;
-        padding: 50px;
-        overflow: auto;
-        height: 100vh; /* 或者你需要的高度 */
-    }
-    .col-sm-4 {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 0px;
-        overflow: auto;
-        height: 100vh; /* 或者你需要的高度 */
-    }
-
-    .col {
-        width: 100%;
-        height: 200px;
-        margin: 20px 10px;
-        padding: 15px;
-        border-radius: 25px;
-        position: relative;
-        background-color: rgba(248, 249, 250, 0.7); /* 添加透明效果 */
-        backdrop-filter: blur(10px); /* 添加毛玻璃效果 */
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-        transition: box-shadow 0.3s ease-in-out;
-    }
-    .col:hover {
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    }
-    .card-title {
-        padding: 5px 0px;
-        font-size: 30px;
-        font-weight: bold; /* 添加这一行 */
-    }
-    .card-text {
-        padding: 5px 0px;
-        margin: 0;
-        font-size: 18px;
-    }
-    /* 当页面宽度达到 768px 时，切换为 2x1 布局 */
-    @media (min-width: 768px) {
-        .col {
-            flex: 0 0 50%;
-            max-width: 50%;
+    <style>
+        body {
+            font-family: Arial, sans-serif;
         }
-    }
 
-    /* 当页面宽度达到 992px 时，切换为 3x3 布局 */
-    @media (min-width: 992px) {
-        .col {
-            flex: 0 0 33.33%;
-            max-width: 33.33%;
+        .btn-primary {
+            background-color: rgba(200, 206, 235, 0.5); /* 天蓝色半透明背景 */
+            border: none;
+            border-radius: 25px;
+            padding: 10px 30px;
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            color: black;
+            backdrop-filter: blur(10px);
+            transition: background-color 0.3s ease-in-out;
+            font-weight: bold;
+            font-size: 16px;
         }
-    }
 
-    /* 当页面宽度达到 1600px 时，切换为 4x3 布局 */
-    @media (min-width: 1600px) {
-        .col {
-            flex: 0 0 25%;
-            max-width: 25%;
+        .btn-primary:hover {
+            background-color: rgba(135, 206, 235, 0.7); /* 鼠标悬停时背景更透明 */
+            color: white; /* 鼠标悬停时字体颜色变为白色 */
         }
-    }
-</style>
-<script>
-    window.onload = function() {
-        var installButtons = document.getElementsByClassName('btn-install');
 
-        for (var i = 0; i < installButtons.length; i++) {
-            installButtons[i].addEventListener('click', function(event) {
-                var appName = this.getAttribute('data-app-name');
-                this.textContent = '安装中...';
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 50px;
+            overflow: auto;
+            height: 100vh; /* 或者你需要的高度 */
+        }
 
-                fetch('api/containers/' + appName + '/create', {
-                    method: 'POST'
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('服务器错误，状态码：' + response.status);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.code === 200) {
-                        alert('安装成功:' + JSON.stringify(data.data));
-                    } else if (data.code === 400) {
-                        alert('安装失败，错误信息是：' + data.errmsg);
-                    }
-                    this.textContent = '安装';
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                    this.textContent = '安装';
-                    alert('安装出错，错误信息是：' + error);
+        .col-sm-4 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0px;
+            overflow: auto;
+            height: 100vh; /* 或者你需要的高度 */
+        }
+
+        .col {
+            width: 100%;
+            height: 200px;
+            margin: 20px 10px;
+            padding: 15px;
+            border-radius: 25px;
+            position: relative;
+            background-color: rgba(248, 249, 250, 0.7); /* 添加透明效果 */
+            backdrop-filter: blur(10px); /* 添加毛玻璃效果 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        .col:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            padding: 5px 0px;
+            font-size: 30px;
+            font-weight: bold; /* 添加这一行 */
+        }
+
+        .card-text {
+            padding: 5px 0px;
+            margin: 0;
+            font-size: 18px;
+        }
+
+        /* 当页面宽度达到 768px 时，切换为 2x1 布局 */
+        @media (min-width: 768px) {
+            .col {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+        }
+
+        /* 当页面宽度达到 992px 时，切换为 3x3 布局 */
+        @media (min-width: 992px) {
+            .col {
+                flex: 0 0 33.33%;
+                max-width: 33.33%;
+            }
+        }
+
+        /* 当页面宽度达到 1600px 时，切换为 4x3 布局 */
+        @media (min-width: 1600px) {
+            .col {
+                flex: 0 0 25%;
+                max-width: 25%;
+            }
+        }
+    </style>
+    <script>
+        window.onload = function () {
+            var installButtons = document.getElementsByClassName('btn-install');
+
+            for (var i = 0; i < installButtons.length; i++) {
+                installButtons[i].addEventListener('click', function (event) {
+                    var appName = this.getAttribute('data-app-name');
+                    this.textContent = '安装中...';
+
+                    fetch('api/containers/' + appName + '/create', {
+                        method: 'POST'
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('服务器错误，状态码：' + response.status);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.code === 200) {
+                                alert('安装成功:' + JSON.stringify(data.data));
+                            } else if (data.code === 400) {
+                                alert('安装失败，错误信息是：' + data.errmsg);
+                            }
+                            this.textContent = '安装';
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                            this.textContent = '安装';
+                            alert('安装出错，错误信息是：' + error);
+                        });
                 });
-            });
+            }
         }
-    }
-</script>
-<div class="container-fluid" style="height: 100%; background: url('{{ url_for('static', filename='img/bg.jpg') }}') no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;">
-    <div class="row">
-        {% for app_name, app_info in apps.items() %}
-        <div class="col">
-            <div class="card-body">
-                <h4 class="card-title"><a href="{{ app_info.url }}">{{ app_name }}</a></h4>
-                <p class="card-text">{{ app_info.description }}</p>
-                <button id="install" class="btn btn-primary btn-install" data-app-name="{{ app_name }}">安装</button>
-            </div>
+    </script>
+    <div class="container-fluid"
+         style="height: 100%; background: url('{{ url_for('static', filename='img/bg.jpg') }}') no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;">
+        <div class="row">
+            {% for app_name, app_info in apps.items() %}
+                <div class="col">
+                    <div class="card-body">
+                        <h4 class="card-title"><a href="{{ app_info.url }}">{{ app_name }}</a></h4>
+                        <p class="card-text">{{ app_info.description }}</p>
+                        <button id="install" class="btn btn-primary btn-install" data-app-name="{{ app_name }}">安装
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
-</div>
 {% endblock %}

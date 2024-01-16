@@ -8,6 +8,7 @@
     --bold-font-weight: bold;
     --normal-font-weight: normal;
 }
+
 html,
 body {
     margin: 0;
@@ -349,6 +350,7 @@ a:visited {
     box-shadow: none;
     background-color: transparent;
 }
+
 .form-control:focus {
     background-color: transparent;
 }

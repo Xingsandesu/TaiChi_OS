@@ -1,5 +1,6 @@
 import logging
 import os
+
 import requests
 from flask import Blueprint, render_template, request
 from flask_login import login_required
@@ -22,7 +23,6 @@ def index():
 def none_back():
     update_docker()
     return render_template('index.html', items_dict=items.items_dict)
-
 
 
 @bp.route('/install')  # /install

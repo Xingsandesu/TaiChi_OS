@@ -1,18 +1,18 @@
-import tornado.ioloop
-import tornado.web
-import tornado.httpclient
 import json
 import logging
 import os
 from subprocess import run
-from aiodocker import Docker
-from core.models import client
-from core.config import SOURCE_URL
 
+import tornado.httpclient
+import tornado.ioloop
+import tornado.web
+from aiodocker import Docker
+
+from core.config import SOURCE_URL
+from core.models import client
 
 CODE_YES = 200  # 操作成功的响应码
 CODE_NO = 400  # 操作失败的响应码
-
 
 
 def create_api_response(handler: tornado.web.RequestHandler, code: int, errmsg: any = '', data: any = None):
@@ -32,7 +32,8 @@ def create_api_response(handler: tornado.web.RequestHandler, code: int, errmsg: 
 
     handler.set_header("Content-Type", "application/json; charset=utf-8")
     handler.write(json_data)
-    
+
+
 class CreateContainerHandler(tornado.web.RequestHandler):
     async def post(self, id):
         aiodocker = Docker()
@@ -133,7 +134,9 @@ class CreateContainerHandler(tornado.web.RequestHandler):
                 image,
                 name=name,
                 ports={k: (None, v) for k, v in ports.items()},
-                volumes={f"/var/lib/docker/volumes/{v}/_data{details['bind']}": {'bind': details['bind'], 'mode': details['mode']} for v, details in volumes.items()} if volumes else {},
+                volumes={f"/var/lib/docker/volumes/{v}/_data{details['bind']}": {'bind': details['bind'],
+                                                                                 'mode': details['mode']} for v, details
+                         in volumes.items()} if volumes else {},
                 restart_policy=restart_policy,
                 environment=env  # 添加环境变量
             )

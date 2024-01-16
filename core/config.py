@@ -1,6 +1,7 @@
-import os
 import json
+import os
 from sys import argv
+
 # 全局基本配置文件
 # 构造 config.json 文件的完整路径
 config_path = os.path.join(os.path.dirname(argv[0]), 'config.json')
@@ -58,10 +59,8 @@ GET_DOCKER_SHELL_COMMAND = data['get_docker_shell_command']
 HOME_PATH = os.path.abspath('/')  # 将路径转化为标准绝对路径
 HOME_NAME = os.path.basename(HOME_PATH)  # 根目录的名字
 
-
 DEFAULT_LOGO_PATH = 'static/img/favicon.png'
 DOCKER_CATEGORY = 'Docker Apps'
-
 
 INSTLL_DOCKER_COMMANDS = [
     f'rm -rf /usr/bin/docker* && \
@@ -81,14 +80,12 @@ INSTLL_DOCKER_COMMANDS = [
     systemctl enable --now docker.service'
 ]
 
-
 UNSUPPORTED_COMMANDS = [
     'top', 'vim', 'ping', 'vi', 'htop', 'nano', 'emacs', 'ssh', 'telnet',
     'ftp', 'sftp', 'scp', 'less', 'more', 'man', 'lynx', 'nc', 'netcat',
     'telnet', 'watch', 'screen', 'tmux', 'w3m', 'links', 'elinks', 'mysql',
     'psql', 'sqlite3'
 ]
-
 
 TAICHI_OS_LOGO = """
  ███████████            ███    █████████  █████       ███        ███████     █████████ 
@@ -100,7 +97,6 @@ TAICHI_OS_LOGO = """
     █████   ░░████████ █████ ░░█████████  ████ █████ █████    ░░░███████░  ░░█████████ 
    ░░░░░     ░░░░░░░░ ░░░░░   ░░░░░░░░░  ░░░░ ░░░░░ ░░░░░       ░░░░░░░     ░░░░░░░░░                                                                                                                                                             
 """
-
 
 TAICHI_OS_WELCOME_MESSAGE = ("\n"
                              "版本 : 0.9.2-DEV\n"
