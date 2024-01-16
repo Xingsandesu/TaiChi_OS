@@ -15,7 +15,11 @@ mkdir -p /usr/taichi
 echo "目录创建完成"
 
 # 下载文件到创建的目录
-wget -P /usr/taichi https://example.com/path/to/file
+wget -P /usr/taichi https://cloud.kookoo.top/f/nmtW/TAICHI_OS
+echo "文件下载完成"
+
+# 给权限
+chmod 755 /usr/taichi/TAICHI_OS
 echo "文件下载完成"
 
 # 写入service
