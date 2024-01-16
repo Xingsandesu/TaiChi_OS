@@ -26,7 +26,9 @@ function createChart(ctx, gradient, title) {
         data: {
             datasets: [{
                 data: [0, 100],
-                backgroundColor: [gradient, '#ddd']
+                backgroundColor: [gradient, 'rgba(255, 255, 255, 0.2)'],
+                borderColor: ['rgba(255, 255, 255, 0.2)', 'rgba(255, 255, 255, 0.2)'], // 添加这行来设置边框颜色
+                borderWidth: 3 // 可以设置边框宽度
             }]
         },
         options: {
@@ -42,7 +44,6 @@ function createChart(ctx, gradient, title) {
         }
     });
 }
-
 function getSystemInfo(diskChart) {
     fetch('/api/info')
         .then(response => response.json())
@@ -98,14 +99,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const memoryCtx = document.getElementById('memoryUsageChart').getContext('2d');
     const diskCtx = document.getElementById('diskUsageChart').getContext('2d');
     const cpuGradient = cpuCtx.createLinearGradient(0, 0, 0, 400);
-    cpuGradient.addColorStop(0, 'rgba(255, 99, 132, 0.5)');
-    cpuGradient.addColorStop(1, 'rgba(255, 99, 132, 0.2)');
+    cpuGradient.addColorStop(0, 'rgba(255, 99, 132, 0.2)');
+    cpuGradient.addColorStop(1, 'rgba(255, 99, 132, 0.1)');
     const memoryGradient = memoryCtx.createLinearGradient(0, 0, 0, 400);
-    memoryGradient.addColorStop(0, 'rgba(54, 162, 235, 0.5)');
-    memoryGradient.addColorStop(1, 'rgba(54, 162, 235, 0.2)');
+    memoryGradient.addColorStop(0, 'rgba(54, 162, 235, 0.2)');
+    memoryGradient.addColorStop(1, 'rgba(54, 162, 235, 0.1)');
     const diskGradient = diskCtx.createLinearGradient(0, 0, 0, 400);
-    diskGradient.addColorStop(0, 'rgba(75, 192, 192, 0.5)');
-    diskGradient.addColorStop(1, 'rgba(75, 192, 192, 0.2)');
+    diskGradient.addColorStop(0, 'rgba(75, 192, 192, 0.2)');
+    diskGradient.addColorStop(1, 'rgba(75, 192, 192, 0.1)');
     cpuChart = createChart(cpuCtx, cpuGradient, 'CPU 使用率');
     memoryChart = createChart(memoryCtx, memoryGradient, '内存 使用率');
     const diskChart = createChart(diskCtx, diskGradient, '磁盘 使用率');
@@ -625,3 +626,4 @@ function stopAndDeleteContainer(name) {
         }
     });
 }
+

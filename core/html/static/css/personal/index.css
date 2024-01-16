@@ -8,13 +8,12 @@
     --bold-font-weight: bold;
     --normal-font-weight: normal;
 }
-
 html,
 body {
     margin: 0;
     padding: 0;
     height: 100%;
-    background-color: #333333;
+    background-color: transparent;
 }
 
 @media (max-width: 768px) {
@@ -44,7 +43,7 @@ body {
 
 .container-body {
     display: flex;
-    border-top: 1px solid #dfdfdf;
+    border-top: 0px solid #dfdfdf;
     padding: 20px 10px 0 10px;
     flex-direction: row;
     flex-wrap: wrap;
@@ -55,7 +54,7 @@ body {
 }
 
 .item-block {
-    border: 1px solid #dfdfdf;
+    border: 0px solid #dfdfdf;
     flex-direction: column;
     height: 160px;
     width: 160px;
@@ -114,6 +113,11 @@ a:visited {
     font-size: 0.8em;
     font-weight: bold;
     padding-bottom: 10px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    font-size: 12px; /* 根据视口宽度设置字体大小 */
+    white-space: nowrap; /* 修改这一行 */
+    word-break: keep-all; /* 修改这一行 */
 }
 
 .divider {
@@ -138,7 +142,8 @@ a:visited {
     padding-right: 5px;
     padding-bottom: 5px;
     padding-left: 5px;
-    background-color: #F8F9FA;
+    background-color: rgba(248, 249, 250, 0.7); /* 添加透明效果 */
+    backdrop-filter: blur(10px); /* 添加毛玻璃效果 */
     border: 0;
     border-radius: 30px;
 }
@@ -344,6 +349,9 @@ a:visited {
     box-shadow: none;
     background-color: transparent;
 }
+.form-control:focus {
+    background-color: transparent;
+}
 
 /* 设置搜索按钮的边框为透明 */
 .input-group-text {
@@ -368,11 +376,12 @@ a:visited {
     padding: 0;
     margin: 0;
     bottom: 0;
-    background-color: #DDDDDD;
+    background-color: rgba(255, 255, 255, 0.3); /* 使用 rgba 设置背景色的透明度 */
     color: #262626;
     width: 90px;
     height: 30px;
-    border-radius: 25px; /* 增大按钮的圆角 */
+    border-radius: 25px;
+    backdrop-filter: blur(10px); /* 添加毛玻璃效果 */
 }
 
 .btn-custom:hover {

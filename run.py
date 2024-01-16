@@ -11,8 +11,8 @@ from core.config import TAICHI_OS_LOGO, TAICHI_OS_WELCOME_MESSAGE
 # 引入Flask应用
 from core.main import create_app as make_core_app
 from settings import get_server_settings, check_encoding_setting
-# 引入WebSocket-Monitor应用
-from websocket.websocket import websocket_app
+# 引入Async应用
+from async_app.view import async_app
 # 引入WebSSH应用
 from webssh.main import make_app as make_webssh_app
 
@@ -54,8 +54,8 @@ def main():
     add_handlers_to_app(main_app, r'/webssh/.*', webssh_app)
 
     # 添加WebSocket应用
-    websocket_handlers = websocket_app()
-    add_handlers_to_app(main_app, r'.*', websocket_handlers)
+    async_handlers = async_app()
+    add_handlers_to_app(main_app, r'.*', async_handlers)
 
     # 添加Flask应用
     flask_app = make_core_app()

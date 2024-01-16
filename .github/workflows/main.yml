@@ -1,4 +1,4 @@
-name: UNIVERSE_OS_DEV_BUILD
+name: TAICHI_OS_BUILD
 
 on:
   release:
@@ -41,12 +41,12 @@ jobs:
           file-version: ${{ github.ref_name }}
           product-version: ${{ github.ref_name }}
           include-data-dir: core/html=core/html
-          output-file: UNIVERSE_OS_DEV_AMD64_${{ github.ref_name }}
+          output-file: TAICHI_OS
 
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: UNIVERSE_OS_DEV_AMD64_${{ github.ref_name }}_${{ runner.os }}-Build
+          name: TAICHI_OS_AMD64_${{ github.ref_name }}_${{ runner.os }}-Build
           path: |
-            build/UNIVERSE_OS_DEV*
+            build/TAICHI_OS

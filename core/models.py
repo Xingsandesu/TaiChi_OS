@@ -79,12 +79,14 @@ class User(db.Model, UserMixin):
     def user_exists(cls, username):
         return cls.query.filter_by(username=username).first() is not None
 
-
+    
 class Config:
     SECRET_KEY = token_hex(16)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     prefix = 'sqlite:///'
     SQLALCHEMY_DATABASE_URI = prefix + os.path.join(os.path.dirname(argv[0]), 'data.db')
+
+
 
 
 ######################### 数据库相关Class结束 #########################

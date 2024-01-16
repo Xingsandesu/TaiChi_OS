@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh" style="height: 100%; background: url('{{ url_for('static', filename='img/bg.jpg') }}') no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/public/bootstrap/icons/font/bootstrap-icons.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/public/bootstrap/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/personal/index.css') }}">
     <title>TaiChi OS</title>
 
-<body>
-<!-- Navbar -->
+<body style="height: 100%; background: none;">
 <nav class="navbar navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">TaiChi OS</a>
@@ -21,7 +21,17 @@
                 <div class="nav-link" id="uploadLabel">上传: 0 Bytes/s</div>
                 <div class="nav-link" id="downloadLabel">下载: 0 Bytes/s</div>
             </div>
-
+            <!-- 应用图标链接 -->
+            <a class="nav-link" href="/install">
+                 <i class="bi bi-bag"></i>
+            </a>
+                                    <!-- 仪表台图标链接 -->
+                                    <a class="nav-link" href="/monitor">
+                                        <i class="bi bi-arrow-down-up"></i>
+                                    </a>
+            <a class="nav-link" href="/containers">
+                <i class="bi bi-boxes"></i>
+            </a>
             <!-- 文件夹图标链接 -->
             <a class="nav-link" href="/files">
                 <i class="bi bi-folder"></i>
@@ -29,17 +39,6 @@
             <!-- Shell图标链接 -->
             <a class="nav-link" href="/webssh/">
                 <i class="bi bi-terminal"></i>
-            </a>
-            <a class="nav-link" href="/containers">
-                <i class="bi bi-boxes"></i>
-            </a>
-            <!-- 应用图标链接 -->
-            <a class="nav-link" href="/install">
-                <i class="bi bi-bag"></i>
-            </a>
-            <!-- 仪表台图标链接 -->
-            <a class="nav-link" href="/monitor">
-                <i class="bi bi-arrow-down-up"></i>
             </a>
             <a class="nav-link" href="/logout">
                 <i class="bi bi-box-arrow-right"></i>
@@ -51,7 +50,7 @@
     <!-- 主体部分开始 -->
     <div class="row">
         <!-- 第一行开始 -->
-        <div class="col" id="body1">
+        <div class="col" id="body1" style="background-color: transparent;">
             <!-- 第一列开始 -->
             <div class="row" id="body2">
                 <!-- 第二行开始 -->

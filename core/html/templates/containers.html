@@ -202,12 +202,12 @@
                 if (data.code === 200) {
                     var rows = "";
                     data.data.forEach(function (container) {
-                        var name = container.Name.substring(1);  // 去掉名称前面的"/"
+                        var name = container.Name.substring(1);
                         var row = "<tr>";
                         row += "<td>" + name + "</td>";
                         row += "<td>" + container.Config.Image + "</td>";
                         row += "<td>" + (container.Config.Cmd ? container.Config.Cmd.join(' ') : '无命令') + "</td>";
-                        var portMappings = formatPortMappings(container);  // 更改了这里
+                        var portMappings = formatPortMappings(container);
                         row += "<td>" + portMappings.containerPort + "</td>";
                         row += "<td>" + portMappings.hostPort + "</td>";
                         var volumeMappings = formatVolumeMappings(container.HostConfig.Binds);
@@ -217,7 +217,7 @@
                         }
                         var startTime = new Date(container.State.StartedAt);
                         var now = new Date();
-                        var runningTime = Math.floor((now - startTime) / 1000 / 60);  // 运行时间，单位为分钟
+                        var runningTime = Math.floor((now - startTime) / 1000 / 60);
                         row += "<td>" + runningTime + "分钟</td>";
                         row += "<td>" + container.State.Status + "</td>";
                         row += "<td>" + container.HostConfig.CpuShares + "</td>";
@@ -235,10 +235,12 @@
                             row += "<td>";
                             row += "<div class='button-group'>";
                             row += "<button class='btn btn-custom btn-sm m-1' onclick='startContainer(\"" + name + "\")'>启动</button>";
+                            row += "<button id='logButton' class='btn btn-custom btn-sm m-1' onclick='viewLogs(\"" + name + "\")'>日志</button>";
                             row += "<button class='btn btn-custom btn-sm m-1' onclick='deleteContainer(\"" + name + "\")'>删除</button>";
                             row += "</div>";
                             row += "</td>";
                         }
+                        
                         rows += row;
                     });
                     $("#containersTable tbody").html(rows);
@@ -399,22 +401,27 @@
                 }
             });
         }
+function formatVolumeMappings(binds) {
+    if (!binds || binds.length === 0) {
+        return {containerPath: "无映射", hostPath: "无映射"};
+    }
+    var result = {containerPath: "", hostPath: ""};
+    for (var i = 0; i < binds.length; i++) {
+        var parts = binds[i].split(":");
+        var hostPath = parts[0].replace("/var/lib/docker/volumes/", "");
+        var containerPath = parts[1];
 
-        function formatVolumeMappings(binds) {
-            if (!binds || binds.length === 0) {
-                return {containerPath: "无映射", hostPath: "无映射"};
-            }
-            var result = {containerPath: "", hostPath: ""};
-            for (var i = 0; i < binds.length; i++) {
-                var parts = binds[i].split(":");
-                var hostPath = parts[0];
-                var containerPath = parts[1];
+        result.containerPath += containerPath;
+        result.hostPath += hostPath;
 
-                result.containerPath += containerPath;
-                result.hostPath += hostPath;
-            }
-            return result;
+
+        if (i < binds.length - 1) {
+            result.containerPath += ", ";
+            result.hostPath += ", ";
         }
+    }
+    return result;
+}
 
         function formatPortMappings(container) {
             if (container.HostConfig && container.HostConfig.NetworkMode === "host") {

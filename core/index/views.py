@@ -1,9 +1,10 @@
+import logging
 import os
-
+import requests
 from flask import Blueprint, render_template, request
 from flask_login import login_required
 
-from core.config import HOME_PATH
+from core.config import HOME_PATH, SOURCE_URL
 from core.models import items, listdir, get_m_time, get_levels, get_abs_path, update_docker
 
 bp = Blueprint('index', __name__, url_prefix='/')
@@ -23,13 +24,22 @@ def none_back():
     return render_template('index.html', items_dict=items.items_dict)
 
 
+
 @bp.route('/install')  # /install
 @login_required
 def install():
-    return render_template('install.html')
+    response = requests.get(SOURCE_URL + '/app.json')
+    logging.info(response.text)  # 打印响应内容
+    try:
+        apps = response.json()
+    except json.JSONDecodeError:
+        logging.error("解析JSON时出错")
+        apps = {}
+    return render_template('install.html', apps=apps)
 
 
 @bp.route('/containers')  # /containers
+@login_required
 def containers():
     return render_template('containers.html')
 

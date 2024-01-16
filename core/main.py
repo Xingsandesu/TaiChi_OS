@@ -19,7 +19,6 @@ def load_user(user_id):  # 创建用户加载回调函数，接受用户 ID 作�
     user = User.query.get(int(user_id))  # 用 ID 作为 User 模型的主键查询对应的用户
     return user  # 返回用户对象
 
-
 def create_app():
     with app.app_context():
         db.create_all()

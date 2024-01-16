@@ -1,38 +1,67 @@
 import os
-
+import json
+from sys import argv
 # 全局基本配置文件
+# 构造 config.json 文件的完整路径
+config_path = os.path.join(os.path.dirname(argv[0]), 'config.json')
+
+# 定义默认值
+default_data = {
+    'source_url': 'https://app.kookoo.top',
+    'docker_download_url': 'https://download.docker.com/linux/static/stable/x86_64/docker-24.0.7.tgz',
+    'docker_service_config': (
+        "[Unit]\n"
+        "Description=Docker Application Container Engine\n"
+        "Documentation=https://docs.docker.com\n"
+        "After=network-online.target firewalld.service\n"
+        "Wants=network-online.target\n"
+        "[Service]\n"
+        "Type=notify\n"
+        "ExecStart=/usr/bin/dockerd\n"
+        "ExecReload=/bin/kill -s HUP $MAINPID\n"
+        "LimitNOFILE=infinity\n"
+        "LimitNPROC=infinity\n"
+        "LimitCORE=infinity\n"
+        "TimeoutStartSec=0\n"
+        "Delegate=yes\n"
+        "KillMode=process\n"
+        "Restart=on-failure\n"
+        "StartLimitBurst=3\n"
+        "StartLimitInterval=60s\n"
+        "[Install]\n"
+        "WantedBy=multi-user.target\n"
+    ),
+    'get_docker_shell_command': 'curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh'
+}
+
+# 检查 config.json 文件是否存在
+if not os.path.exists(config_path):
+    # 如果不存在，创建一个新的文件，并设置默认值
+    data = default_data
+    with open(config_path, 'w') as f:
+        json.dump(data, f)
+else:
+    # 如果存在，尝试打开文件并读取值
+    try:
+        with open(config_path, 'r') as f:
+            data = json.load(f)
+    except json.JSONDecodeError:
+        # 如果文件内容被破坏，使用默认值
+        data = default_data
+
+SOURCE_URL = data['source_url']
+DOCKER_DOWNLOAD_URL = data['docker_download_url']
+DOCKER_SERVICE_CONFIG = data['docker_service_config']
+GET_DOCKER_SHELL_COMMAND = data['get_docker_shell_command']
 
 # @/file 配置文件
 HOME_PATH = os.path.abspath('/')  # 将路径转化为标准绝对路径
 HOME_NAME = os.path.basename(HOME_PATH)  # 根目录的名字
 
-DEFAULT_LOGO_PATH = 'static/img/ops.png'
+
+DEFAULT_LOGO_PATH = 'static/img/favicon.png'
 DOCKER_CATEGORY = 'Docker Apps'
 
-DOCKER_DOWNLOAD_URL = 'https://download.docker.com/linux/static/stable/x86_64/docker-24.0.7.tgz'
-
-DOCKER_SERVICE_CONFIG = (
-    "[Unit]\n"
-    "Description=Docker Application Container Engine\n"
-    "Documentation=https://docs.docker.com\n"
-    "After=network-online.target firewalld.service\n"
-    "Wants=network-online.target\n"
-    "[Service]\n"
-    "Type=notify\n"
-    "ExecStart=/usr/bin/dockerd\n"
-    "ExecReload=/bin/kill -s HUP $MAINPID\n"
-    "LimitNOFILE=infinity\n"
-    "LimitNPROC=infinity\n"
-    "LimitCORE=infinity\n"
-    "TimeoutStartSec=0\n"
-    "Delegate=yes\n"
-    "KillMode=process\n"
-    "Restart=on-failure\n"
-    "StartLimitBurst=3\n"
-    "StartLimitInterval=60s\n"
-    "[Install]\n"
-    "WantedBy=multi-user.target\n"
-)
 
 INSTLL_DOCKER_COMMANDS = [
     f'rm -rf /usr/bin/docker* && \
@@ -52,10 +81,6 @@ INSTLL_DOCKER_COMMANDS = [
     systemctl enable --now docker.service'
 ]
 
-GET_DOCKER_SHELL_COMMAND = [
-    'curl -fsSL https://get.docker.com -o get-docker.sh && \
-    sh get-docker.sh'
-]
 
 UNSUPPORTED_COMMANDS = [
     'top', 'vim', 'ping', 'vi', 'htop', 'nano', 'emacs', 'ssh', 'telnet',
@@ -63,6 +88,7 @@ UNSUPPORTED_COMMANDS = [
     'telnet', 'watch', 'screen', 'tmux', 'w3m', 'links', 'elinks', 'mysql',
     'psql', 'sqlite3'
 ]
+
 
 TAICHI_OS_LOGO = """
  ███████████            ███    █████████  █████       ███        ███████     █████████ 
@@ -75,8 +101,9 @@ TAICHI_OS_LOGO = """
    ░░░░░     ░░░░░░░░ ░░░░░   ░░░░░░░░░  ░░░░ ░░░░░ ░░░░░       ░░░░░░░     ░░░░░░░░░                                                                                                                                                             
 """
 
+
 TAICHI_OS_WELCOME_MESSAGE = ("\n"
-                             "版本 : 0.9.0-DEV\n"
+                             "版本 : 0.9.2-DEV\n"
                              "GITHUB : https://github.com/Xingsandesu\n")
 # # @/command 配置文件
 # commands = {
