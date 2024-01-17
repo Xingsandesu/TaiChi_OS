@@ -44,7 +44,7 @@ def login():
     # 检查数据库中是否已经存在用户
     if not User.query.first():
         # 如果不存在用户，重定向到注册页面
-        flash('欢迎首次使用Universe OS, 请注册')
+        flash('欢迎首次使用TaiChi OS, 请注册')
         return redirect(url_for('login.register'))
 
     if request.method == 'POST':
