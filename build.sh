@@ -1,7 +1,7 @@
 echo "系统更新"
 sudo apt update
 echo "安装依赖"
-sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev wget libbz2-dev
+sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev wget libbz2-dev patchelf
 echo "解压Python源码"
 tar -zvxf Python-3.10.11.tgz
 echo "编译安装Python"
