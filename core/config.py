@@ -99,7 +99,7 @@ TAICHI_OS_LOGO = """
 """
 
 TAICHI_OS_WELCOME_MESSAGE = ("\n"
-                             "版本 : 0.9.2-DEV\n"
+                             "版本 : 0.9.7-DEV\n"
                              "GITHUB : https://github.com/Xingsandesu\n")
 # # @/command 配置文件
 # commands = {

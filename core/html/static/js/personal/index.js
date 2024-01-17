@@ -1,7 +1,7 @@
 let cpuChart, memoryChart;
 
 const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-const socket = new WebSocket(`${protocol}//${window.location.hostname}/Monitor`);
+const socket = new WebSocket(`${protocol}//${window.location.host}/Monitor`);
 let recvData = null;
 socket.onmessage = function (event) {
     recvData = JSON.parse(event.data);
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
     getSystemInfo(diskChart);
 
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const socket = new WebSocket(`${protocol}//${window.location.hostname}/Monitor`);
+    const socket = new WebSocket(`${protocol}//${window.location.host}/Monitor`);
     let recvData = null;
     socket.onmessage = function (event) {
         recvData = JSON.parse(event.data);
