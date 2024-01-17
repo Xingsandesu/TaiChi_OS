@@ -13,6 +13,7 @@ make
 echo "Python源码编译"
 make install
 echo "安装软件依赖"
+cd ..
 pip3 install -r requirements.txt
 echo "安装nuitka"
 pip3 install nuitka
