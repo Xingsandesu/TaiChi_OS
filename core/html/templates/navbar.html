@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html style="height: 100%; background: url('{{ url_for('static', filename='img/bg.jpg') }}') no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;"
-      lang="zh">
+<html lang="zh"
+      style="height: 100%; background: url('{{ url_for('static', filename='img/bg.jpg') }}') no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/public/bootstrap/icons/font/bootstrap-icons.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/public/bootstrap/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/personal/index.css') }}">
+    <link href="{{ url_for('static', filename='img/favicon.png') }}" rel="icon">
+    <link href="{{ url_for('static', filename='css/public/bootstrap/icons/font/bootstrap-icons.min.css') }}"
+          rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/public/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/personal/navbar.css') }}" rel="stylesheet">
     <title>{% block title %}{% endblock %}</title>
 </head>
-<body>
+<body style="background-color: rgba(0, 0, 0, 0);">
 <!-- Navbar -->
 <nav class="navbar navbar-light bg-light">
     <div class="container-fluid">

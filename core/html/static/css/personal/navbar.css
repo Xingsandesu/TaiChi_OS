@@ -1,0 +1,126 @@
+:root {
+    --main-bg-color: #F7F7F7;
+    --main-font-color: #000000;
+    --secondary-font-color: #888888;
+    --border-color: #dfdfdf;
+    --main-font-size: 14px;
+    --secondary-font-size: 12px;
+    --bold-font-weight: bold;
+    --normal-font-weight: normal;
+}
+
+.fullscreen-blur {
+    position: fixed; /* 使元素固定在屏幕上 */
+    top: 0; /* 从屏幕顶部开始 */
+    left: 0; /* 从屏幕左侧开始 */
+    width: 100%; /* 覆盖全宽 */
+    height: 100%; /* 覆盖全高 */
+    backdrop-filter: blur(10px); /* 添加毛玻璃效果 */
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: transparent;
+    backdrop-filter: blur(10px); /* 添加毛玻璃效果 */
+}
+
+@media (max-width: 768px) {
+    .responsive-hide {
+        display: none !important;
+    }
+}
+
+@media screen and (max-width: 1243px) {
+    #systemVersion {
+        display: none;
+    }
+}
+
+
+a:link {
+    color: #000000;
+    text-decoration: none;
+}
+
+a:visited {
+    color: #000000;
+    text-decoration: none;
+}
+
+
+/* 定义滚动条的宽度 */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+/* 定义滚动条的背景 */
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* 定义滚动条的滑块 */
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+/* 定义滚动条的滑块：鼠标悬停 */
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.navbar {
+    padding: 0.5rem 1rem; /* 调整 Navbar 的内边距以改变其高度 */
+}
+
+.nav-link i {
+    font-size: 1.5rem; /* 调整图标大小 */
+    margin-right: 20px; /* 在图标之间添加间隙 */
+}
+
+.nav-link {
+    color: #333; /* 改变链接颜色 */
+    transition: color 0.3s ease; /* 添加颜色过渡效果 */
+}
+
+.nav-link:hover {
+    color: #007bff; /* 改变鼠标悬停时的链接颜色 */
+}
+
+
+.outer::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+}
+
+.outer {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+#prev, #next {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 20px;
+    border: 2px solid rgba(0, 0, 0, 0); /* 透明度设置为20% */
+    background: transparent;
+}
+
+#prev {
+    right: 90px; /* 从60px增加到80px */
+}
+
+#next {
+    right: 50px; /* 从20px增加到40px */
+}
+
+#prev i, #next i {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, 0%);
+}
+

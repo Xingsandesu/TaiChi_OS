@@ -1,520 +1,581 @@
 {% extends "navbar.html" %}
 {% block title %}
-    TaiChi OS 容器
+TaiChi OS 容器
 {% endblock %}
 {% block navbar_brand %}
-    Docker管理
+Docker管理
 {% endblock %}
 {% block content %}
-    <style>
-        /* 公共样式 */
-        .card {
-            border-radius: 15px;
-            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-            transition: 0.3s;
-            margin-bottom: 20px;
-        }
+<style>
+    /* 公共样式 */
+    .card {
+        border-radius: 0;
+        margin: 5px;
+        background-color: rgba(248, 249, 250, 0.7); /* 添加透明效果 */
+        backdrop-filter: blur(10px); /* 添加毛玻璃效果 */
+        border-radius: 25px; /* 添加圆角 */
+    }
 
-        .card:hover {
-            box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
-        }
+    .card:hover {
+        box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+    }
 
-        /* 添加样式以确保表格适应页面宽度 */
-        .card.table-responsive {
-            overflow-x: auto;
-            margin: 20px;
-            border: 0;
-            padding: 0;
+    .card-custom {
+        width: auto;
+        height: 290px;
+    }
 
-        }
+    .card-body-custom {
+        overflow: auto;
+        height: auto;
+    }
 
-        .table {
-            width: auto;
-            max-width: 100%; /* 表格的最大宽度为页面宽度 */
-            margin-bottom: 0; /* 可以适当调整这个值，根据实际需要 */
-        }
+    /* 模态框的样式 */
+    .modal {
+        display: none; /* 默认隐藏 */
+        position: fixed; /* 固定位置 */
+        z-index: 1; /* 在其他元素之上 */
+        left: 0;
+        top: 0;
+        width: 100%; /* 宽度和高度覆盖整个屏幕 */
+        height: auto;
+        background-color: rgba(0, 0, 0, 0.4); /* 半透明背景 */
+    }
 
-        /* 以下样式可根据需要进行调整 */
-        .table th,
-        .table td {
-            white-space: nowrap; /* 防止文本换行 */
-        }
+    /* 模态框内容的样式 */
+    .modal-content {
+        display: flex;
+        flex-direction: column;
+        background-color: #000; /* 黑色背景 */
+        margin: auto; /* 自动外边距 */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%; /* 固定宽度 */
+        height: 80%; /* 固定高度 */
+        color: #fff; /* 白色字体 */
+        position: fixed; /* 固定位置 */
+        top: 50%; /* 顶部位置为50% */
+        left: 50%; /* 左侧位置为50% */
+        transform: translate(-50%, -50%); /* 使用transform属性将元素的中心点移动到其父元素的中心 */
+        border-radius: 20px; /* 添加圆角 */
+    }
 
-        caption {
-            caption-side: top;
-            text-align: left;
-        }
+    #commandInput {
+        margin-top: auto;
+        margin-bottom: 10px;
+        border: 1px solid #aaa; /* 设置边框样式 */
+        padding: 5px; /* 添加内边距 */
+        background-color: #333; /* 设置背景颜色 */
+        color: #fff; /* 设置字体颜色 */
+        border-radius: 20px; /* 添加圆角 */
+    }
 
-        .tablename {
-            margin-left: 20px;
-            margin-right: auto;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            display: block;
-        }
+    /* 关闭按钮的样式 */
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
 
-        /* 模态框的样式 */
-        .modal {
-            display: none; /* 默认隐藏 */
-            position: fixed; /* 固定位置 */
-            z-index: 1; /* 在其他元素之上 */
-            left: 0;
-            top: 0;
-            width: 100%; /* 宽度和高度覆盖整个屏幕 */
-            height: auto;
-            overflow: auto; /* 启用滚动条 */
-            background-color: rgba(0, 0, 0, 0.4); /* 半透明背景 */
-        }
+    .close:hover,
+    .close:focus {
+        color: #fff;
+        text-decoration: none;
+        cursor: pointer;
+    }
 
-        /* 模态框内容的样式 */
-        .modal-content {
-            display: flex;
-            flex-direction: column;
-            background-color: #000; /* 黑色背景 */
-            margin: auto; /* 自动外边距 */
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%; /* 固定宽度 */
-            height: 80%; /* 固定高度 */
-            color: #fff; /* 白色字体 */
-            position: fixed; /* 固定位置 */
-            top: 50%; /* 顶部位置为50% */
-            left: 50%; /* 左侧位置为50% */
-            transform: translate(-50%, -50%); /* 使用transform属性将元素的中心点移动到其父元素的中心 */
-            border-radius: 20px; /* 添加圆角 */
-        }
+    .btn-primary {
+        background-color: rgba(200, 206, 235, 0.5); /* 天蓝色半透明背景 */
+        border: none;
+        border-radius: 25px;
+        padding: 8px 28px;
+        position: absolute;
+        right: 20px;
+        bottom: 20px;
+        color: black;
+        backdrop-filter: blur(10px);
+        transition: background-color 0.3s ease-in-out;
+        font-weight: bold;
+        font-size: 12px;
+    }
 
-        #commandInput {
-            margin-top: auto;
-            margin-bottom: 10px;
-            border: 1px solid #aaa; /* 设置边框样式 */
-            padding: 5px; /* 添加内边距 */
-            background-color: #333; /* 设置背景颜色 */
-            color: #fff; /* 设置字体颜色 */
-            border-radius: 20px; /* 添加圆角 */
-        }
+    .btn-primary:hover {
+        background-color: rgba(135, 206, 235, 0.7); /* 鼠标悬停时背景更透明 */
+        color: white; /* 鼠标悬停时字体颜色变为白色 */
+    }
 
-        /* 关闭按钮的样式 */
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
+    .btn-primary:nth-child(1) {
+        bottom: 20px;
+    }
 
-        .close:hover,
-        .close:focus {
-            color: #fff;
-            text-decoration: none;
-            cursor: pointer;
-        }
-    </style>
-    <div class="card table-responsive">
-        <table id="containersTable" class="table table-striped table-hover text-center striped">
-            <caption><h3 class="tablename">容器</h3>
-                <hr>
-            </caption>
-            <thead>
-            <tr>
-                <th class="text-nowrap">名称</th>
-                <th class="text-nowrap">镜像</th>
-                <th class="text-nowrap">命令</th>
-                <th class="text-nowrap">容器端口</th>
-                <th class="text-nowrap">主机端口</th>
-                <th class="text-nowrap">容器路径</th>
-                <th class="text-nowrap">主机路径</th>
-                <th class="text-nowrap">运行时间</th>
-                <th class="text-nowrap">状态</th>
-                <th class="text-nowrap">CPU</th>
-                <th class="text-nowrap">RAM</th>
-                <th class="text-nowrap">操作</th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+    .btn-primary:nth-child(2) {
+        bottom: 70px;
+    }
+
+    .btn-primary:nth-child(3) {
+        bottom: 120px;
+    }
+
+    .btn-primary:nth-child(4) {
+        bottom: 170px;
+    }
+
+    .col {
+        width: 120%;
+        height: 200px;
+        margin: 20px 10px;
+        padding: 15px;
+        border-radius: 25px;
+        position: relative;
+        background-color: rgba(248, 249, 250, 0.7); /* 添加透明效果 */
+        backdrop-filter: blur(10px); /* 添加毛玻璃效果 */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+        transition: box-shadow 0.3s ease-in-out;
+    }
+
+    .col:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 20px;
+        padding: 0;
+        overflow: auto;
+    }
+
+    .card-title {
+        padding: 0px 0px;
+        margin: 0;
+        font-size: 30px;
+        font-weight: bold;
+    }
+
+    .card-text {
+        padding: 10px 0px;
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.8; /* 设置行间距 */
+    }
+
+    .col-md-9 {
+        background-color: transparent;
+    }
+
+    #volumescard, #vol-card-title {
+        font-size: 10px;
+        height: 50px;
+        weight: 0;
+    }
+
+    .item div {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
+<div class="row">
+    <div class="col-md-3 d-none d-md-block" style="overflow:auto; height:95vh;">
+        <div class="card-columns" id="images"></div>
+        <div class="card-columns" id="volumes"></div>
     </div>
-    <div class="card table-responsive">
-        <table id="imagesTable" class="table table-striped table-hover text-center striped">
-            <caption><h3 class="tablename">镜像</h3>
-                <hr>
-            </caption>
-            <thead>
-            <tr>
-                <th class="text-nowrap">镜像名称</th>
-                <th class="text-nowrap">TAG</th>
-                <th class="text-nowrap">镜像ID</th>
-                <th class="text-nowrap">镜像大小</th>
-                <th class="text-nowrap">操作</th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+    <div class="col-md-9" style="overflow:auto; height:95vh;">
+        <div class="card-columns" id="containers"></div>
     </div>
-    <div class="card table-responsive">
-        <table id="volumesTable" class="table table-striped table-hover text-center striped">
-            <caption><h3 class="tablename">存储卷</h3>
-                <hr>
-            </caption>
-            <thead>
-            <tr>
-                <th>存储卷名称</th>
-                <th>存储类型</th>
-                <th>挂载点</th>
-                <th>操作</th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+</div>
+<!-- 日志模态框 -->
+<div class="modal" id="logModal">
+    <div class="modal-content">
+        <span class="close" id="closeLogModal">&times;</span>
+        <pre id="logElement"></pre>
     </div>
-    <!-- 日志模态框 -->
-    <div id="logModal" class="modal">
-        <div class="modal-content">
-            <span id="closeLogModal" class="close">&times;</span>
-            <pre id="logElement"></pre>
-        </div>
+</div>
+
+<!-- 运行命令模态框 -->
+<div class="modal" id="commandModal">
+    <div class="modal-content">
+        <span class="close" id="closeCommandModal">&times;</span>
+        <pre id="commandElement"></pre>
+        <input id="commandInput" placeholder="    输入命令并按回车键发送" type="text">
     </div>
-
-    <!-- 运行命令模态框 -->
-    <div id="commandModal" class="modal">
-        <div class="modal-content">
-            <span id="closeCommandModal" class="close">&times;</span>
-            <pre id="commandElement"></pre>
-            <input id="commandInput" type="text" placeholder="    输入命令并按回车键发送">
-        </div>
-    </div>
+</div>
 
 
-    <script src="{{ url_for('static', filename='js/public/jquery.min.js') }}"></script>
-    <script>
-
-        var refreshIntervalId;
-
-        $(document).ready(function () {
-            loadContainers();
-            refreshIntervalId = setInterval(loadContainers, 5000);  // 每5秒刷新一次
-        });
-
-        function loadContainers() {
-            $.get("/api/containers", function (data) {
-                if (data.code === 200) {
-                    var rows = "";
-                    data.data.forEach(function (container) {
-                        var name = container.Name.substring(1);
-                        var row = "<tr>";
-                        row += "<td>" + name + "</td>";
-                        row += "<td>" + container.Config.Image + "</td>";
-                        row += "<td>" + (container.Config.Cmd ? container.Config.Cmd.join(' ') : '无命令') + "</td>";
-                        var portMappings = formatPortMappings(container);
-                        row += "<td>" + portMappings.containerPort + "</td>";
-                        row += "<td>" + portMappings.hostPort + "</td>";
-                        var volumeMappings = formatVolumeMappings(container.HostConfig.Binds);
-                        if (volumeMappings !== "") {
-                            row += "<td>" + volumeMappings.containerPath + "</td>";
-                            row += "<td>" + volumeMappings.hostPath + "</td>";
-                        }
-                        var startTime = new Date(container.State.StartedAt);
-                        var now = new Date();
-                        var runningTime = Math.floor((now - startTime) / 1000 / 60);
-                        row += "<td>" + runningTime + "分钟</td>";
-                        row += "<td>" + container.State.Status + "</td>";
-                        row += "<td>" + container.HostConfig.CpuShares + "</td>";
-                        row += "<td>" + container.HostConfig.Memory + "</td>";
-                        if (container.State.Status === "running") {
-                            row += "<td>";
-                            row += "<div class='button-group'>";
-                            row += "<button class='btn btn-custom btn-sm m-1' onclick='stopContainer(\"" + name + "\")'>停止</button>";
-                            row += "<button class='btn btn-custom btn-sm m-1' onclick='stopAndDeleteContainer(\"" + name + "\")'>停止并删除</button>";
-                            row += "<button id='logButton' class='btn btn-custom btn-sm m-1' onclick='viewLogs(\"" + name + "\")'>日志</button>";
-                            row += "<button id='commandButton' class='btn btn-custom btn-sm m-1' onclick='runCommand(\"" + name + "\")'>运行命令</button>";
-                            row += "</div>";
-                            row += "</td>";
-                        } else {
-                            row += "<td>";
-                            row += "<div class='button-group'>";
-                            row += "<button class='btn btn-custom btn-sm m-1' onclick='startContainer(\"" + name + "\")'>启动</button>";
-                            row += "<button id='logButton' class='btn btn-custom btn-sm m-1' onclick='viewLogs(\"" + name + "\")'>日志</button>";
-                            row += "<button class='btn btn-custom btn-sm m-1' onclick='deleteContainer(\"" + name + "\")'>删除</button>";
-                            row += "</div>";
-                            row += "</td>";
-                        }
-
-                        rows += row;
-                    });
-                    $("#containersTable tbody").html(rows);
+<script src="{{ url_for('static', filename='js/public/jquery.min.js') }}"></script>
+<script>
+    function checkUserAgent() {
+        var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+            var metaTag = document.createElement('meta');
+            metaTag.name = "viewport";
+            metaTag.content = "width=500";
+            document.getElementsByTagName('head')[0].appendChild(metaTag);
+            $('.col-md-3').hide();
+        } else {
+            $(window).resize(function () {
+                if ($(window).width() <= 1080) {
+                    $('.col-md-3').hide();
+                } else {
+                    $('.col-md-3').show();
                 }
-            });
+            }).trigger('resize');
         }
+    }
 
-        // 获取模态框元素
-        var logModal = document.getElementById("logModal");
-        var commandModal = document.getElementById("commandModal");
-        // 获取关闭模态框的元素
-        var closeLogModal = document.getElementById("closeLogModal");
-        var closeCommandModal = document.getElementById("closeCommandModal");
-        // 获取显示日志和命令的元素
-        var logElement = document.getElementById("logElement");
-        var commandElement = document.getElementById("commandElement");
+    checkUserAgent();
 
-        function viewLogs(name) {
-            // 根据当前页面是http还是https，自动选择ws或wss进行WebSocket连接
-            var wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            var ws = new WebSocket(wsProtocol + "//" + location.host + "/containers/" + name + "/logs");
-            // 当接收到一个新的日志条目时，将其添加到日志元素
-            ws.onmessage = function (event) {
-                logElement.textContent += event.data + "\n";
-            };
-            // 打开模态框
-            logModal.style.display = "block";
-            // 当 WebSocket 连接关闭时，清空日志
-            ws.onclose = function () {
-                logElement.textContent = "";
-            };
-            // 当用户点击关闭元素时，关闭模态框并关闭 WebSocket 连接
-            closeLogModal.onclick = function () {
+    function loadContainers() {
+        $.get("/api/containers", function (data) {
+            if (data.code === 200) {
+                $("#containers").empty();
+                var row = $('<div class="row"></div>');
+                data.data.forEach(function (container, index) {
+                    var name = container.Name.substring(1);
+                    var portMappings = formatPortMappings(container);
+                    var volumeMappings = formatVolumeMappings(container.HostConfig.Binds);
+                    var startTime = new Date(container.State.StartedAt);
+                    var now = new Date();
+                    var runningTime = Math.floor((now - startTime) / 1000 / 60);
+                    var card = `
+                            <div class="col-md-6">
+                                <div id="containerscard" class="card card-custom">
+                                    <div class="card-body card-body-custom">
+                                        <h4 class="card-title">${name}</h4>
+                                        <span class="badge ${getStatusClass(container.State.Status)}">${container.State.Status}</span><br>
+
+                                        <div class='button-group'>
+                                            ${container.State.Status === "running" ? `
+                                                <button class='btn btn-primary' onclick='stopContainer("${name}")'>停止</button>
+                                                <button class='btn btn-primary' onclick='stopAndDeleteContainer("${name}")'>停止并删除</button>
+                                                <button id='logButton' class='btn btn-primary' onclick='viewLogs("${name}")'>日志</button>
+                                                <button id='commandButton' class='btn btn-primary' onclick='runCommand("${name}")'>运行命令</button>
+                                            ` : `
+                                                <button class='btn btn-primary' onclick='startContainer("${name}")'>启动</button>
+                                                <button id='logButton' class='btn btn-primary' onclick='viewLogs("${name}")'>日志</button>
+                                                <button class='btn btn-primary' onclick='deleteContainer("${name}")'>删除</button>
+                                            `}
+                                        </div>
+                                        <p class="card-text bg-transparent">
+                                            <i class="bi bi-clock icon-large"></i> <span>${runningTime}分钟</span><br>
+                                            ${container.Config.Cmd ? `<i class="bi bi-terminal icon-large"></i> <span>${container.Config.Cmd.join(' ')}</span><br>` : ''}
+                                            <i class="bi bi-arrow-repeat icon-large"></i> <span>${portMappings.containerPort} --> ${portMappings.hostPort}</span><br>
+                                            <i class="bi bi-hdd-stack"></i> <span>${container.Config.Image}</span><br>
+                                            ${volumeMappings.hostPath ? `<i class="bi bi-hdd icon-large"></i> <br><span>${volumeMappings.hostPath}</span><br>` : ''}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    row.append(card);
+                    if ((index + 1) % 2 === 0) {
+                        $("#containers").append(row);
+                        row = $('<div class="row"></div>');
+                    }
+                });
+                if (row.children().length > 0) {
+                    $("#containers").append(row);
+                }
+            }
+        });
+    }
+
+    function getVolumes() {
+        $.get('/api/volumes', function (response) {
+            if (response.code === 200 && Array.isArray(response.data)) {
+                $("#volumes").empty();
+                var container = $('<div class="container"></div>');
+                response.data.forEach(function (volume, index) {
+                    var item = `
+                        <div class="item card rounded-3 border p-3 mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="fs-5">${volume.Name}</div>
+                                <button class="btn" onclick='deleteVolume("${volume.Name}")'><i class="bi bi-trash-fill"></i></button>
+                            </div>
+                        </div>
+                    `;
+                    container.append(item);
+                });
+                $("#volumes").append(container);
+            } else {
+                console.error('Expected an array but got', typeof response.data);
+            }
+        });
+    }
+
+    function loadImages() {
+        $.get("/api/images", function (data) {
+            if (data.code === 200) {
+                $("#images").empty();
+                var container = $('<div class="container"></div>');
+                data.data.forEach(function (image, index) {
+                    var item = `
+                            <div class="item card rounded-3 border p-3 mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="mb-2">${image.RepoTags[0].split(":")[0]}</h5>
+                                        <p class="mb-0">
+                                            TAG: ${image.RepoTags[0].split(":")[1]}<br>
+                                            镜像ID: ${image.Id.split(":")[1].substring(0, 12)}<br>
+                                            镜像大小: ${(image.Size / 1000000).toFixed(2)}MB<br>
+                                        </p>
+                                    </div>
+                                    <button class='btn' onclick='deleteImage("${image.Id}")'><i class="bi bi-trash-fill"></i></button>
+                                </div>
+                            </div>
+                        `;
+                    container.append(item);
+                });
+                $("#images").append(container);
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        loadContainers();
+        loadImages();
+        getVolumes();
+        setInterval(loadImages, 10000);
+        setInterval(getVolumes, 10000);
+        refreshIntervalId = setInterval(loadContainers, 5000);
+    });
+
+    function getStatusClass(status) {
+        switch (status) {
+            case 'running':
+                return 'bg-success';
+            case 'paused':
+                return 'bg-warning';
+            case 'stopped':
+                return 'bg-danger';
+            default:
+                return 'bg-secondary';
+        }
+    }
+
+    // 获取模态框元素
+    var logModal = document.getElementById("logModal");
+    var commandModal = document.getElementById("commandModal");
+    // 获取关闭模态框的元素
+    var closeLogModal = document.getElementById("closeLogModal");
+    var closeCommandModal = document.getElementById("closeCommandModal");
+    // 获取显示日志和命令的元素
+    var logElement = document.getElementById("logElement");
+    var commandElement = document.getElementById("commandElement");
+
+    function viewLogs(name) {
+        // 根据当前页面是http还是https，自动选择ws或wss进行WebSocket连接
+        var wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+        var ws = new WebSocket(wsProtocol + "//" + location.host + "/containers/" + name + "/logs");
+        // 当接收到一个新的日志条目时，将其添加到日志元素
+        ws.onmessage = function (event) {
+            logElement.textContent += event.data + "\n";
+        };
+        // 打开模态框
+        logModal.style.display = "block";
+        // 当 WebSocket 连接关闭时，清空日志
+        ws.onclose = function () {
+            logElement.textContent = "";
+        };
+        // 当用户点击关闭元素时，关闭模态框并关闭 WebSocket 连接
+        closeLogModal.onclick = function () {
+            logModal.style.display = "none";
+            logElement.textContent = "";  // 清空日志
+            ws.close();  // 关闭 WebSocket 连接
+        };
+        // 当用户点击模态框外部时，关闭模态框并关闭 WebSocket 连接
+        window.onclick = function (event) {
+            if (event.target == logModal) {
                 logModal.style.display = "none";
                 logElement.textContent = "";  // 清空日志
                 ws.close();  // 关闭 WebSocket 连接
-            };
-            // 当用户点击模态框外部时，关闭模态框并关闭 WebSocket 连接
-            window.onclick = function (event) {
-                if (event.target == logModal) {
-                    logModal.style.display = "none";
-                    logElement.textContent = "";  // 清空日志
-                    ws.close();  // 关闭 WebSocket 连接
-                }
-            };
-            ws.onmessage = function (event) {
-                logElement.textContent += event.data + "\n";
-                logElement.scrollTop = logElement.scrollHeight;  // 滚动到底部
-            };
-        }
+            }
+        };
+        ws.onmessage = function (event) {
+            logElement.textContent += event.data + "\n";
+            logElement.scrollTop = logElement.scrollHeight;  // 滚动到底部
+        };
+    }
 
-        function runCommand(name) {
-            // 根据当前页面是http还是https，自动选择ws或wss进行WebSocket连接
-            var wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            var ws = new WebSocket(wsProtocol + "//" + location.host + "/containers/" + name + "/bash");
-            // 当接收到一个新的消息时，将其添加到命令元素
-            ws.onmessage = function (event) {
-                commandElement.textContent += event.data + "\n";
-            };
-            // 打开模态框
-            commandModal.style.display = "block";
-            // 当 WebSocket 连接关闭时，清空命令
-            ws.onclose = function () {
-                commandElement.textContent = "";
-            };
-            // 当用户点击关闭元素时，关闭模态框并关闭 WebSocket 连接
-            closeCommandModal.onclick = function () {
+    function runCommand(name) {
+        // 根据当前页面是http还是https，自动选择ws或wss进行WebSocket连接
+        var wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+        var ws = new WebSocket(wsProtocol + "//" + location.host + "/containers/" + name + "/bash");
+        // 当接收到一个新的消息时，将其添加到命令元素
+        ws.onmessage = function (event) {
+            commandElement.textContent += event.data + "\n";
+        };
+        // 打开模态框
+        commandModal.style.display = "block";
+        // 当 WebSocket 连接关闭时，清空命令
+        ws.onclose = function () {
+            commandElement.textContent = "";
+        };
+        // 当用户点击关闭元素时，关闭模态框并关闭 WebSocket 连接
+        closeCommandModal.onclick = function () {
+            commandModal.style.display = "none";
+            commandElement.textContent = "";  // 清空命令
+            ws.close();  // 关闭 WebSocket 连接
+        };
+        // 当用户点击模态框外部时，关闭模态框并关闭 WebSocket 连接
+        window.onclick = function (event) {
+            if (event.target == commandModal) {
                 commandModal.style.display = "none";
                 commandElement.textContent = "";  // 清空命令
                 ws.close();  // 关闭 WebSocket 连接
-            };
-            // 当用户点击模态框外部时，关闭模态框并关闭 WebSocket 连接
-            window.onclick = function (event) {
-                if (event.target == commandModal) {
-                    commandModal.style.display = "none";
-                    commandElement.textContent = "";  // 清空命令
-                    ws.close();  // 关闭 WebSocket 连接
-                }
-            };
-            // 当用户在文本框中按下回车键时，发送消息
-            document.getElementById("commandInput").onkeydown = function (event) {
-                if (event.key === "Enter") {
-                    // 如果文本框为空，不发送消息
-                    if (!event.target.value.trim()) {
-                        return;
-                    }
-                    ws.send(event.target.value);
-                    event.target.value = "";  // 清空文本框
-                }
-            };
-            ws.onmessage = function (event) {
-                commandElement.textContent += event.data + "\n";
-                commandElement.scrollTop = commandElement.scrollHeight;  // 滚动到底部
-            };
-        }
-
-        function stopContainer(name) {
-            clearInterval(refreshIntervalId);  // 停止自动刷新
-            var button = $("button[onclick='stopContainer(\"" + name + "\")']");
-            button.text('停止中...');  // 更改按钮文本
-
-            $.post("/api/containers/" + name + "/stop", function (data) {
-                if (data.code === 200) {
-                    loadContainers();
-                }
-                button.text('停止');  // 将按钮文本更改回来
-                refreshIntervalId = setInterval(loadContainers, 5000);  // 重新开始自动刷新
-            });
-        }
-
-        function deleteContainer(name) {
-            clearInterval(refreshIntervalId);  // 停止自动刷新
-            var button = $("button[onclick='deleteContainer(\"" + name + "\")']");
-            button.text('删除中...');  // 更改按钮文本
-
-            $.ajax({
-                url: "/api/containers/" + name + "/delete",
-                type: 'DELETE',
-                success: function (data) {
-                    if (data.code === 200) {
-                        loadContainers();
-                    }
-                    button.text('删除');  // 将按钮文本更改回来
-                    refreshIntervalId = setInterval(loadContainers, 5000);  // 重新开始自动刷新
-                }
-            });
-        }
-
-
-        function startContainer(name) {
-            clearInterval(refreshIntervalId);
-            var button = $("button[onclick='startContainer(\"" + name + "\")']");
-            button.text('启动中...');
-
-            $.post("/api/containers/" + name + "/start", function (data) {
-                if (data.code === 200) {
-                    loadContainers();
-                }
-                button.text('启动');
-                refreshIntervalId = setInterval(loadContainers, 5000);
-            });
-        }
-
-        function stopAndDeleteContainer(name) {
-            clearInterval(refreshIntervalId);
-            var button = $("button[onclick='stopAndDeleteContainer(\"" + name + "\")']");
-            button.text('进行中...');
-
-            $.ajax({
-                url: "/api/containers/" + name + "/stop_and_delete",
-                type: 'DELETE',
-                success: function (data) {
-                    if (data.code === 200) {
-                        loadContainers();
-                    }
-                    button.text('停止并删除');
-                    refreshIntervalId = setInterval(loadContainers, 5000);
-                }
-            });
-        }
-
-        function formatVolumeMappings(binds) {
-            if (!binds || binds.length === 0) {
-                return {containerPath: "无映射", hostPath: "无映射"};
             }
-            var result = {containerPath: "", hostPath: ""};
-            for (var i = 0; i < binds.length; i++) {
-                var parts = binds[i].split(":");
-                var hostPath = parts[0].replace("/var/lib/docker/volumes/", "");
+        };
+        // 当用户在文本框中按下回车键时，发送消息
+        document.getElementById("commandInput").onkeydown = function (event) {
+            if (event.key === "Enter") {
+                // 如果文本框为空，不发送消息
+                if (!event.target.value.trim()) {
+                    return;
+                }
+                ws.send(event.target.value);
+                event.target.value = "";  // 清空文本框
+            }
+        };
+        ws.onmessage = function (event) {
+            commandElement.textContent += event.data + "\n";
+            commandElement.scrollTop = commandElement.scrollHeight;  // 滚动到底部
+        };
+    }
+
+    function stopContainer(name) {
+        clearInterval(refreshIntervalId);  // 停止自动刷新
+        var button = $("button[onclick='stopContainer(\"" + name + "\")']");
+        button.text('停止中...');  // 更改按钮文本
+
+        $.post("/api/containers/" + name + "/stop", function (data) {
+            if (data.code === 200) {
+                loadContainers();
+            }
+            button.text('停止');  // 将按钮文本更改回来
+            refreshIntervalId = setInterval(loadContainers, 5000);  // 重新开始自动刷新
+        });
+    }
+
+    function deleteContainer(name) {
+        clearInterval(refreshIntervalId);  // 停止自动刷新
+        var button = $("button[onclick='deleteContainer(\"" + name + "\")']");
+        button.text('删除中...');  // 更改按钮文本
+
+        $.ajax({
+            url: "/api/containers/" + name + "/delete",
+            type: 'DELETE',
+            success: function (data) {
+                if (data.code === 200) {
+                    loadContainers();
+                }
+                button.text('删除');  // 将按钮文本更改回来
+                refreshIntervalId = setInterval(loadContainers, 5000);  // 重新开始自动刷新
+            }
+        });
+    }
+
+
+    function startContainer(name) {
+        clearInterval(refreshIntervalId);
+        var button = $("button[onclick='startContainer(\"" + name + "\")']");
+        button.text('启动中...');
+
+        $.post("/api/containers/" + name + "/start", function (data) {
+            if (data.code === 200) {
+                loadContainers();
+            }
+            button.text('启动');
+            refreshIntervalId = setInterval(loadContainers, 5000);
+        });
+    }
+
+    function stopAndDeleteContainer(name) {
+        clearInterval(refreshIntervalId);
+        var button = $("button[onclick='stopAndDeleteContainer(\"" + name + "\")']");
+        button.text('进行中...');
+
+        $.ajax({
+            url: "/api/containers/" + name + "/stop_and_delete",
+            type: 'DELETE',
+            success: function (data) {
+                if (data.code === 200) {
+                    loadContainers();
+                }
+                button.text('停止并删除');
+                refreshIntervalId = setInterval(loadContainers, 5000);
+            }
+        });
+    }
+
+    function formatVolumeMappings(binds) {
+        if (!binds || binds.length === 0) {
+            return {containerPath: "", hostPath: ""};
+        }
+        var result = {containerPath: "", hostPath: ""};
+        for (var i = 0; i < binds.length; i++) {
+            var parts = binds[i].split(":");
+            if (parts[0].includes("/var/lib/docker/volumes/")) {
+                var pathParts = parts[0].split("/var/lib/docker/volumes/");
+                var hostPath = pathParts[1].split("/")[0]; // 只保留 "/var/lib/docker/volumes/" 之后的一个文件夹的名字
                 var containerPath = parts[1];
 
                 result.containerPath += containerPath;
                 result.hostPath += hostPath;
 
-
                 if (i < binds.length - 1) {
-                    result.containerPath += ", ";
-                    result.hostPath += ", ";
+                    result.containerPath += "<br>";
+                    result.hostPath += "<br>";
                 }
             }
-            return result;
         }
+        return result;
+    }
 
-        function formatPortMappings(container) {
-            if (container.HostConfig && container.HostConfig.NetworkMode === "host") {
-                return {containerPort: "Host网络", hostPort: "Host网络"};
-            } else if (container.HostConfig.NetworkMode.startsWith("macvlan")) {
-                return {containerPort: "Macvlan网络", hostPort: "Macvlan网络"};
-            } else if (!container.HostConfig.PortBindings || Object.keys(container.HostConfig.PortBindings).length === 0) {
-                return {containerPort: "无映射", hostPort: "无映射"};
-            }
-            var result = {containerPort: [], hostPort: []};
-            for (var key in container.HostConfig.PortBindings) {
-                var containerPort = key;
-                var hostPort = container.HostConfig.PortBindings[key][0].HostPort;
-                result.containerPort.push(containerPort);
-                result.hostPort.push(hostPort);
-            }
-            return {containerPort: result.containerPort.join(", "), hostPort: result.hostPort.join(", ")};
+    function formatPortMappings(container) {
+        if (container.HostConfig && container.HostConfig.NetworkMode === "host") {
+            return {containerPort: "Host网络", hostPort: "Host网络"};
+        } else if (container.HostConfig.NetworkMode.startsWith("macvlan")) {
+            return {containerPort: "Macvlan网络", hostPort: "Macvlan网络"};
+        } else if (!container.HostConfig.PortBindings || Object.keys(container.HostConfig.PortBindings).length === 0) {
+            return {containerPort: "", hostPort: ""};
         }
+        var result = {containerPort: [], hostPort: []};
+        for (var key in container.HostConfig.PortBindings) {
+            var containerPort = key;
+            var hostPort = container.HostConfig.PortBindings[key][0].HostPort;
+            result.containerPort.push(containerPort);
+            result.hostPort.push(hostPort);
+        }
+        return {containerPort: result.containerPort.join(", "), hostPort: result.hostPort.join(", ")};
+    }
 
-        $(document).ready(function () {
-            loadImages();
-            getVolumes();  // 加载存储卷的列表
-            setInterval(loadImages, 10000);  // 每10秒刷新一次镜像列表
-            setInterval(getVolumes, 10000);  // 每10秒刷新一次存储卷列表
-        });
 
-        function loadImages() {
-            $.get("/api/images", function (data) {
+    function deleteImage(id) {
+        $.ajax({
+            url: "/api/images/" + id + "/delete",
+            type: 'DELETE',
+            success: function (data) {
                 if (data.code === 200) {
-                    var rows = "";
-                    data.data.forEach(function (image) {
-                        var row = "<tr>";
-                        row += "<td>" + image.RepoTags[0].split(":")[0] + "</td>";
-                        row += "<td>" + image.RepoTags[0].split(":")[1] + "</td>";
-                        row += "<td>" + image.Id.split(":")[1].substring(0, 12) + "</td>";
-                        row += "<td>" + (image.Size / 1000000).toFixed(2) + "MB</td>";
-                        row += "<td>";
-                        row += "<button class='btn btn-custom btn-sm m-1' onclick='deleteImage(\"" + image.Id + "\")'>删除</button>";
-                        row += "</td>";
-                        rows += row;
-                    });
-                    $("#imagesTable tbody").html(rows);
+                    loadImages();
                 }
-            });
-        }
+            }
+        });
+    }
 
-        function deleteImage(id) {
-            $.ajax({
-                url: "/api/images/" + id + "/delete",
-                type: 'DELETE',
-                success: function (data) {
-                    if (data.code === 200) {
-                        loadImages();
-                    }
-                }
-            });
-        }
 
-        // 获取存储卷的列表并显示在表格中
-        function getVolumes() {
-            $.get('/api/volumes', function (response) {
-                if (response.code === 200 && Array.isArray(response.data)) {
-                    var rows = "";
-                    response.data.forEach(function (volume) {
-                        var row = "<tr>";
-                        row += "<td>" + volume.Name + "</td>";
-                        row += "<td>" + volume.Driver + "</td>";  // 存储类型
-                        row += "<td>" + volume.Mountpoint + "</td>";  // 挂载点
-                        row += "<td>";
-                        row += "<button class='btn btn-custom btn-sm m-1' onclick='deleteVolume(\"" + volume.Name + "\")'>删除</button>";
-                        row += "</td>";
-                        rows += row;
-                    });
-                    $("#volumesTable tbody").html(rows);
-                } else {
-                    console.error('Expected an array but got', typeof response.data);
+    // 删除指定的存储卷
+    function deleteVolume(id) {
+        $.ajax({
+            url: '/api/volumes/' + id + '/delete',
+            type: 'DELETE',
+            success: function (response) {
+                if (response.code === 200) {
+                    // 删除成功后，重新获取存储卷的列表
+                    getVolumes();
                 }
-            });
-        }
-
-        // 删除指定的存储卷
-        function deleteVolume(id) {
-            $.ajax({
-                url: '/api/volumes/' + id + '/delete',
-                type: 'DELETE',
-                success: function (response) {
-                    if (response.code === 200) {
-                        // 删除成功后，重新获取存储卷的列表
-                        getVolumes();
-                    }
-                }
-            });
-        }
-    </script>
+            }
+        });
+    }
+</script>
 {% endblock %}

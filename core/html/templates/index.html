@@ -1,14 +1,30 @@
 <!DOCTYPE html>
-<html lang="zh"
+<html class="fullscreen-blur" lang="zh"
       style="height: 100%; background: url('{{ url_for('static', filename='img/bg.jpg') }}') no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/public/bootstrap/icons/font/bootstrap-icons.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/public/bootstrap/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/personal/index.css') }}">
+    <link href="{{ url_for('static', filename='img/favicon.png') }}" rel="icon">
+    <link href="{{ url_for('static', filename='css/public/bootstrap/icons/font/bootstrap-icons.min.css') }}"
+          rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/public/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/personal/index.css') }}" rel="stylesheet">
     <title>TaiChi OS</title>
+    <!-- 日志模态框 -->
+    <div class="modal" id="logModal">
+        <div class="modal-content">
+            <span class="close" id="closeLogModal">&times;</span>
+            <pre id="logElement"></pre>
+        </div>
+    </div>
+
+    <!-- 运行命令模态框 -->
+    <div class="modal" id="commandModal">
+        <div class="modal-content">
+            <span class="close" id="closeCommandModal">&times;</span>
+            <pre id="commandElement"></pre>
+            <input id="commandInput" placeholder="    输入命令并按回车键发送" type="text">
+        </div>
+    </div>
 
 <body style="height: 100%; background: none;">
 <nav class="navbar navbar-light bg-light">
@@ -17,7 +33,7 @@
 
         <div class="d-flex flex-row">
             <!-- 系统状态信息，仅在宽屏下显示 -->
-            <div id="systemStatusTitle" class="d-none d-lg-flex flex-column flex-lg-row">
+            <div class="d-none d-lg-flex flex-column flex-lg-row" id="systemStatusTitle">
                 <div class="nav-link" id="systemVersion"></div>
                 <div class="nav-link" id="uploadLabel">上传: 0 Bytes/s</div>
                 <div class="nav-link" id="downloadLabel">下载: 0 Bytes/s</div>
@@ -74,27 +90,27 @@
                             <!-- 系统使用率显示区域 -->
                             <div class="usage-area">
                                 <!-- CPU使用率显示区域 -->
-                                <div id="cpuUsageBlock" class="usage-block">
+                                <div class="usage-block" id="cpuUsageBlock">
                                     <canvas id="cpuUsageChart"></canvas>
-                                    <div id="cpuUsageLabel" class="centered-label">
+                                    <div class="centered-label" id="cpuUsageLabel">
                                         <div class="usage">0%</div>
                                         <div class="type">CPU</div>
                                     </div>
                                 </div>
 
                                 <!-- 内存使用率显示区域 -->
-                                <div id="memoryUsageBlock" class="usage-block">
+                                <div class="usage-block" id="memoryUsageBlock">
                                     <canvas id="memoryUsageChart"></canvas>
-                                    <div id="memoryUsageLabel" class="centered-label">
+                                    <div class="centered-label" id="memoryUsageLabel">
                                         <div class="usage">0%</div>
                                         <div class="type">内存</div>
                                     </div>
                                 </div>
 
                                 <!-- 磁盘使用率显示区域 -->
-                                <div id="diskUsageBlock" class="usage-block">
+                                <div class="usage-block" id="diskUsageBlock">
                                     <canvas id="diskUsageChart"></canvas>
-                                    <div id="diskUsageLabel" class="centered-label">
+                                    <div class="centered-label" id="diskUsageLabel">
                                         <div class="usage">0%</div>
                                         <div class="type">磁盘</div>
                                     </div>
@@ -107,16 +123,16 @@
                     <div class="row">
                         <div class="col">
                             <!-- 搜索功能 -->
-                            <form id="searchForm" action="https://www.google.com/search" method="get" target="_blank">
+                            <form action="https://www.google.com/search" id="searchForm" method="get" target="_blank">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" id="searchEngineIcon">
-                                            <i id="googleIcon" class="bi bi-google" style="display: none;"></i>
-                                            <i id="baiduIcon" class="bi bi-search"></i>
+                                            <i class="bi bi-google" id="googleIcon" style="display: none;"></i>
+                                            <i class="bi bi-search" id="baiduIcon"></i>
                                             <!-- 这里图标是反的，是在BUG上运行的，能跑就行 -->
                                         </span>
                                     </div>
-                                    <input type="text" class="form-control" name="q" placeholder="搜索...">
+                                    <input class="form-control" name="q" placeholder="搜索..." type="text">
                                 </div>
                             </form>
                         </div>
@@ -173,48 +189,33 @@
                                 </div>
 
                                 {% for category, items in items_dict.items() %}
-                                    <div class="container">
-                                        <div class="container-header">
-                                            {{ category }}
+                                <div class="container">
+                                    <div class="container-header">
+                                        {{ category }}
 
-                                        </div>
-                                        <div class="container-body">
-                                            {% for item in items %}
-                                                <div class="item-block">
-                                                    <a href="{{ item.link }}" target="_blank">
-                                                        <div class="item-top">
-                                                            <div class="item-logo"><img src="{{ item.logo }}" alt="">
-                                                            </div>
-                                                            <div class="item-body">
-                                                                <span class="title">{{ item.title }}</span>
-                                                            </div>
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                            {% endfor %}
-                                        </div>
                                     </div>
+                                    <div class="container-body">
+                                        {% for item in items %}
+                                        <div class="item-block">
+                                            <a href="{{ item.link }}" target="_blank">
+                                                <div class="item-top">
+                                                    <div class="item-logo"><img alt="" src="{{ item.logo }}">
+                                                    </div>
+                                                    <div class="item-body">
+                                                        <span class="title">{{ item.title }}</span>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
                                 {% endfor %}
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <!-- 容器管理区域 -->
-                        <div class="col table-responsive" id="containers">
-                            <table id="containersTable">
-                                <thead>
-                                <tr>
-                                    <th class="text-nowrap">容器名称</th>
-                                    <th class="text-nowrap">容器镜像</th>
-                                    <th class="text-nowrap">主机端口</th>
-                                    <th class="text-nowrap">容器状态</th>
-                                    <th class="text-nowrap">操作</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
+                    <!-- 容器管理区域 -->
+                    <div class="row" id="containers">
                     </div>
                     <div class="row">
                         <!-- 监控图表显示区域 -->

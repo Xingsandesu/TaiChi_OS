@@ -1,18 +1,19 @@
 import logging
 import os
 import urllib.request
+from collections import OrderedDict
 from concurrent.futures import ThreadPoolExecutor
 from os.path import join, isdir, abspath, pardir, basename, getmtime
 from secrets import token_hex
 from sys import exit, stdout, argv
 from time import localtime, asctime
 
+import requests
 from docker import from_env
 from flask import request
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from lxml import html
-from requests import Session
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from core.config import DOCKER_CATEGORY, DEFAULT_LOGO_PATH
@@ -131,24 +132,41 @@ class Items:
 items = Items()
 
 
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.cache = OrderedDict()
+        self.capacity = capacity
+
+    def get(self, key: str, default=0):
+        if key in self.cache:
+            self.cache.move_to_end(key)
+            return self.cache[key]
+        else:
+            return default
+
+    def put(self, key: str, value: int):
+        if key in self.cache:
+            self.cache.move_to_end(key)
+        else:
+            if len(self.cache) >= self.capacity:
+                self.cache.popitem(last=False)
+        self.cache[key] = value
+
+
+failed_urls = LRUCache(1000)
+
+
 def get_url_content(url: str, timeout=1.0):
-    """
-    获取指定URL的内容。
+    if failed_urls.get(url) >= 2:
+        return None
 
-    参数:
-    url (str): 要获取内容的URL。
-    timeout (float, 可选): 请求超时时间，默认为1.0秒。
-
-    返回:
-    str: 如果请求成功，返回URL的内容。否则，返回None。
-    """
-    session = Session()
     try:
-        response = session.get(url, timeout=timeout)
+        response = requests.get(url, timeout=timeout)
         if response.status_code == 200:
             return response.text
     except Exception as error:
-        logging.warning(f"获取URL时出错: {url}: {error}")
+        failed_urls.put(url, failed_urls.get(url, 0) + 1)
+        logging.error(f"获取URL时出错: {url}: {error}")
         return None
 
 

@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html style="height: 100%; background: url('{{ url_for('static', filename='img/bg.jpg') }}') no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;"
-      lang="zh">
+<html lang="zh"
+      style="height: 100%; background: url('{{ url_for('static', filename='img/bg.jpg') }}') no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;">
 <head>
     <meta charset="UTF-8">
     <title>TaiChi OS 文件管理</title>
-    <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/public/bootstrap/bootstrap.min.3.css') }}">
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/public/bootstrap/icons/font/bootstrap-icons.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/public/codemirror.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/public/monokai.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/personal/files.css') }}">
+    <link href="{{ url_for('static', filename='img/favicon.png') }}" rel="icon">
+    <link href="{{ url_for('static', filename='css/public/bootstrap/bootstrap.min.3.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/public/bootstrap/icons/font/bootstrap-icons.min.css') }}"
+          rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/public/codemirror.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/public/monokai.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/personal/files.css') }}" rel="stylesheet">
 </head>
 <body>
 <!-- Navbar -->
@@ -60,179 +60,179 @@
 <div class="main">
 
     {% block main %}
-        <!--导航条-->
-        <nav class="navbar navbar-default" id="save_data" data-path="{{ path }}">
-            <div class="container-fluid">
-                <!--首页-->
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="{{ url_for('index.files') }}" title="home"><i
-                            class="bi bi-house-door-fill"></i></a>
-                </div>
+    <!--导航条-->
+    <nav class="navbar navbar-default" data-path="{{ path }}" id="save_data">
+        <div class="container-fluid">
+            <!--首页-->
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{{ url_for('index.files') }}" title="home"><i
+                        class="bi bi-house-door-fill"></i></a>
+            </div>
 
-                <!--其他按钮-->
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav">
+            <!--其他按钮-->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
 
-                        <!--新建文件夹-->
-                        <li>
+                    <!--新建文件夹-->
+                    <li>
 
-                            <a data-toggle="modal" role="button" data-target=".new-directory" title="new directory">
-                                <i class="bi bi-plus-circle-fill"></i>
-                            </a>
+                        <a data-target=".new-directory" data-toggle="modal" role="button" title="new directory">
+                            <i class="bi bi-plus-circle-fill"></i>
+                        </a>
 
-                            <!-- 弹出层-->
-                            <div class="modal fade new-directory only-input" tabindex="-1" role="dialog">
-                                <div class="modal-dialog modal-sm" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <i class="bi bi-x"></i></button>
-                                            <h4 class="modal-title">输入目录名</h4>
-                                        </div>
+                        <!-- 弹出层-->
+                        <div class="modal fade new-directory only-input" role="dialog" tabindex="-1">
+                            <div class="modal-dialog modal-sm" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                                            <i class="bi bi-x"></i></button>
+                                        <h4 class="modal-title">输入目录名</h4>
+                                    </div>
 
-                                        <div class="modal-body">
-                                            <input type="text" class="form-control" placeholder="press enter"
-                                                   id="dir_name_input">
-                                        </div>
+                                    <div class="modal-body">
+                                        <input class="form-control" id="dir_name_input" placeholder="press enter"
+                                               type="text">
+                                    </div>
 
-                                        <div class="modal-footer">
-                                            <button class="btn btn-default" id="new_dir_btn">确认</button>
-                                        </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-default" id="new_dir_btn">确认</button>
                                     </div>
                                 </div>
-                            </div>
-                        </li>
-
-                        <!--上传文件-->
-                        <li>
-                            <a data-toggle="modal" role="button" data-target=".upload-file" title="upload file">
-                                <i class="bi bi-upload"></i>
-                            </a>
-
-                            <!-- 弹出层-->
-                            <div class="modal fade upload-file" tabindex="-1" role="dialog">
-                                <div class="modal-dialog modal-sm" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <i class="bi bi-x"></i></button>
-                                            <h4 class="modal-title">上传文件</h4>
-                                        </div>
-
-                                        <div class="modal-body">
-                                            <div class="form-group">
-                                                <input type="file" multiple="multiple" id="file_input">
-                                            </div>
-                                        </div>
-
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" id="upload_btn">上传</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
-        <!-- 路径导航 -->
-        <ol class="breadcrumb">
-            {% for full_path, base_name in levels %}
-                <li><a href="{{ url_for('index.files', path=full_path) }}">{{ base_name }}</a></li>
-            {% endfor %}
-        </ol>
-
-        <!--用于重命名的交互窗口-->
-        <div class="modal fade only-input" tabindex="-1" role="dialog" id="rename_modal">
-            <div class="modal-dialog modal-sm" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
-                                class="bi bi-x"></i></button>
-                        <h4 class="modal-title">请输入名字</h4>
-                    </div>
-
-                    <div class="modal-body">
-                        <input type="text" class="form-control" placeholder="文件名..." id="rename_input">
-                    </div>
-
-                    <div class="modal-footer">
-                        <button class="btn btn-default" id="rename_btn">确定</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!--用于复制移动的交互窗口-->
-
-        <div class="modal fade" tabindex="-1" role="dialog" id="cp_mv_modal">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
-                                class="bi bi-x"></i></button>
-                        <h4 class="modal-title" id="dst_selected">选择目的路径</h4>
-                    </div>
-
-                    <div class="modal-body">
-                        <div class="row pre-scrollable">
-                            <div class="list-group">
-                                <button class="list-group-item" id="home_item" data-dst="{{ home_path }}"
-                                        data-status="unload">
-                                    <i class="bi bi-folder-fill"></i>
-                                    <span class="path">{{ home_name }}</span>
-                                </button>
                             </div>
                         </div>
-                    </div>
+                    </li>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" id="cp_mv_btn">确定</button>
-                    </div>
+                    <!--上传文件-->
+                    <li>
+                        <a data-target=".upload-file" data-toggle="modal" role="button" title="upload file">
+                            <i class="bi bi-upload"></i>
+                        </a>
 
+                        <!-- 弹出层-->
+                        <div class="modal fade upload-file" role="dialog" tabindex="-1">
+                            <div class="modal-dialog modal-sm" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                                            <i class="bi bi-x"></i></button>
+                                        <h4 class="modal-title">上传文件</h4>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <input id="file_input" multiple="multiple" type="file">
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button class="btn btn-default" id="upload_btn" type="button">上传</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 路径导航 -->
+    <ol class="breadcrumb">
+        {% for full_path, base_name in levels %}
+        <li><a href="{{ url_for('index.files', path=full_path) }}">{{ base_name }}</a></li>
+        {% endfor %}
+    </ol>
+
+    <!--用于重命名的交互窗口-->
+    <div class="modal fade only-input" id="rename_modal" role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button"><i
+                            class="bi bi-x"></i></button>
+                    <h4 class="modal-title">请输入名字</h4>
+                </div>
+
+                <div class="modal-body">
+                    <input class="form-control" id="rename_input" placeholder="文件名..." type="text">
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-default" id="rename_btn">确定</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!--文件名和目录名-->
-        <div class="list">
-            <div class="list-group">
-                {% for dir, m_time in dirs %}
-                    <a href="{{ url_for('index.files',  path=path+'/'+dir) }}" class="list-group-item item-dir">
-                        <i class="bi bi-folder-fill"></i>
-                        <span class='path'>{{ dir }}</span>
+    <!--用于复制移动的交互窗口-->
 
-                        <ul class="nav navbar-nav navbar-right">
-                            <li><span>{{ m_time }}</span></li>
-                            <li class="btn-group-li" data-path="{{ path+'/'+dir }}">
-                                <div class="btn-group btn-group-xs" role="group">
+    <div class="modal fade" id="cp_mv_modal" role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
 
-                                    <button type="button" class="btn btn-default btn-rename" title="rename">
-                                        <i class="bi bi-arrow-repeat"></i>
-                                    </button>
+                <div class="modal-header">
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button"><i
+                            class="bi bi-x"></i></button>
+                    <h4 class="modal-title" id="dst_selected">选择目的路径</h4>
+                </div>
 
-                                    <button type="button" class="btn btn-default btn-move" title="move">
-                                        <i class="bi bi-arrow-right-square"></i>
-                                    </button>
+                <div class="modal-body">
+                    <div class="row pre-scrollable">
+                        <div class="list-group">
+                            <button class="list-group-item" data-dst="{{ home_path }}" data-status="unload"
+                                    id="home_item">
+                                <i class="bi bi-folder-fill"></i>
+                                <span class="path">{{ home_name }}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
-                                    <button type="button" class="btn btn-default btn-copy" title="copy">
-                                        <i class="bi bi-files"></i>
-                                    </button>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="cp_mv_btn" type="button">确定</button>
+                </div>
 
-                                    <button type="button" class="btn btn-default btn-remove" title="remove">
-                                        <i class="bi bi-x-square"></i>
-                                    </button>
-                                </div>
-                            </li>
-                        </ul>
-                    </a>
-                {% endfor %}
+            </div>
+        </div>
+    </div>
 
-                {% for file, m_time in files %}
-                    <span class="list-group-item">
+    <!--文件名和目录名-->
+    <div class="list">
+        <div class="list-group">
+            {% for dir, m_time in dirs %}
+            <a class="list-group-item item-dir" href="{{ url_for('index.files',  path=path+'/'+dir) }}">
+                <i class="bi bi-folder-fill"></i>
+                <span class='path'>{{ dir }}</span>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li><span>{{ m_time }}</span></li>
+                    <li class="btn-group-li" data-path="{{ path+'/'+dir }}">
+                        <div class="btn-group btn-group-xs" role="group">
+
+                            <button class="btn btn-default btn-rename" title="rename" type="button">
+                                <i class="bi bi-arrow-repeat"></i>
+                            </button>
+
+                            <button class="btn btn-default btn-move" title="move" type="button">
+                                <i class="bi bi-arrow-right-square"></i>
+                            </button>
+
+                            <button class="btn btn-default btn-copy" title="copy" type="button">
+                                <i class="bi bi-files"></i>
+                            </button>
+
+                            <button class="btn btn-default btn-remove" title="remove" type="button">
+                                <i class="bi bi-x-square"></i>
+                            </button>
+                        </div>
+                    </li>
+                </ul>
+            </a>
+            {% endfor %}
+
+            {% for file, m_time in files %}
+            <span class="list-group-item">
                 <i class="bi bi-file-earmark-text"></i>
                 <span class='path'>{{ file }}</span>
 
@@ -245,19 +245,19 @@
                                 <i class="bi bi-download"></i>
                             </a>
 
-                            <button type="button" class="btn btn-default btn-rename" title="rename">
+                            <button class="btn btn-default btn-rename" title="rename" type="button">
                                 <i class="bi bi-arrow-repeat"></i>
                             </button>
 
-                            <button type="button" class="btn btn-default btn-move" title="move">
+                            <button class="btn btn-default btn-move" title="move" type="button">
                                 <i class="bi bi-arrow-right-square"></i>
                             </button>
 
-                            <button type="button" class="btn btn-default btn-copy" title="copy">
+                            <button class="btn btn-default btn-copy" title="copy" type="button">
                                 <i class="bi bi-files"></i>
                             </button>
 
-                            <button type="button" class="btn btn-default btn-remove" title="remove">
+                            <button class="btn btn-default btn-remove" title="remove" type="button">
                                 <i class="bi bi-x-square"></i>
                             </button>
                             <!-- 新增的查看文件按钮 -->
@@ -268,34 +268,34 @@
                     </li>
                 </ul>
             </span>
-                {% endfor %}
-            </div>
+            {% endfor %}
         </div>
-        <!-- 用于查看和编辑文件的模态窗口 -->
-        <div class="modal fade" id="view_file_modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">代码编辑器</h4>
-                    </div>
-                    <div class="modal-body">
-                        <!-- Ace编辑器的容器 -->
-                        <div id="editor"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                        <button type="button" class="btn btn-primary" id="save_btn">保存</button>
-                    </div>
+    </div>
+    <!-- 用于查看和编辑文件的模态窗口 -->
+    <div class="modal fade" id="view_file_modal" role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">代码编辑器</h4>
+                </div>
+                <div class="modal-body">
+                    <!-- Ace编辑器的容器 -->
+                    <div id="editor"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal" type="button">关闭</button>
+                    <button class="btn btn-primary" id="save_btn" type="button">保存</button>
                 </div>
             </div>
         </div>
-        <script src="{{ url_for('static', filename='js/public/jquery.min.3.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/public/bootstrap/bootstrap.min.3.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/public/codemirror.min.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/public/javascript.min.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/personal/files.js') }}"></script>
+    </div>
+    <script src="{{ url_for('static', filename='js/public/jquery.min.3.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/public/bootstrap/bootstrap.min.3.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/public/codemirror.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/public/javascript.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/personal/files.js') }}"></script>
     {% endblock %}
 </div>
 </body>

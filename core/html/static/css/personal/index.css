@@ -9,12 +9,22 @@
     --normal-font-weight: normal;
 }
 
+.fullscreen-blur {
+    position: fixed; /* 使元素固定在屏幕上 */
+    top: 0; /* 从屏幕顶部开始 */
+    left: 0; /* 从屏幕左侧开始 */
+    width: 100%; /* 覆盖全宽 */
+    height: 100%; /* 覆盖全高 */
+    backdrop-filter: blur(10px); /* 添加毛玻璃效果 */
+}
+
 html,
 body {
     margin: 0;
     padding: 0;
     height: 100%;
     background-color: transparent;
+    backdrop-filter: blur(10px); /* 添加毛玻璃效果 */
 }
 
 @media (max-width: 768px) {
@@ -144,14 +154,14 @@ a:visited {
     padding-bottom: 5px;
     padding-left: 5px;
     background-color: rgba(248, 249, 250, 0.7); /* 添加透明效果 */
-    backdrop-filter: blur(10px); /* 添加毛玻璃效果 */
     border: 0;
     border-radius: 30px;
+    backdrop-filter: blur(10px); /* 添加毛玻璃效果 */
 }
 
 #md-3, #md-9 {
     overflow: auto;
-    height: 100vh; /* 或者你需要的高度 */
+    height: 90vh; /* 或者你需要的高度 */
 }
 
 /* 定义滚动条的宽度 */
@@ -257,6 +267,8 @@ a:visited {
     justify-content: center;
     margin: 0 auto;
     border: none;
+    margin-top: 30px;
+    margin-bottom: 30px;
 }
 
 #NETWORKchart,
@@ -373,49 +385,137 @@ a:visited {
     font-size: 2.5rem;
 }
 
-/* 按钮样式 */
-.btn-custom {
+#containers {
     padding: 0;
     margin: 0;
-    bottom: 0;
-    background-color: rgba(255, 255, 255, 0.3); /* 使用 rgba 设置背景色的透明度 */
-    color: #262626;
-    width: 90px;
-    height: 30px;
-    border-radius: 25px;
+}
+
+.card {
+    border-radius: 0;
+    margin: 0;
+    border: 0;
+    width: 200px;
+    height: 100px;
+    background-color: rgba(248, 249, 250, 0.7); /* 添加透明效果 */
     backdrop-filter: blur(10px); /* 添加毛玻璃效果 */
+    border-radius: 25px; /* 添加圆角 */
 }
 
-.btn-custom:hover {
-    background-color: #8a8a8a;
+.card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
 }
 
-/* 按钮组样式 */
-.btn-grid {
-    display: grid;
-    gap: 0;
-    white-space: nowrap; /* 防止文本换行 */
-    justify-items: center;
-    padding: 0; /* 增加内边距 */
+.card-custom {
+    width: auto;
+    height: 290px;
 }
 
-#containers {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.card-body-custom {
+    overflow: auto;
+    height: auto;
 }
 
-#containersTable {
-    width: 100%;
-    text-align: center;
-    background-color: transparent;
-}
-
-#containersTable th,
-#containersTable td {
-    padding: 10px;
-    text-align: center;
-    background-color: transparent;
+.btn-primary {
+    background-color: rgba(200, 206, 235, 0.5); /* 天蓝色半透明背景 */
     border: none;
-    color: inherit;
+    border-radius: 25px;
+    padding: 8px 28px;
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    color: black;
+    backdrop-filter: blur(10px);
+    transition: background-color 0.3s ease-in-out;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.btn-primary:hover {
+    background-color: rgba(135, 206, 235, 0.7); /* 鼠标悬停时背景更透明 */
+    color: white; /* 鼠标悬停时字体颜色变为白色 */
+}
+
+.card-title {
+    padding: 0px 0px;
+    margin: 0;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.card-text {
+    padding: 10px 0px;
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.8; /* 设置行间距 */
+}
+
+.btn-primary:nth-child(1) {
+    bottom: 20px;
+}
+
+.btn-primary:nth-child(2) {
+    bottom: 70px;
+}
+
+.btn-primary:nth-child(3) {
+    bottom: 120px;
+}
+
+.btn-primary:nth-child(4) {
+    bottom: 170px;
+}
+
+/* 模态框的样式 */
+.modal {
+    display: none; /* 默认隐藏 */
+    position: fixed; /* 固定位置 */
+    z-index: 1; /* 在其他元素之上 */
+    left: 0;
+    top: 0;
+    width: 100%; /* 宽度和高度覆盖整个屏幕 */
+    height: auto;
+    background-color: rgba(0, 0, 0, 0.4); /* 半透明背景 */
+}
+
+/* 模态框内容的样式 */
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    background-color: #000; /* 黑色背景 */
+    margin: auto; /* 自动外边距 */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* 固定宽度 */
+    height: 80%; /* 固定高度 */
+    color: #fff; /* 白色字体 */
+    position: fixed; /* 固定位置 */
+    top: 50%; /* 顶部位置为50% */
+    left: 50%; /* 左侧位置为50% */
+    transform: translate(-50%, -50%); /* 使用transform属性将元素的中心点移动到其父元素的中心 */
+    border-radius: 20px; /* 添加圆角 */
+}
+
+#commandInput {
+    margin-top: auto;
+    margin-bottom: 10px;
+    border: 1px solid #aaa; /* 设置边框样式 */
+    padding: 5px; /* 添加内边距 */
+    background-color: #333; /* 设置背景颜色 */
+    color: #fff; /* 设置字体颜色 */
+    border-radius: 20px; /* 添加圆角 */
+}
+
+/* 关闭按钮的样式 */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #fff;
+    text-decoration: none;
+    cursor: pointer;
 }

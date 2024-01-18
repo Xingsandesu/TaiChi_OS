@@ -508,35 +508,85 @@ $(document).ready(function () {
 function loadContainers() {
     $.get("/api/containers", function (data) {
         if (data.code === 200) {
-            var rows = "";
-            data.data.forEach(function (container) {
-                var name = container.Name.substring(1);
-                var row = "<tr>";
-                row += "<td>" + name + "</td>";
-                row += "<td>" + container.Config.Image + "</td>";
-                var portMappings = formatPortMappings(container);
-                row += "<td>" + portMappings.hostPort + "</td>";
-                row += "<td>" + container.State.Status + "</td>";
-                if (container.State.Status === "running") {
-                    row += "<td>";
-                    row += "<div class='btn-grid'>";
-                    row += "<button class='btn btn-custom btn-sm m-1' onclick='stopContainer(\"" + name + "\")'>停止</button>";
-                    row += "<button class='btn btn-custom btn-sm m-1' onclick='stopAndDeleteContainer(\"" + name + "\")'>停止并删除</button>";
-                    row += "</div>";
-                    row += "</td>";
-                } else {
-                    row += "<td>";
-                    row += "<div class='btn-grid'>";
-                    row += "<button class='btn btn-custom btn-sm m-1' onclick='startContainer(\"" + name + "\")'>启动</button>";
-                    row += "<button class='btn btn-custom btn-sm m-1' onclick='deleteContainer(\"" + name + "\")'>删除</button>";
-                    row += "</div>";
-                    row += "</td>";
-                }
-                rows += row;
+            $("#containers").empty();
+            var rows = data.data.reduce(function (result, container, index) {
+                if (index % 2 === 0) result.push([]);
+                result[result.length - 1].push(container);
+                return result;
+            }, []);
+            var allCards = '';
+            rows.forEach(function (row) {
+                var rowElement = '<div class="row">';
+                row.forEach(function (container, index) {
+                    var name = container.Name.substring(1);
+                    var portMappings = formatPortMappings(container);
+                    var startTime = new Date(container.State.StartedAt);
+                    var now = new Date();
+                    var runningTime = Math.floor((now - startTime) / 1000 / 60);
+                    var card = `
+                        <div class="card card-custom col" style="margin-right: ${row.length > 1 && index % 2 === 0 ? '35px' : '0'}; margin-top: 8.75px; margin-bottom: 8.75px;">
+                            <div class="card-body card-body-custom">
+                                <h4 class="card-title">${name}</h4>
+                                <span class="badge ${getStatusClass(container.State.Status)}">${container.State.Status}</span><br>
+
+                                <div class='button-group' data-container-name="${name}">
+                                    ${container.State.Status === "running" ? `
+                                        <button class='btn btn-primary stop-container'>停止</button>
+                                        <button class='btn btn-primary stop-delete-container'>停止并删除</button>
+                                        <button id='logButton' class='btn btn-primary view-logs'>日志</button>
+                                        <button id='commandButton' class='btn btn-primary run-command'>运行命令</button>
+                                    ` : `
+                                        <button class='btn btn-primary start-container'>启动</button>
+                                        <button id='logButton' class='btn btn-primary view-logs'>日志</button>
+                                        <button class='btn btn-primary delete-container'>删除</button>
+                                    `}
+                                </div>
+                                <p class="card-text">
+                                    <i class="bi bi-clock icon-large"></i> <span>${runningTime}分钟</span><br>
+                                    <i class="bi bi-arrow-repeat icon-large"></i> <span>${portMappings.containerPort} --> ${portMappings.hostPort}</span><br>
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                    rowElement += card;
+                });
+                rowElement += '</div>';
+                allCards += rowElement;
             });
-            $("#containersTable tbody").html(rows);
+            $("#containers").append(allCards);
         }
     });
+}
+
+// Event delegation
+$("#containers").on("click", ".button-group", function (e) {
+    var containerName = $(this).data("container-name");
+    if ($(e.target).hasClass("stop-container")) {
+        stopContainer(containerName);
+    } else if ($(e.target).hasClass("stop-delete-container")) {
+        stopAndDeleteContainer(containerName);
+    } else if ($(e.target).hasClass("view-logs")) {
+        viewLogs(containerName);
+    } else if ($(e.target).hasClass("run-command")) {
+        runCommand(containerName);
+    } else if ($(e.target).hasClass("start-container")) {
+        startContainer(containerName);
+    } else if ($(e.target).hasClass("delete-container")) {
+        deleteContainer(containerName);
+    }
+});
+
+function getStatusClass(status) {
+    switch (status) {
+        case 'running':
+            return 'bg-success';
+        case 'paused':
+            return 'bg-warning';
+        case 'stopped':
+            return 'bg-danger';
+        default:
+            return 'bg-secondary';
+    }
 }
 
 
@@ -546,7 +596,7 @@ function formatPortMappings(container) {
     } else if (container.HostConfig.NetworkMode.startsWith("macvlan")) {
         return {containerPort: "Macvlan网络", hostPort: "Macvlan网络"};
     } else if (!container.HostConfig.PortBindings || Object.keys(container.HostConfig.PortBindings).length === 0) {
-        return {containerPort: "无映射", hostPort: "无映射"};
+        return {containerPort: "", hostPort: ""};
     }
     var result = {containerPort: [], hostPort: []};
     for (var key in container.HostConfig.PortBindings) {
@@ -626,5 +676,94 @@ function stopAndDeleteContainer(name) {
             refreshIntervalId = setInterval(loadContainers, 5000);
         }
     });
+}
+
+// 获取模态框元素
+var logModal = document.getElementById("logModal");
+var commandModal = document.getElementById("commandModal");
+// 获取关闭模态框的元素
+var closeLogModal = document.getElementById("closeLogModal");
+var closeCommandModal = document.getElementById("closeCommandModal");
+// 获取显示日志和命令的元素
+var logElement = document.getElementById("logElement");
+var commandElement = document.getElementById("commandElement");
+
+function viewLogs(name) {
+    // 根据当前页面是http还是https，自动选择ws或wss进行WebSocket连接
+    var wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    var ws = new WebSocket(wsProtocol + "//" + location.host + "/containers/" + name + "/logs");
+    // 当接收到一个新的日志条目时，将其添加到日志元素
+    ws.onmessage = function (event) {
+        logElement.textContent += event.data + "\n";
+    };
+    // 打开模态框
+    logModal.style.display = "block";
+    // 当 WebSocket 连接关闭时，清空日志
+    ws.onclose = function () {
+        logElement.textContent = "";
+    };
+    // 当用户点击关闭元素时，关闭模态框并关闭 WebSocket 连接
+    closeLogModal.onclick = function () {
+        logModal.style.display = "none";
+        logElement.textContent = "";  // 清空日志
+        ws.close();  // 关闭 WebSocket 连接
+    };
+    // 当用户点击模态框外部时，关闭模态框并关闭 WebSocket 连接
+    window.onclick = function (event) {
+        if (event.target == logModal) {
+            logModal.style.display = "none";
+            logElement.textContent = "";  // 清空日志
+            ws.close();  // 关闭 WebSocket 连接
+        }
+    };
+    ws.onmessage = function (event) {
+        logElement.textContent += event.data + "\n";
+        logElement.scrollTop = logElement.scrollHeight;  // 滚动到底部
+    };
+}
+
+function runCommand(name) {
+    // 根据当前页面是http还是https，自动选择ws或wss进行WebSocket连接
+    var wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    var ws = new WebSocket(wsProtocol + "//" + location.host + "/containers/" + name + "/bash");
+    // 当接收到一个新的消息时，将其添加到命令元素
+    ws.onmessage = function (event) {
+        commandElement.textContent += event.data + "\n";
+    };
+    // 打开模态框
+    commandModal.style.display = "block";
+    // 当 WebSocket 连接关闭时，清空命令
+    ws.onclose = function () {
+        commandElement.textContent = "";
+    };
+    // 当用户点击关闭元素时，关闭模态框并关闭 WebSocket 连接
+    closeCommandModal.onclick = function () {
+        commandModal.style.display = "none";
+        commandElement.textContent = "";  // 清空命令
+        ws.close();  // 关闭 WebSocket 连接
+    };
+    // 当用户点击模态框外部时，关闭模态框并关闭 WebSocket 连接
+    window.onclick = function (event) {
+        if (event.target == commandModal) {
+            commandModal.style.display = "none";
+            commandElement.textContent = "";  // 清空命令
+            ws.close();  // 关闭 WebSocket 连接
+        }
+    };
+    // 当用户在文本框中按下回车键时，发送消息
+    document.getElementById("commandInput").onkeydown = function (event) {
+        if (event.key === "Enter") {
+            // 如果文本框为空，不发送消息
+            if (!event.target.value.trim()) {
+                return;
+            }
+            ws.send(event.target.value);
+            event.target.value = "";  // 清空文本框
+        }
+    };
+    ws.onmessage = function (event) {
+        commandElement.textContent += event.data + "\n";
+        commandElement.scrollTop = commandElement.scrollHeight;  // 滚动到底部
+    };
 }
 

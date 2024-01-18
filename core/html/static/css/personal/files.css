@@ -12,6 +12,7 @@ body {
     border-radius: 20px;
     overflow: hidden; /* 当内容超过高度时，会出现滚动条 */
     padding: 10px;
+    margin-bottom: 50px;
 }
 
 .back-to-top {

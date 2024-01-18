@@ -4,6 +4,7 @@ import os
 import requests
 from flask import Blueprint, render_template, request
 from flask_login import login_required
+from requests.exceptions import JSONDecodeError
 
 from core.config import HOME_PATH, SOURCE_URL
 from core.models import items, listdir, get_m_time, get_levels, get_abs_path, update_docker
@@ -29,12 +30,13 @@ def none_back():
 @login_required
 def install():
     response = requests.get(SOURCE_URL + '/app.json')
-    logging.info(response.text)  # 打印响应内容
+    logging.info(response.text)
     try:
         apps = response.json()
-    except json.JSONDecodeError:
+    except JSONDecodeError:
         logging.error("解析JSON时出错")
-        apps = {}
+        return "解析JSON时出错, 可能是网络原因或者软件源没有app.json"
+
     return render_template('install.html', apps=apps)
 
 
