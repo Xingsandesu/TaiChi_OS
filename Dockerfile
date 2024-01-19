@@ -3,7 +3,7 @@ LABEL authors="huxin"
 
 # 安装依赖
 RUN apk update && \
-    apk add --no-cache ca-certificates && mkdir -p /taichi_os/work
+    apk add --no-cache gcc ca-certificates
 
 WORKDIR /taichi_os
 
