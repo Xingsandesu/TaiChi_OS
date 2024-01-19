@@ -894,7 +894,9 @@ docker_install_taichi() {
 EOF
 	echo "Docker配置覆盖完成"
 
-	mkdir -p /usr/taichi/work
+	mkdir -p /usr/taichi
+	touch /usr/taichi/config.json
+	touch /usr/taichi/data.db
 	echo "目录创建完成"
 
 	# 询问用户输入端口
@@ -904,7 +906,8 @@ EOF
 	docker run -itd  \
 		-p ${host_port}:80 \
 		-v /var/run/docker.sock:/var/run/docker.sock  \
-		-v /usr/taichi/work:/taichi_os/work  \
+		--mount type=bind,source=/usr/taichi/config.json,target=/taichi_os/config.json \
+		--mount type=bind,source=/usr/taichi/data.db,target=/taichi_os/data.db \
 		--name taichios \
 		--restart=always \
 		fushin/taichios
@@ -1004,13 +1007,13 @@ case $operation in
 	5)
 		# 恢复默认设置
 		echo "开始恢复默认设置..."
-		rm /usr/taichi/work/config.json
+		rm /usr/taichi/config.json
 		echo "恢复默认设置完毕"
 		;;
 	6)
 		# 重置账号密码
 		echo "开始重置账号密码..."
-		rm /usr/taichi/work/data.db
+		rm /usr/taichi/data.db
 		echo "重置账号密码完毕"
 		;;
 	7)
@@ -1029,7 +1032,7 @@ case $operation in
 		if [[ $new_source != http://* ]]; then
 			new_source="http://${new_source}"
 		fi
-		sed -i "s|\"source_url\": \".*\"|\"source_url\": \"${new_source}\"|g" /usr/taichi/work/config.json
+		sed -i "s|\"source_url\": \".*\"|\"source_url\": \"${new_source}\"|g" /usr/taichi/config.json
 		;;
 	9)
 		echo "Docker安装开始"

@@ -1,9 +1,9 @@
-FROM python:3.11.7-slim-bookworm
+FROM python:3.11.7-alpine
 LABEL authors="huxin"
 
 # 安装依赖
-RUN apt-get update && \
-    apt-get install -y gcc python3-dev ca-certificates && mkdir -p /taichi_os/work
+RUN apk update && \
+    apk add --no-cache ca-certificates && mkdir -p /taichi_os/work
 
 WORKDIR /taichi_os
 

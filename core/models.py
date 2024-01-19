@@ -85,13 +85,7 @@ class Config:
     SECRET_KEY = token_hex(16)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     prefix = 'sqlite:///'
-    db_dir = os.path.join(os.path.dirname(argv[0]), 'work')
-
-    # 确保数据库目录存在
-    if not os.path.exists(db_dir):
-        os.makedirs(db_dir)
-
-    SQLALCHEMY_DATABASE_URI = prefix + os.path.join(db_dir, 'data.db')
+    SQLALCHEMY_DATABASE_URI = prefix + os.path.join(os.path.dirname(argv[0]), 'data.db')
 
 
 ######################### 数据库相关Class结束 #########################
@@ -163,7 +157,7 @@ failed_urls = LRUCache(1000)
 
 
 def get_url_content(url: str, timeout=1.0):
-    if failed_urls.get(url) >= 2:
+    if failed_urls.get(url) >= 3:
         return None
 
     try:
@@ -172,7 +166,7 @@ def get_url_content(url: str, timeout=1.0):
             return response.text
     except Exception as error:
         failed_urls.put(url, failed_urls.get(url, 0) + 1)
-        logging.error(f"获取URL时出错: {url}: {error}")
+        print(f"获取URL时出错: {url}: {error}")
         return None
 
 

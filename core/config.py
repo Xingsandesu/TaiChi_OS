@@ -4,7 +4,7 @@ from sys import argv
 
 # 全局基本配置文件
 # 构造 config.json 文件的完整路径
-config_path = os.path.join(os.path.dirname(argv[0]), 'work', 'config.json')
+config_path = os.path.join(os.path.dirname(argv[0]), 'config.json')
 
 # 定义默认值
 default_data = {
