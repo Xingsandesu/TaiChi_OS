@@ -29,13 +29,16 @@ def none_back():
 @bp.route('/install')  # /install
 @login_required
 def install():
-    response = requests.get(SOURCE_URL + '/app.json')
-    logging.info(response.text)
     try:
-        apps = response.json()
-    except JSONDecodeError:
-        logging.error("解析JSON时出错")
-        return "解析JSON时出错, 可能是网络原因或者软件源没有app.json"
+        response = requests.get(SOURCE_URL + '/app.json', timeout=1)
+        logging.info(response.text)
+        try:
+            apps = response.json()
+        except JSONDecodeError:
+            logging.error("解析JSON时出错")
+            return "解析JSON时出错, 可能是网络原因或者软件源没有app.json"
+    except requests.exceptions.Timeout:
+        return "请求超时，请检查网络或者软件源"
 
     return render_template('install.html', apps=apps)
 

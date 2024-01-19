@@ -818,7 +818,7 @@ EOF
 	echo "Python源码编译"
 	make install
 	echo "安装软件依赖, 更换国内源"
-	cd /usr/taichi
+	cd /usr/taichi/TaiChi_OS-master
 	/usr/taichi/python/bin/pip3 install -i https://mirrors.aliyun.com/pypi/simple/ pip -U
 	/usr/taichi/python/bin/pip3 config set global.index-url https://mirrors.aliyun.com/pypi/simple/
 	/usr/taichi/python/bin/pip3 install -r requirements.txt
@@ -837,7 +837,7 @@ EOF
 
 	[Service]
 	WorkingDirectory=/usr/taichi
-	ExecStart=/usr/taichi/python/bin/python3 /usr/taichi/run.py --port=${port}
+	ExecStart=/usr/taichi/python/bin/python3 /usr/taichi/TaiChi_OS-master/run.py --port=${port}
 	Restart=on-abnormal
 	RestartSec=5s
 	KillMode=mixed
@@ -962,11 +962,15 @@ update_taichi() {
 
 python_update_taichi() {
 	systemctl stop taichi
-	mv /usr/taichi/python /tmp/taichi/python
+	mv /usr/taichi/python /tmp/
+	mv /usr/taichi/TaiChi_OS-master/config.json /tmp/
+	mv /usr/taichi/TaiChi_OS-master/data.db /tmp/
 	rm -rf /usr/taichi/*
-	mv /tmp/taichi/python /usr/taichi/python
 	wget -P /usr/taichi https://codeload.github.com/Xingsandesu/TaiChi_OS/zip/refs/heads/master
 	unzip /usr/taichi/master -d /usr/taichi
+	mv /tmp/python /usr/taichi/python
+  	mv /tmp/config.json /usr/taichi/TaiChi_OS-master/config.json
+ 	mv /tmp/data.db /usr/taichi/TaiChi_OS-master/data.db
 	systemctl start taichi
 	systemctl daemon-reload
 }
@@ -1014,31 +1018,57 @@ case $operation in
 		if systemctl --all --type=service | grep -q 'taichi'; then
 			  	systemctl restart taichi
 
-    else
+    	else
     		docker restart taichi
-    fi
+    	fi
 		echo "重启完毕"
 		;;
 	5)
 		# 恢复默认设置
 		echo "开始恢复默认设置..."
-		rm /usr/taichi/config.json
+		rm -rf /usr/taichi/TaiChi_OS-master/config.json
+		if systemctl --all --type=service | grep -q 'taichi'; then
+    			systemctl restart taichi
+
+    	else
+        	docker restart taichi
+    	fi
 		echo "恢复默认设置完毕"
 		;;
 	6)
 		# 重置账号密码
 		echo "开始重置账号密码..."
-		rm /usr/taichi/data.db
+		rm /usr/taichi/TaiChi_OS-master/data.db
+		if systemctl --all --type=service | grep -q 'taichi'; then
+        	systemctl restart taichi
+
+    	else
+        	docker restart taichi
+    	fi
 		echo "重置账号密码完毕"
 		;;
 	7)
 		# 更换端口
 		echo "请输入新的端口："
 		read new_port
-		sed -i "s/--port=[0-9]*/--port=${new_port}/g" /etc/systemd/system/taichi.service
-		systemctl daemon-reload
-		systemctl restart taichi
-		echo "端口更新完毕"
+		if docker ps -a --format '{{.Names}}' | grep -q '^taichios$'; then
+			docker stop taichios
+			docker rm taichios
+			docker run -itd  \
+				-p ${new_port}:80 \
+				-v /var/run/docker.sock:/var/run/docker.sock  \
+				--mount type=bind,source=/usr/taichi/config.json,target=/taichi_os/config.json \
+				--mount type=bind,source=/usr/taichi/data.db,target=/taichi_os/data.db \
+				--name taichios \
+				--restart=always \
+				fushin/taichios
+			echo "Docker 端口更新完毕"
+		else
+			sed -i "s/--port=[0-9]*/--port=${new_port}/g" /etc/systemd/system/taichi.service
+			systemctl daemon-reload
+			systemctl restart taichi
+			echo "端口更新完毕"
+		fi
 		;;
 	8)
 		# 更换软件源
@@ -1047,7 +1077,12 @@ case $operation in
 		if [[ $new_source != http://* ]]; then
 			new_source="http://${new_source}"
 		fi
-		sed -i "s|\"source_url\": \".*\"|\"source_url\": \"${new_source}\"|g" /usr/taichi/config.json
+		sed -i 's|\("source_url": "\)[^"]*"|\1'${new_source}'"|' /usr/taichi/TaiChi_OS-master/config.json
+		if systemctl --all --type=service | grep -q 'taichi'; then
+			systemctl restart taichi
+		else
+			docker restart taichi
+		fi
 		;;
 	9)
 		echo "Docker安装开始"
