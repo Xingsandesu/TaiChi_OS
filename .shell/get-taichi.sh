@@ -903,7 +903,6 @@ EOF
 
 	docker run -itd  \
 		-p ${host_port}:80 \
-		-v /usr/taichi:/taichi_os \
 		-v /var/run/docker.sock:/var/run/docker.sock  \
 		-v /usr/taichi/work:/taichi_os/work  \
 		--name taichios \
