@@ -921,21 +921,14 @@ EOF
 
 
 uninstall_taichi() {
-	if [ -x "$(command -v docker)" ]; then
-		docker stop taichios
-		docker rm taichios
-		docker rmi fushin/taichios
-	else
-		if [ -x "$(command -v systemctl)" ] && systemctl --all --type=service | grep -q 'taichi'; then
-			systemctl stop taichi
-			systemctl disable taichi
-		fi
-		rm -rf /usr/taichi
-		rm -f /etc/systemd/system/taichi.service
-		if [ -x "$(command -v systemctl)" ]; then
-			systemctl daemon-reload
-		fi
-	fi
+	docker stop taichios || true
+	docker rm taichios || true
+	docker rmi fushin/taichios || true
+	systemctl stop taichi || true
+	systemctl disable taichi || true
+	rm -rf /usr/taichi || true
+	rm -f /etc/systemd/system/taichi.service || true
+	systemctl daemon-reload || true
 }
 update_taichi() {
 	if systemctl --all --type=service | grep -q 'taichi'; then
