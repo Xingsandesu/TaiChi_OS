@@ -211,8 +211,6 @@ fushin/taichi_os_software_source
 - AMD64 E3v3 PVE 黑群晖DSM7.1.1
 
 ## 开源协议
-本软件采用Apache 许可证 2.0
+本软件采用GPLv3协议
 
-## 附加条款
-1. 不允许以盈利为目的
 [![Star History Chart](https://api.star-history.com/svg?repos=Xingsandesu/TaiChi_OS&type=Date)](https://star-history.com/#hslr-s/sun-panel&Date)
