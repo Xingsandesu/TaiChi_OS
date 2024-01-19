@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import socket
 from subprocess import run
 
 import tornado.httpclient
@@ -32,6 +33,9 @@ def create_api_response(handler: tornado.web.RequestHandler, code: int, errmsg: 
 
     handler.set_header("Content-Type", "application/json; charset=utf-8")
     handler.write(json_data)
+    
+
+
 
 
 class CreateContainerHandler(tornado.web.RequestHandler):
@@ -63,16 +67,7 @@ class CreateContainerHandler(tornado.web.RequestHandler):
         logging.info(f"Ports: {ports}")
         logging.info(f"Restart Policy: {restart_policy}")
         logging.info(f"Environment Variables: {env}")  # 打印环境变量
-
-        try:
-            if client.containers.list(filters={'expose': list(ports.keys())}):
-                logging.error(f"端口{ports}已被占用")
-                return create_api_response(self, CODE_NO, f"端口{ports}已被占用")
-
-        except Exception as e:
-            logging.error(f"检查端口占用时出错: {e}")
-            return create_api_response(self, CODE_NO, f"检查端口占用时出错: {e}")
-
+        
         volumes = app_run_data.get('volumes', {})
         for volume, details in volumes.items():
             if volume not in [v.name for v in client.volumes.list()]:
