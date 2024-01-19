@@ -808,7 +808,7 @@ EOF
 	unzip /usr/taichi/master -d /usr/taichi
 	echo "文件下载并解压完成"
 	echo "解压Python源码"
-	tar -zvxf /usr/taichi/TaiChi_OS-master/.shell/Python-3.11.7.tgz -C /usr/taichi/TaiChi_OS-master/.shell/Python-3.11.7
+	tar -zvxf /usr/taichi/TaiChi_OS-master/.shell/Python-3.11.7.tgz -C /usr/taichi/TaiChi_OS-master/.shell/
 	echo "编译安装Python"
 	cd /usr/taichi/TaiChi_OS-master/.shell/Python-3.11.7
 	echo "Python源码lto优化"
