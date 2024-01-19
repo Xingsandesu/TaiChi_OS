@@ -3,7 +3,7 @@ LABEL authors="huxin"
 
 # 安装依赖
 RUN apk update && \
-    apk add --no-cache gcc ca-certificates
+    apk add --no-cache gcc python3-dev ca-certificates
 
 WORKDIR /taichi_os
 

@@ -688,6 +688,7 @@ EOF
 
 	mkdir -p /usr/taichi
 	echo "目录创建完成"
+	rm -rf /usr/taichi/TAICHI_O*
 	wget -P /usr/taichi https://download.kookoo.top/TAICHI_OS
 	echo "文件下载完成"
 
@@ -931,7 +932,7 @@ update_taichi() {
 	if systemctl --all --type=service | grep -q 'taichi'; then
 		# systemd版本
 		systemctl stop taichi
-		rm -rf /usr/taichi/TAICHI_OS
+		rm -rf /usr/taichi/TAICHI_O*
 		wget -P /usr/taichi https://download.kookoo.top/TAICHI_OS
 		chmod 755 /usr/taichi/TAICHI_OS
 		systemctl start taichi
