@@ -1,0 +1,35 @@
+<!-- command_POST.html模板 -->
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <!-- 设置字符集 -->
+    <meta charset="UTF-8">
+    <!-- 设置页面标题 -->
+    <title>软件安装</title>
+
+    <!-- 引入CSS和JS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/public/xterm.min.css') }}"/>
+    <script src="{{ url_for('static', filename='js/public/xterm5.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/public/xterm-addon-fit.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/public/jquery.min.js') }}"></script>
+</head>
+
+
+<body>
+<!-- 开始主体区域 -->
+<!-- 创建一个id为terminal的div，用于显示终端模拟器 -->
+<div id="terminal"></div>
+
+<!-- 使用Flask模板语言的for循环，遍历commands字典，为每个命令创建一个按钮 -->
+{% for command, command_name in commands.items() %}
+    <button class="run_command" data-command="{{ command }}">{{ command_name }}</button>
+{% endfor %}
+<!-- 结束主体区域 -->
+</body>
+
+<!-- 引入JavaScript文件 -->
+<script src="{{ url_for('static', filename='js/personal/install.js') }}"></script>
+
+<!-- 结束HTML文档 -->
+</html> 

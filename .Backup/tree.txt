@@ -1,0 +1,17 @@
+└─core                              # 核心代码
+    ├─api                           # Api接口，包含所有后端服务
+    │  ├─http_api                   # 提供HTTP类型的API接口
+    │  └─websocket_api              # 提供Websocket类型的API接口
+    └─index                         # 前端页面，使用Flask和jinja2进行渲染
+        ├─static                    # 存放所有静态文件
+        │  ├─css                    # 存放CSS样式文件
+        │  │  ├─bootstrap           # 存放Bootstrap相关的CSS样式文件
+        │  │  ├─personal            # 存放个人使用的CSS样式文件
+        │  │  └─public              # 存放公共的CSS样式文件
+        │  ├─fonts                  # 存放字体文件
+        │  ├─img                    # 存放图片文件
+        │  └─js                     # 存放JavaScript文件
+        │      ├─bootstrap          # 存放Bootstrap相关的JavaScript文件
+        │      ├─personal           # 存放个人使用的JavaScript文件
+        │      └─public             # 存放公共的JavaScript文件
+        └─templates                 # 存放jinja2模板文件

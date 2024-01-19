@@ -1,0 +1,197 @@
+    /* 为html和body元素设置全局样式 */
+    html,
+    body {
+      margin: 0; /* 设置外边距为0 */
+      padding: 0; /* 设置内边距为0 */
+      height: 100%; /* 设置高度为100% */
+      background-color: #F7F7F7; /* 设置背景颜色为#F7F7F7 */
+    }
+
+    /* 为.container类设置样式 */
+    .container {
+      background-color: #fff; /* 设置背景颜色为白色 */
+    }
+
+    /* 为.container-header类设置样式 */
+    .container-header {
+      display: flex; /* 设置为弹性布局 */
+      align-items: center; /* 设置子元素垂直居中 */
+      font-size: 14px; /* 设置字体大小为14px */
+      font-weight: bold; /* 设置字体为粗体 */
+      height: 40px; /* 设置高度为40px */
+      padding-left: 10px; /* 设置左内边距为10px */
+    }
+
+    /* 为.container-body类设置样式 */
+    .container-body {
+      display: flex; /* 设置为弹性布局 */
+      border-top: 1px solid #dfdfdf; /* 设置上边框为1px的#dfdfdf颜色实线 */
+      padding: 20px 10px 0 10px; /* 设置内边距 */
+      flex-direction: row; /* 设置主轴方向为行 */
+      flex-wrap: wrap; /* 设置换行 */
+    }
+
+    /* 为.container类下的div元素设置样式 */
+    .container div {
+      display: flex; /* 设置为弹性布局 */
+    }
+
+    /* 为.item-block类设置样式 */
+    .item-block {
+      border: 1px solid #dfdfdf; /* 设置边框为1px的#dfdfdf颜色实线 */
+      flex-direction: column; /* 设置主轴方向为列 */
+      height: 160px; /* 设置高度为160px */
+      width: 20em; /* 设置宽度为20em */
+      margin-bottom: 20px; /* 设置下外边距为20px */
+      margin-right: 10px; /* 设置右外边距为10px */
+    }
+
+    /* 为链接设置样式 */
+    a:link,
+    a:visited {
+      color: #000000; /* 设置颜色为黑色 */
+      text-decoration: none; /* 取消文本装饰 */
+    }
+
+    /* 为.item-top类设置样式 */
+    .item-top {
+      height: 80px; /* 设置高度为80px */
+      padding: 20px; /* 设置内边距为20px */
+    }
+
+    /* 为.item-logo类设置样式 */
+    .item-logo {
+      width: 21%; /* 设置宽度为21% */
+      height: 60px; /* 设置高度为60px */
+      margin-right: 20px; /* 设置右外边距为20px */
+    }
+
+    /* 为.item-logo类下的img元素设置样式 */
+    .item-logo img {
+      width: 50px; /* 设置宽度为50px */
+      height: 50px; /* 设置高度为50px */
+    }
+
+    /* 为.item-body类设置样式 */
+    .item-body {
+      flex-direction: column; /* 设置主轴方向为列 */
+      width: 79%; /* 设置宽度为79% */
+    }
+
+    /* 为.item-bottom类设置样式 */
+    .item-bottom {
+      height: 40px; /* 设置高度为40px */
+      justify-content: space-around; /* 设置子元素之间的空间均匀分布 */
+      align-items: center; /* 设置子元素垂直居中 */
+      color: #888888; /* 设置颜色为#888888 */
+      background-color: #F7F7F7; /* 设置背景颜色为#F7F7F7 */
+      font-size: 13px; /* 设置字体大小为13px */
+    }
+
+    /* 为.title类设置样式 */
+    .title {
+      font-size: 16px; /* 设置字体大小为16px */
+      font-weight: bold; /* 设置字体为粗体 */
+      padding-bottom: 10px; /* 设置下内边距为10px */
+    }
+
+    /* 为.notice类设置样式 */
+    .notice {
+      font-size: 12px; /* 设置字体大小为12px */
+      color: #888; /* 设置颜色为#888 */
+    }
+
+    /* 为.divider类设置样式 */
+    .divider {
+      height: 20px; /* 设置高度为20px */
+      width: 1px; /* 设置宽度为1px */
+      background-color: #dfdfdf; /* 设置背景颜色为#dfdfdf */
+    }
+
+    /* 为.centered-label类设置样式 */
+    .centered-label {
+      position: absolute; /* 设置定位为绝对定位 */
+      top: 55%; /* 设置距离上边的距离为55% */
+      left: 50%; /* 设置距离左边的距离为50% */
+      transform: translate(-50%, -60%); /* 设置元素位置偏移 */
+      display: flex; /* 设置为弹性布局 */
+      flex-direction: column; /* 设置主轴方向为列 */
+      align-items: center; /* 设置子元素垂直居中 */
+      justify-content: center; /* 设置子元素水平居中 */
+    }
+    /* 以下是仪表相关样式设置 */
+    /* 为.centered-label类下的.usage类设置样式 */
+    .centered-label .usage {
+      font-weight: bold; /* 设置字体为粗体 */
+      font-size: 1.5em; /* 设置字体大小为24px */
+      margin-bottom: 3px; /* 设置下外边距为10px */
+    }
+
+    /* 为.centered-label类下的.type类设置样式 */
+    .centered-label .type {
+      font-weight: bold; /* 设置字体样式 */
+      font-size: 0.5em; /* 设置字体大小为16px */
+      color: #888888; /* 设置颜色为灰色 */
+    }
+    /* 为 #mainContainer 设置样式 */
+    #mainContainer {
+      box-sizing: border-box; /* 设置盒模型为边框盒模型 */
+      margin: auto; /* 设置外边距为自动，实现水平居中 */
+      padding: 20px; /* 设置内边距为20px */
+      width: 100%; /* 设置宽度为100% */
+    }
+
+    /* 为 #containerHeader 设置样式 */
+    #containerHeader {
+      align-items: center; /* 设置子元素垂直居中 */
+      border-radius: 5px; /* 设置边框圆角为5px */
+      display: flex; /* 设置为弹性布局 */
+      justify-content: space-between; /* 设置子元素之间的空间均匀分布 */
+      padding: 10px; /* 设置内边距为10px */
+    }
+
+    /* 为 #systemStatusTitle 设置样式 */
+    #systemStatusTitle {
+      color: #343a40; /* 设置颜色为#343a40 */
+      font-size: 2em; /* 设置字体大小为2em */
+      font-weight: bold; /* 设置字体为粗体 */
+    }
+
+    /* 为 #uploadDownloadDisplay 设置样式 */
+    #uploadDownloadDisplay {
+      display: flex; /* 设置为弹性布局 */
+      flex-direction: column; /* 设置主轴方向为列 */
+      gap: 5px; /* 设置子元素之间的间隔为5px */
+    }
+
+    /* 为 #uploadLabel 和 #downloadLabel 设置样式 */
+    #uploadLabel, #downloadLabel {
+      color: #6c757d; /* 设置颜色为#6c757d */
+      font-size: 1em; /* 设置字体大小为0.5em */
+      font-weight: normal; /* 设置字体为粗体 */
+    }
+
+    /* 为 #cpuUsageBlock、#memoryUsageBlock 和 #diskUsageBlock 设置样式 */
+    #cpuUsageBlock, #memoryUsageBlock, #diskUsageBlock {
+      opacity: 0; /* 设置透明度为0 */
+      transition: opacity 2s ease-out; /* 设置过渡效果，透明度变化时持续2秒，缓动效果为ease-out */
+      width: 12em; /* 设置宽度为自动 */
+      height: 12em; /* 设置高度为自动 */
+      position: relative; /* 设置定位为相对定位 */
+      text-align: center; /* 设置文本居中对齐 */
+      display: flex; /* 设置为弹性布局 */
+      flex-direction: column; /* 设置主轴方向为列 */
+      align-items: center; /* 设置子元素垂直居中 */
+      justify-content: center; /* 设置子元素水平居中 */
+      margin: 0 auto; /* 设置外边距为0，实现水平居中 */
+      border: none; /* 取消边框 */
+    }
+    #systemVersion {
+      min-width: auto; /* 设置最小宽度为自动 */
+      font-size: 0.5em; /* 设置字体大小为0.5em */
+      color: #6c757d; /* 设置颜色为#6c757d */
+      opacity: 0; /* 设置透明度为0 */
+      transition: opacity 1s ease-in-out; /* 设置过渡效果，透明度变化时持续1秒，缓动效果为ease-in-out */
+      margin-left: 1em; 
+      margin-top: 1em; 
+    }

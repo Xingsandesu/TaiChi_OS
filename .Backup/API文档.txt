@@ -1,0 +1,99 @@
+    """
+    返回一个josnify后的对象
+    :param code: 响应码
+    :param errmsg: 错误信息
+    :param data: 要带上的数据
+    :return: josnify()后的对象
+    json_data = {
+        'code': code,
+        'errmsg': errmsg,
+        'data': data
+    }
+    """
+1. 删除文件或目录
+URL: /api/remove/
+方法: POST
+参数: path 文件或目录的路径
+返回值: JSON对象，包含操作结果
+
+2. 新建文件夹
+URL: /api/mkdir/
+方法: POST
+参数: dir 哪个目录下创建目录, name 新建的目录名字
+返回值: JSON对象，包含操作结果
+
+3. 上传文件
+URL: /api/upload/
+方法: POST
+参数: dir 存放的目录, files 文件对象的列表
+返回值: JSON对象，包含操作结果和成功上传的文件列表
+
+4. 获取目录下内容
+URL: /api/listdir/
+方法: POST
+参数: dir 目录名字
+返回值: JSON对象，包含操作结果和目录下的文件和子目录列表
+
+5. 复制文件/目录
+URL: /api/copy/
+方法: POST
+参数: src 源路径, dst 目标路径
+返回值: JSON对象，包含操作结果
+
+6. 移动文件
+URL: /api/move/
+方法: POST
+参数: src 源路径, dst 目标路径
+返回值: JSON对象，包含操作结果
+
+7. 重命名文件或目录
+URL: /api/rename/
+方法: POST
+参数: path 文件或目录的路径, name 新的名字
+返回值: JSON对象，包含操作结果
+
+8. 下载文件
+URL: /api/download/
+方法: GET
+参数: file 文件的路径
+返回值: 文件下载
+
+9. 查看文件内容
+URL: /api/view/
+方法: GET
+参数: path 文件的路径
+返回值: JSON对象，包含操作结果和文件内容
+10. 修改文件内容
+
+URL: /api/edit/
+方法: POST
+参数: path 文件的路径, content 新的文件内容
+返回值: JSON对象，包含操作结果
+
+11. 运行命令
+URL: /api/command/
+方法: POST
+参数: command
+返回值: JSON对象，包含操作结果
+
+12. 系统信息
+URL: /api/info/
+方法: GET
+参数: 无
+返回值: JSON对象，包含操作结果
+
+
+### 应用安装界面
+GET /install
+
+### 系统监控界面
+GET /monitor
+
+### WEBSSH界面
+GET /plugins/webssh
+
+### 文件管理界面
+GET /files
+
+### WebSocket系统监控命名空间
+WS /Monitor

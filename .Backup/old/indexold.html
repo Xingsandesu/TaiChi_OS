@@ -1,0 +1,100 @@
+<!-- index.html模板 -->   
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <!-- 设置字符集 -->
+  <meta charset="UTF-8">
+  <!-- 设置页面标题 -->
+  <title>{{ title }}</title>
+  <!-- 引入CSS样式 -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/personal/index.css') }}">
+</head>
+
+<body>
+<!-- 以下是系统监控开始部分 -->
+ <div id="mainContainer" class="container">
+  <!-- 容器头部 -->
+  <div id="containerHeader" class="container-header">
+    <!-- 系统状态标题 -->
+    <div id="systemStatusTitle">系统状态<div id="systemVersion"></div></div>
+    <!-- 上传下载速度显示 -->
+    <div id="uploadDownloadDisplay">
+      <span id="uploadLabel">上传: 0 Bytes/s</span>
+      <span id="downloadLabel">下载: 0 Bytes/s</span>
+    </div>
+  </div>
+  <!-- 容器主体 -->
+  <div class="container-body">
+    <!-- CPU使用率显示区域 -->
+    <div id="cpuUsageBlock" class="item-block">
+      <canvas id="cpuUsageChart"></canvas>
+      <div id="cpuUsageLabel" class="centered-label">
+        <div class="usage">0%</div>
+        <div class="type">CPU使用率</div>
+      </div>
+    </div>
+    <!-- 内存使用率显示区域 -->
+    <div id="memoryUsageBlock" class="item-block">
+      <canvas id="memoryUsageChart"></canvas>
+      <div id="memoryUsageLabel" class="centered-label">
+        <div class="usage">0%</div>
+        <div class="type">内存使用率</div>
+      </div>
+    </div>
+    <!-- 磁盘使用率显示区域 -->
+    <div id="diskUsageBlock" class="item-block">
+      <canvas id="diskUsageChart"></canvas>
+      <div id="diskUsageLabel" class="centered-label">
+        <div class="usage">0%</div>
+        <div class="type">磁盘使用率</div>
+      </div>
+    </div>
+  </div>
+ </div>
+<!-- 系统监控部分结束 -->
+
+<!-- 以下是动态生成的项目列表 -->
+  {% for category, items in items_dict.items() %}
+  <div class="container">
+    <div class="container-header">{{ category }}</div>
+    <div class="container-body">
+      {% for item in items %}
+      <div class="item-block">
+        <a href="{{ item.link }}" target="_blank">
+          <div class="item-top">
+            <div class="item-logo"><img src="{{ item.logo }}" alt=""></div>
+            <div class="item-body">
+              <span class="title">{{ item.title }}</span>
+              <span class="notice">{{ item.notice }}</span>
+            </div>
+          </div>
+        </a>
+        <div class="item-bottom">
+          {% for link, label in item.links %}
+          <a href="{{ link }}" target="_blank">
+            <div>{{ label }}</div>
+          </a>
+          {% if not loop.last %}
+          <div class="divider"></div>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+<!-- 动态生成的项目列表结束 -->
+
+<!-- 引入JS -->
+  <!-- 引入socket.io库 -->
+  <script type="text/javascript" src="{{ url_for('static', filename='js/public/socket.io.min.js') }}"></script>
+  <!-- 引入Chart.js库 -->
+  <script src="{{ url_for('static', filename='js/public/chart.js')}}"></script>
+  <!-- 引入index.js -->
+  <script src="{{ url_for('static', filename='js/personal/index.js') }}"></script>
+<!-- 引入JS结束 -->
+</body>
+
+</html>
