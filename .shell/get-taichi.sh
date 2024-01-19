@@ -779,7 +779,7 @@ EOF
 		sudo apt -y update
 		sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev \
 		libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev \
-		xz-utils tk-dev libffi-dev liblzma-dev python-openssl git unzip
+		xz-utils tk-dev libffi-dev liblzma-dev python3-openssl git unzip
 	elif [ "$OS" = "centos" ]; then
 		sudo yum update -y
 		sudo yum groupinstall -y "Development Tools"
