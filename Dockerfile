@@ -1,9 +1,9 @@
-FROM python:3.11.7-alpine
+FROM python:3.10.13-slim-bullseye
 LABEL authors="huxin"
 
 # 安装依赖
-RUN apk update && \
-    apk add --no-cache gcc python3-dev ca-certificates
+RUN apt update -y && \
+    apt install -y gcc python3-dev ca-certificates
 
 WORKDIR /taichi_os
 
