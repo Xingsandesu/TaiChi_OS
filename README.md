@@ -42,7 +42,7 @@ curl -sSL -o get-taichi.sh https://download.kookoo.top/get-taichi.sh && bash get
 ```
 - 或者
 ```Shell
-curl -sSL -o https://raw.githubusercontent.com/Xingsandesu/TaiChi_OS/master/.shell/get-taichi.sh && bash get-taichi.sh
+curl -sSL -o get-taichi.sh https://raw.githubusercontent.com/Xingsandesu/TaiChi_OS/master/.shell/get-taichi.sh && bash get-taichi.sh
 ```
 #### ARM64
 - 内测二进制支持版本Ubuntu18.04日期往后的所有发行版, Docker支持所有运行Docker的发行版, 源码安装支持主流Linux发行版
