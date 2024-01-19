@@ -921,13 +921,22 @@ EOF
 
 
 uninstall_taichi() {
-	systemctl stop taichi
-	systemctl disable taichi
-	rm -rf /usr/taichi
-	rm /etc/systemd/system/taichi.service
-	systemctl daemon-reload
+	if [ -x "$(command -v docker)" ]; then
+		docker stop taichios
+		docker rm taichios
+		docker rmi fushin/taichios
+	else
+		if [ -x "$(command -v systemctl)" ] && systemctl --all --type=service | grep -q 'taichi'; then
+			systemctl stop taichi
+			systemctl disable taichi
+		fi
+		rm -rf /usr/taichi
+		rm -f /etc/systemd/system/taichi.service
+		if [ -x "$(command -v systemctl)" ]; then
+			systemctl daemon-reload
+		fi
+	fi
 }
-
 update_taichi() {
 	if systemctl --all --type=service | grep -q 'taichi'; then
 		# systemd版本
@@ -941,8 +950,20 @@ update_taichi() {
 		# Docker版本
 		docker stop taichi
 		docker rm taichi
+		docker rmi fushin/taichios
 		docker pull kookoo/taichi:latest
-		docker_install_taichi
+		# 询问用户输入端口
+    	echo "请输入程序运行的端口:"
+    	read host_port
+
+    	docker run -itd  \
+    		-p ${host_port}:80 \
+    		-v /var/run/docker.sock:/var/run/docker.sock  \
+    		--mount type=bind,source=/usr/taichi/config.json,target=/taichi_os/config.json \
+    		--mount type=bind,source=/usr/taichi/data.db,target=/taichi_os/data.db \
+    		--name taichios \
+    		--restart=always \
+    		fushin/taichios
 	fi
 }
 
