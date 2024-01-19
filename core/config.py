@@ -4,7 +4,7 @@ from sys import argv
 
 # 全局基本配置文件
 # 构造 config.json 文件的完整路径
-config_path = os.path.join(os.path.dirname(argv[0]), 'config.json')
+config_path = os.path.join(os.path.dirname(argv[0]), 'work', 'config.json')
 
 # 定义默认值
 default_data = {
@@ -35,20 +35,24 @@ default_data = {
     'get_docker_shell_command': 'curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh'
 }
 
-# 检查 config.json 文件是否存在
-if not os.path.exists(config_path):
-    # 如果不存在，创建一个新的文件，并设置默认值
-    data = default_data
-    with open(config_path, 'w') as f:
-        json.dump(data, f)
-else:
-    # 如果存在，尝试打开文件并读取值
+# 如果存在，尝试打开文件并读取值
+if os.path.exists(config_path):
     try:
         with open(config_path, 'r') as f:
             data = json.load(f)
     except json.JSONDecodeError:
         # 如果文件内容被破坏，使用默认值
         data = default_data
+else:
+    # 如果不存在，创建一个新的文件，并设置默认值
+    data = default_data
+    with open(config_path, 'w') as f:
+        json.dump(data, f)
+
+# 检查 data 字典是否包含所有需要的键，如果不包含，使用默认值
+for key in default_data:
+    if key not in data:
+        data[key] = default_data[key]
 
 SOURCE_URL = data['source_url']
 DOCKER_DOWNLOAD_URL = data['docker_download_url']

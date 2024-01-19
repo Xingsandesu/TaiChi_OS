@@ -159,3 +159,4 @@ cython_debug/
 /app.py
 /get-docker.sh
 /config.json
+/work/

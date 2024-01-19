@@ -85,7 +85,7 @@ class Config:
     SECRET_KEY = token_hex(16)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     prefix = 'sqlite:///'
-    SQLALCHEMY_DATABASE_URI = prefix + os.path.join(os.path.dirname(argv[0]), 'data.db')
+    SQLALCHEMY_DATABASE_URI = prefix + os.path.join(os.path.dirname(argv[0]), 'work', 'data.db')
 
 
 ######################### 数据库相关Class结束 #########################

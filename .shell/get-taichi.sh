@@ -740,6 +740,134 @@ EOF
 	echo "太极OS安装完成，您可以通过以下地址访问：${ip}:${port}"
 }
 
+python_install_taichi() {
+	# 安装操作
+	echo "开始安装..."
+	# 检查Docker是否已安装
+	if ! command -v docker &> /dev/null
+	then
+		echo "Docker 没有安装, 将自动安装"
+		do_install
+	else
+		echo "Docker 已经安装."
+	fi
+
+	# 覆盖/etc/docker/daemon.json
+	if [ ! -d "/etc/docker" ]; then
+		mkdir -p /etc/docker
+	fi
+
+	cat << EOF > /etc/docker/daemon.json
+	{
+	   "registry-mirrors": [
+		   "https://mirror.ccs.tencentyun.com"
+	  ]
+	}
+EOF
+	echo "Docker配置覆盖完成"
+	echo "系统更新并安装依赖"
+	if [ -f /etc/os-release ]; then
+		. /etc/os-release
+		OS=$ID
+	else
+		echo "Cannot identify the OS"
+		exit 1
+	fi
+
+	if [ "$OS" = "ubuntu" ] || [ "$OS" = "debian" ]; then
+		sudo apt -y update
+		sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev \
+		libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev \
+		xz-utils tk-dev libffi-dev liblzma-dev python-openssl git unzip
+	elif [ "$OS" = "centos" ]; then
+		sudo yum update -y
+		sudo yum groupinstall -y "Development Tools"
+		sudo yum install -y zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl-devel xz xz-devel libffi-devel findutils unzip
+	elif [ "$OS" = "fedora" ]; then
+		sudo dnf upgrade -y
+		sudo dnf groupinstall -y "Development Tools"
+		sudo dnf install -y zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl-devel xz xz-devel libffi-devel findutils unzip
+	elif [ "$OS" = "opensuse-leap" ]; then
+		sudo zypper refresh
+		sudo zypper install -y make gcc libssl-devel zlib-devel libbz2-devel \
+		readline-devel sqlite3-devel wget curl llvm ncurses-devel ncurses5-devel \
+		xz-utils tk-devel libffi-devel liblzma5 python-openssl git unzip
+	elif [ "$OS" = "arch" ]; then
+		sudo pacman -Syu --needed --noconfirm make gcc openssl zlib bzip2 \
+		readline sqlite wget curl llvm ncurses xz tk libffi xz python openssl git unzip
+	else
+		echo "Unsupported OS"
+		exit 1
+	fi
+
+
+	mkdir -p /usr/taichi
+	echo "目录创建完成"
+	wget -P /usr/taichi https://codeload.github.com/Xingsandesu/TaiChi_OS/zip/refs/heads/master
+	unzip /usr/taichi/master -d /usr/taichi
+	echo "文件下载并解压完成"
+	echo "解压Python源码"
+	tar -zvxf /usr/taichi/.shell/Python-3.11.7.tgz
+	echo "编译安装Python"
+	cd /usr/taichi/.shell/Python-3.11.7
+	echo "Python源码lto优化"
+	./configure --enable-optimizations --prefix=/usr/taichi/python
+	echo "Python源码编译"
+	make
+	echo "Python源码编译"
+	make install
+	echo "安装软件依赖, 更换国内源"
+	cd /usr/taichi
+	/usr/taichi/python/bin/pip3 install -i https://mirrors.aliyun.com/pypi/simple/ pip -U
+	/usr/taichi/python/bin/pip3 config set global.index-url https://mirrors.aliyun.com/pypi/simple/
+	/usr/taichi/python/bin/pip3 install -r requirements.txt
+
+
+
+	# 写入service
+	echo "请输入程序运行的端口："
+	read port
+	cat << EOF > /etc/systemd/system/taichi.service
+	[Unit]
+	Description=Taichi
+	Documentation=https://app.kookoo.top
+	After=network.target
+	Wants=network.target
+
+	[Service]
+	WorkingDirectory=/usr/taichi
+	ExecStart=/usr/taichi/python/bin/python3 /usr/taichi/run.py --port=${port}
+	Restart=on-abnormal
+	RestartSec=5s
+	KillMode=mixed
+
+	StandardOutput=null
+	StandardError=syslog
+
+	[Install]
+	WantedBy=multi-user.target
+EOF
+	echo "服务写入完成"
+
+	# 更新配置
+	systemctl daemon-reload
+	echo "配置更新完成"
+
+	# 启动服务
+	systemctl start taichi
+	echo "服务启动完成"
+
+	# 设置开机启动
+	systemctl enable taichi
+	echo "设置开机启动完成"
+
+	# 获取用户的IP地址
+	ip=$(hostname -I | awk '{print $1}')
+
+	echo "太极OS安装完成，您可以通过以下地址访问：${ip}:${port}"
+}
+
+
 docker_install_taichi() {
 	# 安装操作
 	echo "开始安装..."
@@ -766,11 +894,8 @@ docker_install_taichi() {
 EOF
 	echo "Docker配置覆盖完成"
 
-	mkdir -p /usr/taichi
+	mkdir -p /usr/taichi/work
 	echo "目录创建完成"
-	wget -P /usr/taichi https://download.kookoo.top/TAICHI_OS
-	chmod 755 /usr/taichi/TAICHI_OS
-	echo "文件下载完成"
 
 	# 询问用户输入端口
 	echo "请输入程序运行的端口:"
@@ -780,6 +905,7 @@ EOF
 		-p ${host_port}:80 \
 		-v /usr/taichi:/taichi_os \
 		-v /var/run/docker.sock:/var/run/docker.sock  \
+		-v /usr/taichi/work:/taichi_os/work  \
 		--name taichios \
 		--restart=always \
 		fushin/taichios
@@ -811,21 +937,29 @@ update_taichi() {
 	else
 		# Docker版本
 		docker stop taichi
-		rm -rf /usr/taichi/TAICHI_OS
-		wget -P /usr/taichi https://download.kookoo.top/TAICHI_OS
-		chmod 755 /usr/taichi/TAICHI_OS
+		docker rm taichi
 		docker pull kookoo/taichi:latest
-		docker restart taichi
+		docker_install_taichi
 	fi
 }
 
+python_update_taichi() {
+	systemctl stop taichi
+	mv /usr/taichi/python /tmp/taichi/python
+	rm -rf /usr/taichi/*
+	mv /tmp/taichi/python /usr/taichi/python
+	wget -P /usr/taichi https://codeload.github.com/Xingsandesu/TaiChi_OS/zip/refs/heads/master
+	unzip /usr/taichi/master -d /usr/taichi
+	systemctl start taichi
+	systemctl daemon-reload
+}
 
 echo "=========太极OS========="
 echo "WIKI:https://github.com/Xingsandesu/TaiChi_OS"
 echo "官方软件源:https://app.kookoo.top"
 echo "=========太极OS========="
 echo "请选择操作："
-echo "1. 安装"
+echo "1. 二进制安装(AMD64)"
 echo "2. 卸载"
 echo "3. 更新"
 echo "4. 重启"
@@ -833,7 +967,9 @@ echo "5. 恢复默认设置"
 echo "6. 重置账号密码"
 echo "7. 更换端口"
 echo "8. 更换软件源"
-echo "9. 使用Docker安装(不推荐,如果遇到没有对应glibc库,使用Docker安装,文件管理需要自己指定映射目录)"
+echo "9. 使用Docker安装(AMD64, ARM64 如果遇到没有对应glibc库,使用Docker安装,文件管理需要自己指定映射目录)"
+echo "10. 源码安装(适用于所有架构)"
+echo "11. 源码更新"
 echo "=========太极OS========="
 read operation
 
@@ -858,19 +994,24 @@ case $operation in
 	4)
 		# 重启操作
 		echo "开始重启..."
-		systemctl restart taichi
+		if systemctl --all --type=service | grep -q 'taichi'; then
+			  	systemctl restart taichi
+
+    else
+    		docker restart taichi
+    fi
 		echo "重启完毕"
 		;;
 	5)
 		# 恢复默认设置
 		echo "开始恢复默认设置..."
-		rm /usr/taichi/config.json
+		rm /usr/taichi/work/config.json
 		echo "恢复默认设置完毕"
 		;;
 	6)
 		# 重置账号密码
 		echo "开始重置账号密码..."
-		rm /usr/taichi/data.db
+		rm /usr/taichi/work/data.db
 		echo "重置账号密码完毕"
 		;;
 	7)
@@ -889,12 +1030,22 @@ case $operation in
 		if [[ $new_source != http://* ]]; then
 			new_source="http://${new_source}"
 		fi
-		sed -i "s|\"source_url\": \".*\"|\"source_url\": \"${new_source}\"|g" /usr/taichi/config.json
+		sed -i "s|\"source_url\": \".*\"|\"source_url\": \"${new_source}\"|g" /usr/taichi/work/config.json
 		;;
 	9)
 		echo "Docker安装开始"
 		docker_install_taichi
 		echo "Docker安装完毕"
+		;;
+	10)
+		echo "源码安装开始"
+		python_install_taichi
+		echo "源码安装完毕"
+		;;
+	11)
+		echo "源码更新开始"
+		python_update_taichi
+		echo "源码更新完毕"
 		;;
 	*)
 		echo "无效的操作"

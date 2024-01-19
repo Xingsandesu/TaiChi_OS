@@ -8,7 +8,7 @@ tar -zvxf Python-3.11.7.tgz
 echo "编译安装Python"
 cd Python-3.11.7
 echo "Python源码lto优化"
-./configure --enable-optimizations
+./configure --enable-optimizations --prefix=/usr/taichi/python
 echo "Python源码编译"
 make
 echo "Python源码编译"

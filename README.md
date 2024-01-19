@@ -19,24 +19,24 @@
 
 ## 功能列表
 
-| 功能 | 描述 |
-| ---- | ---- |
-| 主页导航 | 自动获取正在运行的容器项目添加到主页 |
+| 功能           | 描述                               |
+|--------------|----------------------------------|
+| 主页导航         | 自动获取正在运行的容器项目添加到主页               |
 | Containers管理 | Containers的日志，终端，运行状态监控，开启，关闭等功能 |
-| Docker存储卷管理 | Docker存储卷相关功能 |
-| Docker镜像管理 | Docker镜像相关功能 |
-| WebSSH | 自带一个简单的WebSSH管理工具 |
-| 文件管理 | 自带一个简单的文件管理工具 |
-| 监控面板 | 实时监控系统运行状态，CPU，RAM，IO，NETWORK |
-| 应用商店 | 自动从官方软件源下载各种软件，当然也可以自己手动部署一个私有源 |
+| Docker存储卷管理  | Docker存储卷相关功能                    |
+| Docker镜像管理   | Docker镜像相关功能                     |
+| WebSSH       | 自带一个简单的WebSSH管理工具                |
+| 文件管理         | 自带一个简单的文件管理工具                    |
+| 监控面板         | 实时监控系统运行状态，CPU，RAM，IO，NETWORK    |
+| 应用商店         | 自动从官方软件源下载各种软件，当然也可以自己手动部署一个私有源  |
 
 
 ## 快速开始
 
-1. 一键安装
+### 一键安装
 
-### AMD64
-- 内测二进制支持版本Ubuntu20.04日期往后的所有发行版，Docker支持所有运行Docker的发行版
+#### AMD64
+- 内测二进制支持版本Ubuntu20.04日期往后的所有发行版, Docker支持所有运行Docker的发行版, 源码安装支持主流Linux发行版
 ```Shell
 curl -sSL -o get-taichi.sh https://download.kookoo.top/get-taichi.sh && bash get-taichi.sh
 ```
@@ -44,8 +44,13 @@ curl -sSL -o get-taichi.sh https://download.kookoo.top/get-taichi.sh && bash get
 ```Shell
 curl -sSL -o https://raw.githubusercontent.com/Xingsandesu/TaiChi_OS/master/.shell/get-taichi.sh && bash get-taichi.sh
 ```
-### ARM64
-- 内测二进制支持版本Ubuntu18.04日期往后的所有发行版，暂不支持Docker运行
+#### ARM64
+- 内测二进制支持版本Ubuntu18.04日期往后的所有发行版, Docker支持所有运行Docker的发行版, 源码安装支持主流Linux发行版
+- (推荐使用源码或者Docker安装安装, 0.9.7之前升级新版本请先卸载一遍再安装)
+```Shell
+curl -sSL -o get-taichi.sh https://download.kookoo.top/get-taichi.sh && bash get-taichi.sh
+```
+- (以下是二进制安装, 随缘更新编译版本)
 ```Shell
 curl -sSL -o get-taichi-arm64.sh https://download.kookoo.top/get-taichi-arm64.sh && bash get-taichi-arm64.sh
 ```
@@ -53,6 +58,24 @@ curl -sSL -o get-taichi-arm64.sh https://download.kookoo.top/get-taichi-arm64.sh
 ```Shell
 curl -sSL -o get-taichi-arm64.sh https://raw.githubusercontent.com/Xingsandesu/TaiChi_OS/master/.shell/get-taichi-arm64.sh && bash get-taichi-arm64.sh
 ```
+
+### 手动部署 (源码运行)
+
+#### 适用于所有架构？
+
+- 下载源码到本地并且解压
+- 进入.shell目录, 修改build.sh, 手动编译安装Python3.11.7, 或者使用包管理工具安装, Python3.10版本以上的版本都可以正常运行
+- 返回主目录, python -m pip install -r requirements.txt
+- 然后执行 python run.py
+
+### 手动部署(二进制)
+
+#### AMD64 
+下载二进制运行
+[Github Actions](https://github.com/Xingsandesu/TaiChi_OS/actions)
+
+### 手动编译
+见[build.sh](https://github.com/Xingsandesu/TaiChi_OS/blob/master/.shell/build.sh)
 
 ## 扩展: 软件源私有部署
 
