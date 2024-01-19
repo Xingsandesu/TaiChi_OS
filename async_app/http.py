@@ -105,7 +105,7 @@ class CreateContainerHandler(tornado.web.RequestHandler):
 
         # 首先，检查镜像是否已经存在
         images = await aiodocker.images.list()
-        if any(img['RepoTags'][0] == image for img in images):
+        if any(img['RepoTags'][0] == image for img in images if img['RepoTags']):
             logging.info(f"镜像:{image} 已经存在")
         else:
             # 如果镜像不存在，尝试拉取镜像
