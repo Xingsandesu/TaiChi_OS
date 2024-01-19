@@ -35,6 +35,10 @@ default_data = {
     'get_docker_shell_command': 'curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh'
 }
 
+# 如果目录不存在，创建它
+if not os.path.exists(os.path.dirname(config_path)):
+    os.makedirs(os.path.dirname(config_path))
+
 # 如果存在，尝试打开文件并读取值
 if os.path.exists(config_path):
     try:
