@@ -676,14 +676,17 @@ install_taichi() {
 		mkdir -p /etc/docker
 	fi
 
-	cat << EOF > /etc/docker/daemon.json
-	{
-	   "registry-mirrors": [
-		   "https://mirror.ccs.tencentyun.com"
-	  ]
-	}
+  tee /etc/docker/daemon.json <<-'EOF'
+{
+    "registry-mirrors": [
+        "https://dockerproxy.com",
+        "https://docker.mirrors.ustc.edu.cn",
+        "https://docker.nju.edu.cn"
+    ]
+}
 EOF
-	echo "Docker配置覆盖完成"
+  systemctl daemon-reload
+  systemctl restart docker
 
 
 	mkdir -p /usr/taichi
@@ -758,13 +761,17 @@ python_install_taichi() {
 		mkdir -p /etc/docker
 	fi
 
-	cat << EOF > /etc/docker/daemon.json
-	{
-	   "registry-mirrors": [
-		   "https://mirror.ccs.tencentyun.com"
-	  ]
-	}
+  tee /etc/docker/daemon.json <<-'EOF'
+{
+    "registry-mirrors": [
+        "https://dockerproxy.com",
+        "https://docker.mirrors.ustc.edu.cn",
+        "https://docker.nju.edu.cn"
+    ]
+}
 EOF
+  systemctl daemon-reload
+  systemctl restart docker
 	echo "Docker配置覆盖完成"
 	echo "系统更新并安装依赖"
 	if [ -f /etc/os-release ]; then
@@ -886,13 +893,17 @@ docker_install_taichi() {
 		mkdir -p /etc/docker
 	fi
 
-	cat << EOF > /etc/docker/daemon.json
-	{
-	   "registry-mirrors": [
-		   "https://mirror.ccs.tencentyun.com"
-	  ]
-	}
+  tee /etc/docker/daemon.json <<-'EOF'
+{
+    "registry-mirrors": [
+        "https://dockerproxy.com",
+        "https://docker.mirrors.ustc.edu.cn",
+        "https://docker.nju.edu.cn"
+    ]
+}
 EOF
+  systemctl daemon-reload
+  systemctl restart docker
 	echo "Docker配置覆盖完成"
 
 	mkdir -p /usr/taichi
