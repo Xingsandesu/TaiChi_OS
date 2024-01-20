@@ -952,8 +952,8 @@ update_taichi() {
 		systemctl daemon-reload
 	else
 		# Docker版本
-		docker stop taichi
-		docker rm taichi
+		docker stop taichios
+		docker rm taichios
 		docker rmi fushin/taichios
 		docker pull kookoo/taichi:latest
 		# 询问用户输入端口
@@ -1128,7 +1128,7 @@ case $operation in
 		;;
 	12)
 		if docker ps -a --format '{{.Names}}' | grep -q '^taichios$'; then
-          docker ps | grep taichi || echo "容器 'taichi' 未运行或不存在"
+          docker ps | grep taichios || echo "容器 'taichi' 未运行或不存在"
 		else
         	systemctl status taichi || echo "服务 'taichi' 未运行或不存在"
 		fi
