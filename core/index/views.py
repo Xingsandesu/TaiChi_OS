@@ -39,6 +39,9 @@ def install():
             return "解析JSON时出错, 可能是网络原因或者软件源没有app.json"
     except requests.exceptions.Timeout:
         return "请求超时，请检查网络或者软件源"
+    except requests.exceptions.RequestException as e:
+        logging.error(f"请求错误: {e}")
+        return f"请求错误: {e}"
 
     return render_template('install.html', apps=apps)
 
