@@ -1128,7 +1128,7 @@ case $operation in
 		;;
 	12)
 		if docker ps -a --format '{{.Names}}' | grep -q '^taichios$'; then
-          docker ps | grep taichios || echo "容器 'taichi' 未运行或不存在"
+          docker inspect taichios
 		else
         	systemctl status taichi || echo "服务 'taichi' 未运行或不存在"
 		fi
