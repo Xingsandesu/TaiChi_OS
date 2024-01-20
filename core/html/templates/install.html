@@ -3,7 +3,7 @@
 TaiChi OS 应用商店
 {% endblock %}
 {% block navbar_brand %}
-Docker管理
+应用商店
 {% endblock %}
 {% block content %}
 <style>
@@ -139,7 +139,7 @@ Docker管理
         }
     }
 </script>
-<div class="container-fluid"
+<div class="container-fluid;"
      style="height: 100%; background: url('{{ url_for('static', filename='img/bg.jpg') }}') no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;">
     <div class="row">
         {% for app_name, app_info in apps.items() %}

@@ -44,12 +44,12 @@
         }
     </style>
 </head>
-<body>
+<body style="background-color: #333; width: auto; height: auto;">
 <!-- Navbar -->
 <nav class="navbar navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand d-none d-lg-block" href="#">WebSSH</a>
-        <div class="d-flex justify-content-end">
+        <div class="d-flex justify-content-center">
             <!-- 主页图标链接 -->
             <a class="nav-link me-2" href="/">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -107,10 +107,10 @@
     </div>
 </nav>
 <!-- Navbar End -->
-<div style="background-color: #333; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
+<div style="display: flex; justify-content: center; align-items: center; height: auto; margin: 0; overflow:auto;">
     <div id="waiter" style="display: none; transform: scale(1.2);"> 连接中 ...</div>
     <div class="container form-container"
-         style="display: none; width: 100%; max-width: 720px; padding: 24px; transform: scale(1.1); background-color: #F8F9FA; border-radius: 10px; box-sizing: border-box; position: relative; left: 50%; transform: translateX(-50%);">
+         style="display: none; width: 100%; max-width: 720px; padding: 24px; background-color: #F8F9FA; border-radius: 10px; box-sizing: border-box; position: relative; left: 50%; transform: translateX(-50%);">
         <form id="connect" action="" method="post" enctype="multipart/form-data"{% if debug %} novalidate{% end %}>
             <div class="row mt-3">
                 <div class="col">
@@ -162,7 +162,7 @@
     </div>
 
 
-</body>
+
 <div class="container">
     <div id="status" style="color: red;"></div>
     <div id="terminal"></div>

@@ -7,10 +7,16 @@ Docker管理
 {% endblock %}
 {% block content %}
 <style>
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0;
+        padding: 0;
+        overflow: auto;
+    }
     /* 公共样式 */
     .card {
-        border-radius: 0;
-        margin: 5px;
+        margin: 15px;
         background-color: rgba(248, 249, 250, 0.7); /* 添加透明效果 */
         backdrop-filter: blur(10px); /* 添加毛玻璃效果 */
         border-radius: 25px; /* 添加圆角 */
@@ -138,13 +144,6 @@ Docker管理
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     }
 
-    .row {
-        display: flex;
-        flex-wrap: wrap;
-        margin: 20px;
-        padding: 0;
-        overflow: auto;
-    }
 
     .card-title {
         padding: 0px 0px;
@@ -167,7 +166,7 @@ Docker管理
     #volumescard, #vol-card-title {
         font-size: 10px;
         height: 50px;
-        weight: 0;
+        width: 0;
     }
 
     .item div {
@@ -176,12 +175,18 @@ Docker管理
         white-space: nowrap;
     }
 </style>
-<div class="row">
-    <div class="col-md-3 d-none d-md-block" style="overflow:auto; height:95vh;">
+<div class="row" style="overflow:none; height:100%;">
+    <div class="col-md-3 d-none d-md-block" style="overflow:auto; height:100%;  margin-top: 60px;">
+
+        <h3 class="text-white bg-transparent p-3" style="padding-left: 25px;">镜像</h3>
         <div class="card-columns" id="images"></div>
+
+
+        <h3 class="text-white bg-transparent p-3" style="padding-left: 25px;">存储卷</h3>
         <div class="card-columns" id="volumes"></div>
+
     </div>
-    <div class="col-md-9" style="overflow:auto; height:95vh;">
+    <div class="col-md-9" style="overflow:auto; height:100%;  margin-top: 90px; margin-bottom: 20px;">
         <div class="card-columns" id="containers"></div>
     </div>
 </div>

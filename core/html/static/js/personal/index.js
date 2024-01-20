@@ -524,7 +524,7 @@ function loadContainers() {
                     var now = new Date();
                     var runningTime = Math.floor((now - startTime) / 1000 / 60);
                     var card = `
-                        <div class="card card-custom col" style="margin-right: ${row.length > 1 && index % 2 === 0 ? '35px' : '0'}; margin-top: 8.75px; margin-bottom: 8.75px;">
+                        <div class="card card-custom col" style="margin-right: ${row.length > 1 && index % 2 === 0 ? '15px' : '0'}; padding: 15px;">
                             <div class="card-body card-body-custom">
                                 <h4 class="card-title">${name}</h4>
                                 <span class="badge ${getStatusClass(container.State.Status)}">${container.State.Status}</span><br>

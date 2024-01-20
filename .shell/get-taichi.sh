@@ -975,10 +975,28 @@ python_update_taichi() {
 	systemctl daemon-reload
 }
 
+# 检查 systemd 服务状态
+systemd_status=$(systemctl is-active taichi 2>/dev/null)
+
+# 检查 Docker 容器状态
+docker_status=$(docker ps --filter "name=taichi" --format "{{.Status}}" 2>/dev/null)
+
+# 设置默认状态为未安装
+status="未安装"
+
+# 检查服务和容器的状态，如果存在，则更新状态
+if [ "$systemd_status" = "active" ]; then
+	status="Systemd 服务 'taichi' \e[32m已安装\e[0m"
+elif [ -n "$docker_status" ]; then
+	status="Docker 容器 'taichi' \e[32m已安装\e[0m"
+fi
+
 echo "=========太极OS========="
-echo "WIKI:https://github.com/Xingsandesu/TaiChi_OS"
-echo "官方软件源:https://app.kookoo.top"
-echo "=========太极OS========="
+echo "WIKI: https://github.com/Xingsandesu/TaiChi_OS"
+echo "官方软件源: https://app.kookoo.top"
+echo "当前状态：$status"
+echo "========================"
+
 echo "请选择操作："
 echo "1. 二进制安装(AMD64)"
 echo "2. 卸载"
@@ -991,8 +1009,10 @@ echo "8. 更换软件源"
 echo "9. 使用Docker安装(AMD64, ARM64 如果遇到没有对应glibc库,使用Docker安装,文件管理需要自己指定映射目录)"
 echo "10. 源码安装(适用于所有架构)"
 echo "11. 源码更新"
-echo "=========太极OS========="
-read operation
+echo "12. 源码更新"
+echo "========================"
+
+read -p "请输入你的选择（1-12）：" operation
 
 case $operation in
 	1)
@@ -1098,6 +1118,13 @@ case $operation in
 		echo "源码更新开始"
 		python_update_taichi
 		echo "源码更新完毕"
+		;;
+	12)
+		if docker ps -a --format '{{.Names}}' | grep -q '^taichios$'; then
+          docker ps | grep taichi || echo "容器 'taichi' 未运行或不存在"
+		else
+        	systemctl status taichi || echo "服务 'taichi' 未运行或不存在"
+		fi
 		;;
 	*)
 		echo "无效的操作"

@@ -10,9 +10,8 @@
     <link href="{{ url_for('static', filename='css/personal/navbar.css') }}" rel="stylesheet">
     <title>{% block title %}{% endblock %}</title>
 </head>
-<body style="background-color: rgba(0, 0, 0, 0);">
 <!-- Navbar -->
-<nav class="navbar navbar-light bg-light">
+<nav class="navbar navbar-light bg-light fixed-top" style="margin-top: 0;">
     <div class="container-fluid">
         <a class="navbar-brand d-none d-lg-block" href="#">
             {% block navbar_brand %}{% endblock %}
@@ -50,6 +49,8 @@
     </div>
 </nav>
 <!-- Navbar End -->
+<body>
+
 {% block content %}{% endblock %}
 <script src="{{ url_for('static', filename='js/public/bootstrap/bootstrap.bundle.min.js') }}"></script>
 </body>

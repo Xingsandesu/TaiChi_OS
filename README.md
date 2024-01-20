@@ -36,7 +36,7 @@
 ### 一键安装
 
 #### AMD64
-- 内测二进制支持版本Ubuntu20.04日期往后的所有发行版, Docker支持所有运行Docker的发行版, 源码安装支持主流Linux发行版
+- 二进制支持版本Ubuntu20.04日期往后的所有发行版, Docker支持所有运行Docker的发行版, 源码安装支持主流Linux发行版, 只有稳定版本才会发二进制, 默认推荐二进制和源码安装
 ```Shell
 curl -sSL -o get-taichi.sh https://download.kookoo.top/get-taichi.sh && bash get-taichi.sh
 ```

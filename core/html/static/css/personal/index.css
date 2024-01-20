@@ -127,8 +127,8 @@ a:visited {
     word-wrap: break-word;
     overflow-wrap: break-word;
     font-size: 12px; /* 根据视口宽度设置字体大小 */
-    white-space: nowrap; /* 修改这一行 */
-    word-break: keep-all; /* 修改这一行 */
+    white-space: nowrap; 
+    word-break: keep-all;
 }
 
 .divider {
@@ -394,8 +394,8 @@ a:visited {
     border-radius: 0;
     margin: 0;
     border: 0;
-    width: 200px;
-    height: 100px;
+    width: auto;
+    height: auto;
     background-color: rgba(248, 249, 250, 0.7); /* 添加透明效果 */
     backdrop-filter: blur(10px); /* 添加毛玻璃效果 */
     border-radius: 25px; /* 添加圆角 */
@@ -407,7 +407,7 @@ a:visited {
 
 .card-custom {
     width: auto;
-    height: 290px;
+    height: 230px;
 }
 
 .card-body-custom {

@@ -26,7 +26,16 @@ body {
     background-color: transparent;
     backdrop-filter: blur(10px); /* 添加毛玻璃效果 */
 }
-
+.title {
+    font-size: 0.8em;
+    font-weight: bold;
+    padding-bottom: 10px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    font-size: 12px; /* 根据视口宽度设置字体大小 */
+    white-space: nowrap; 
+    word-break: keep-all;
+}
 @media (max-width: 768px) {
     .responsive-hide {
         display: none !important;
