@@ -955,7 +955,7 @@ update_taichi() {
 		docker stop taichios
 		docker rm taichios
 		docker rmi fushin/taichios
-		docker pull kookoo/taichi:latest
+		docker pull fushin/taichi:latest
 		# 询问用户输入端口
     	echo "请输入程序运行的端口:"
     	read host_port
