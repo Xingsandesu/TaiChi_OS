@@ -36,7 +36,7 @@
 ### 一键安装
 
 #### AMD64
-- 二进制支持版本Ubuntu20.04日期往后的所有发行版, Docker支持所有运行Docker的发行版, 源码安装支持主流Linux发行版, 只有稳定版本才会发二进制, 默认推荐二进制和源码安装
+- Docker支持所有运行Docker的发行版, 源码安装支持主流Linux发行版, 只有稳定版本才会发二进制, 默认推荐二进制和源码安装
 ```Shell
 curl -sSL -o get-taichi.sh https://download.kookoo.top/get-taichi.sh && bash get-taichi.sh
 ```
@@ -45,18 +45,10 @@ curl -sSL -o get-taichi.sh https://download.kookoo.top/get-taichi.sh && bash get
 curl -sSL -o get-taichi.sh https://raw.githubusercontent.com/Xingsandesu/TaiChi_OS/master/.shell/get-taichi.sh && bash get-taichi.sh
 ```
 #### ARM64
-- 内测二进制支持版本Ubuntu18.04日期往后的所有发行版, Docker支持所有运行Docker的发行版, 源码安装支持主流Linux发行版
+- Docker支持所有运行Docker的发行版, 源码安装支持主流Linux发行版
 - (推荐使用源码或者Docker安装安装, 0.9.7之前升级新版本请先卸载一遍再安装)
 ```Shell
 curl -sSL -o get-taichi.sh https://download.kookoo.top/get-taichi.sh && bash get-taichi.sh
-```
-- (以下是二进制安装, 随缘更新编译版本)
-```Shell
-curl -sSL -o get-taichi-arm64.sh https://download.kookoo.top/get-taichi-arm64.sh && bash get-taichi-arm64.sh
-```
-- 或者
-```Shell
-curl -sSL -o get-taichi-arm64.sh https://raw.githubusercontent.com/Xingsandesu/TaiChi_OS/master/.shell/get-taichi-arm64.sh && bash get-taichi-arm64.sh
 ```
 
 ### 手动部署 (源码运行)
