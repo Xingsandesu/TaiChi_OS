@@ -65,6 +65,7 @@ HOME_NAME = os.path.basename(HOME_PATH)  # 根目录的名字
 
 DEFAULT_LOGO_PATH = 'static/img/favicon.png'
 DOCKER_CATEGORY = 'Docker Apps'
+SERVICE_CATEGORY = 'Service'
 
 INSTLL_DOCKER_COMMANDS = [
     f'rm -rf /usr/bin/docker* && \
@@ -103,7 +104,7 @@ TAICHI_OS_LOGO = """
 """
 
 TAICHI_OS_WELCOME_MESSAGE = ("\n"
-                             "版本 : 0.9.9-DEV\n"
+                             "版本 : 0.9.9.7-DEV\n"
                              "GITHUB : https://github.com/Xingsandesu\n")
 # # @/command 配置文件
 # commands = {
