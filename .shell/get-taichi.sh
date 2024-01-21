@@ -1073,25 +1073,31 @@ case $operation in
 	5)
 		# 恢复默认设置
 		echo "开始恢复默认设置..."
-		rm -rf /usr/taichi/TaiChi_OS-master/config.json
+		if [ -f "/usr/taichi/TaiChi_OS-master/config.json" ]; then
+			rm -rf /usr/taichi/TaiChi_OS-master/config.json
+		else
+			rm -rf /usr/taichi/config.json
+		fi
 		if systemctl --all --type=service | grep -q 'taichi'; then
-    			systemctl restart taichi
-
-    	else
-        	docker restart taichios
-    	fi
+			systemctl restart taichi
+		else
+			docker restart taichios
+		fi
 		echo "恢复默认设置完毕"
 		;;
 	6)
 		# 重置账号密码
 		echo "开始重置账号密码..."
-		rm /usr/taichi/TaiChi_OS-master/data.db
+		if [ -f "/usr/taichi/TaiChi_OS-master/data.db" ]; then
+			rm -rf /usr/taichi/TaiChi_OS-master/data.db
+		else
+			rm -rf /usr/taichi/data.db
+		fi
 		if systemctl --all --type=service | grep -q 'taichi'; then
-        	systemctl restart taichi
-
-    	else
-        	docker restart taichios
-    	fi
+			systemctl restart taichi
+		else
+			docker restart taichios
+		fi
 		echo "重置账号密码完毕"
 		;;
 	7)
@@ -1124,7 +1130,11 @@ case $operation in
 		if [[ $new_source != http://* ]]; then
 			new_source="http://${new_source}"
 		fi
-		sed -i 's|\("source_url": "\)[^"]*"|\1'${new_source}'"|' /usr/taichi/TaiChi_OS-master/config.json
+		if [ -f "/usr/taichi/TaiChi_OS-master/config.json" ]; then
+			sed -i 's|\("source_url": "\)[^"]*"|\1'${new_source}'"|' /usr/taichi/TaiChi_OS-master/config.json
+		else
+			sed -i 's|\("source_url": "\)[^"]*"|\1'${new_source}'"|' /usr/taichi/config.json
+		fi
 		if systemctl --all --type=service | grep -q 'taichi'; then
 			systemctl restart taichi
 		else
@@ -1156,7 +1166,11 @@ case $operation in
 	13)
 		echo "请输入新的 Docker 路径："
 		read new_docker_path
-		sed -i 's|\("docker_data_path": "\)[^"]*"|\1'${new_docker_path}'"|' /usr/taichi/TaiChi_OS-master/config.json
+		if [ -f "/usr/taichi/TaiChi_OS-master/config.json" ]; then
+			sed -i 's|\("docker_data_path": "\)[^"]*"|\1'${new_docker_path}'"|' /usr/taichi/TaiChi_OS-master/config.json
+		else
+			sed -i 's|\("docker_data_path": "\)[^"]*"|\1'${new_docker_path}'"|' /usr/taichi/config.json
+		fi
 		if systemctl --all --type=service | grep -q 'taichi'; then
 			systemctl restart taichi
 		else
@@ -1166,7 +1180,11 @@ case $operation in
 	14)
 		echo "修复开始"
 		echo "Docker 路径:$docker_data_path"
-		sed -i 's|\("docker_data_path": "\)[^"]*"|\1'${docker_data_path}'"|' /usr/taichi/TaiChi_OS-master/config.json
+		if [ -f "/usr/taichi/TaiChi_OS-master/config.json" ]; then
+			sed -i 's|\("docker_data_path": "\)[^"]*"|\1'${docker_data_path}'"|' /usr/taichi/TaiChi_OS-master/config.json
+		else
+			sed -i 's|\("docker_data_path": "\)[^"]*"|\1'${docker_data_path}'"|' /usr/taichi/config.json
+		fi
 		if systemctl --all --type=service | grep -q 'taichi'; then
 			systemctl restart taichi
 		else
