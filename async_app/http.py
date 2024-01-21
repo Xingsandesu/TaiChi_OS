@@ -15,13 +15,16 @@ from core.models import client
 CODE_YES = 200  # 操作成功的响应码
 CODE_NO = 400  # 操作失败的响应码
 
+
 # 获取 Docker 数据路径
 def get_docker_data_path():
     docker_info = client.info()
     return docker_info.get('DockerRootDir')
 
+
 # 使用 Docker 数据路径
 docker_data_path = get_docker_data_path()
+
 
 def create_api_response(handler: tornado.web.RequestHandler, code: int, errmsg: any = '', data: any = None):
     """
@@ -40,9 +43,6 @@ def create_api_response(handler: tornado.web.RequestHandler, code: int, errmsg: 
 
     handler.set_header("Content-Type", "application/json; charset=utf-8")
     handler.write(json_data)
-    
-
-
 
 
 class CreateContainerHandler(tornado.web.RequestHandler):
@@ -74,14 +74,14 @@ class CreateContainerHandler(tornado.web.RequestHandler):
         logging.info(f"Ports: {ports}")
         logging.info(f"Restart Policy: {restart_policy}")
         logging.info(f"Environment Variables: {env}")  # 打印环境变量
-        
+
         volumes = app_run_data.get('volumes', {})
         for volume, details in volumes.items():
             if volume not in [v.name for v in client.volumes.list()]:
                 logging.info(f"将创建存储卷:{volume}")
                 client.volumes.create(volume)
                 bind_path = details['bind']
-                host_path = f"/var/lib/docker/volumes/{volume}/_data{bind_path}"
+                host_path = f"{docker_data_path}/volumes/{volume}/_data{bind_path}"
                 logging.info(f"将初始化存储卷:{volume}")
                 if os.path.splitext(bind_path)[1] == '' or bind_path.endswith('/'):
                     os.makedirs(host_path, exist_ok=True)
@@ -95,7 +95,7 @@ class CreateContainerHandler(tornado.web.RequestHandler):
 
         for volume, cmds in run_cmd.items():
             bind_path = volumes[volume]['bind']
-            host_path = f"/var/lib/docker/volumes/{volume}/_data{bind_path}"
+            host_path = f"{docker_data_path}/volumes/{volume}/_data{bind_path}"
             if not os.path.isdir(host_path):
                 host_path = os.path.dirname(host_path)
             for cmd in cmds:
@@ -137,7 +137,8 @@ class CreateContainerHandler(tornado.web.RequestHandler):
                 name=name,
                 ports={k: (None, v) for k, v in ports.items()},
                 volumes={f"{docker_data_path}/volumes/{v}/_data{details['bind']}": {'bind': details['bind'],
-                                                                                 'mode': details['mode']} for v, details
+                                                                                    'mode': details['mode']} for
+                         v, details
                          in volumes.items()} if volumes else {},
                 restart_policy=restart_policy,
                 environment=env  # 添加环境变量
