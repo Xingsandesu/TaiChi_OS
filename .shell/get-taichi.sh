@@ -1045,7 +1045,7 @@ case $operation in
 			  	systemctl restart taichi
 
     	else
-    		docker restart taichi
+    		docker restart taichios
     	fi
 		echo "重启完毕"
 		;;
@@ -1057,7 +1057,7 @@ case $operation in
     			systemctl restart taichi
 
     	else
-        	docker restart taichi
+        	docker restart taichios
     	fi
 		echo "恢复默认设置完毕"
 		;;
@@ -1069,7 +1069,7 @@ case $operation in
         	systemctl restart taichi
 
     	else
-        	docker restart taichi
+        	docker restart taichios
     	fi
 		echo "重置账号密码完毕"
 		;;
@@ -1107,7 +1107,7 @@ case $operation in
 		if systemctl --all --type=service | grep -q 'taichi'; then
 			systemctl restart taichi
 		else
-			docker restart taichi
+			docker restart taichios
 		fi
 		;;
 	9)
