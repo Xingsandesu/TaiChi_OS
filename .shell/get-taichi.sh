@@ -685,8 +685,8 @@ install_taichi() {
     ]
 }
 EOF
-  systemctl daemon-reload
-  systemctl restart docker
+	systemctl daemon-reload || true
+	systemctl restart docker || true
 
 
 	mkdir -p /usr/taichi
@@ -770,8 +770,8 @@ python_install_taichi() {
     ]
 }
 EOF
-  systemctl daemon-reload
-  systemctl restart docker
+	systemctl daemon-reload || true
+	systemctl restart docker || true
 	echo "Docker配置覆盖完成"
 	echo "系统更新并安装依赖"
 	if [ -f /etc/os-release ]; then
@@ -902,8 +902,8 @@ docker_install_taichi() {
     ]
 }
 EOF
-  systemctl daemon-reload
-  systemctl restart docker
+	systemctl daemon-reload || true
+	systemctl restart docker || true
 	echo "Docker配置覆盖完成"
 
 	mkdir -p /usr/taichi
