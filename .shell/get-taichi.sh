@@ -979,11 +979,25 @@ python_update_taichi() {
 	wget -P /usr/taichi https://codeload.github.com/Xingsandesu/TaiChi_OS/zip/refs/heads/master
 	unzip /usr/taichi/master -d /usr/taichi
 	mv /tmp/python /usr/taichi/python
-  	mv /tmp/config.json /usr/taichi/TaiChi_OS-master/config.json
+  mv /tmp/config.json /usr/taichi/TaiChi_OS-master/config.json
  	mv /tmp/data.db /usr/taichi/TaiChi_OS-master/data.db
 	systemctl start taichi
 	systemctl daemon-reload
 }
+
+
+# 获取 Docker 数据路径
+get_docker_data_path() {
+	docker_info=$(docker info --format '{{.DockerRootDir}}' 2>/dev/null || echo "")
+	if [ -z "$docker_info" ]; then
+		echo "无法获取 Docker 数据路径"
+	else
+		echo $docker_info
+	fi
+}
+
+docker_data_path=$(get_docker_data_path)
+
 systemd_status=$(systemctl is-active taichi 2>/dev/null || true)
 docker_status=$(docker ps --filter "name=taichi" --format "{{.Status}}" 2>/dev/null || true)
 
@@ -1001,6 +1015,7 @@ echo "=========太极OS========="
 echo "WIKI: https://github.com/Xingsandesu/TaiChi_OS"
 echo "官方软件源: https://app.kookoo.top"
 echo "$status"
+echo "Docker 路径:$docker_data_path"
 echo "========================"
 
 echo "请选择操作："
@@ -1016,6 +1031,12 @@ echo "9. 使用Docker安装(AMD64, ARM64 如果遇到没有对应glibc库,使用
 echo "10. 源码安装(适用于所有架构, 推荐)"
 echo "11. 源码更新"
 echo "12. 查看状态"
+echo "13. [DEBUG]更改Docker路径配置"
+echo "14. 群晖或者OpenWRT等应用安装路径错误修复"
+echo "========================"
+echo "优先使用源码安装"
+echo "群晖或者OpenWRT使用Docker安装"
+echo "群晖或者OpenWRT使用Docker安装注册完成后使用14更新路径"
 echo "========================"
 
 read -p "请输入你的选择（1-12）：" operation
@@ -1130,6 +1151,26 @@ case $operation in
           docker inspect taichios
 		else
         	systemctl status taichi || echo "服务 'taichi' 未运行或不存在"
+		fi
+		;;
+	13)
+		echo "请输入新的 Docker 路径："
+		read new_docker_path
+		sed -i 's|\("docker_data_path": "\)[^"]*"|\1'${new_docker_path}'"|' /usr/taichi/TaiChi_OS-master/config.json
+		if systemctl --all --type=service | grep -q 'taichi'; then
+			systemctl restart taichi
+		else
+			docker restart taichios
+		fi
+		;;
+	14)
+		echo "修复开始"
+		echo "Docker 路径:$docker_data_path"
+		sed -i 's|\("docker_data_path": "\)[^"]*"|\1'${docker_data_path}'"|' /usr/taichi/TaiChi_OS-master/config.json
+		if systemctl --all --type=service | grep -q 'taichi'; then
+			systemctl restart taichi
+		else
+			docker restart taichios
 		fi
 		;;
 	*)

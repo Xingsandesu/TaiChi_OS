@@ -9,7 +9,7 @@ import tornado.ioloop
 import tornado.web
 from aiodocker import Docker
 
-from core.config import SOURCE_URL
+from core.config import SOURCE_URL, DOCKER_DATA_PATH
 from core.models import client
 
 CODE_YES = 200  # 操作成功的响应码
@@ -129,7 +129,7 @@ class CreateContainerHandler(tornado.web.RequestHandler):
                 image,
                 name=name,
                 ports={k: (None, v) for k, v in ports.items()},
-                volumes={f"/var/lib/docker/volumes/{v}/_data{details['bind']}": {'bind': details['bind'],
+                volumes={f"{DOCKER_DATA_PATH}/volumes/{v}/_data{details['bind']}": {'bind': details['bind'],
                                                                                  'mode': details['mode']} for v, details
                          in volumes.items()} if volumes else {},
                 restart_policy=restart_policy,
