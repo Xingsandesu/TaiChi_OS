@@ -1180,6 +1180,7 @@ case $operation in
 	14)
 		echo "修复开始"
 		echo "Docker 路径:$docker_data_path"
+		docker stop taichios
 		if [ -f "/usr/taichi/TaiChi_OS-master/config.json" ]; then
 			sed -i 's|\("docker_data_path": "\)[^"]*"|\1'${docker_data_path}'"|' /usr/taichi/TaiChi_OS-master/config.json
 		else
