@@ -6,10 +6,11 @@ from sys import argv
 # 构造 config.json 文件的完整路径
 config_path = os.path.join(os.path.dirname(argv[0]), 'config.json')
 
+
+
 # 定义默认值
 default_data = {
     'source_url': 'https://app.kookoo.top',
-    'docker_data_path':'/var/lib/docker',
     'docker_download_url': 'https://download.docker.com/linux/static/stable/x86_64/docker-24.0.7.tgz',
     'docker_service_config': (
         "[Unit]\n"
@@ -59,7 +60,7 @@ SOURCE_URL = data['source_url']
 DOCKER_DOWNLOAD_URL = data['docker_download_url']
 DOCKER_SERVICE_CONFIG = data['docker_service_config']
 GET_DOCKER_SHELL_COMMAND = data['get_docker_shell_command']
-DOCKER_DATA_PATH = data['docker_data_path']
+
 # @/file 配置文件
 HOME_PATH = os.path.abspath('/')  # 将路径转化为标准绝对路径
 HOME_NAME = os.path.basename(HOME_PATH)  # 根目录的名字
@@ -105,7 +106,7 @@ TAICHI_OS_LOGO = """
 """
 
 TAICHI_OS_WELCOME_MESSAGE = ("\n"
-                             "版本 : 0.9.9.12-DEV\n"
+                             "版本 : 0.9.9.16-DEV\n"
                              "GITHUB : https://github.com/Xingsandesu\n")
 # # @/command 配置文件
 # commands = {

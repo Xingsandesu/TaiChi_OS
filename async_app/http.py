@@ -9,12 +9,19 @@ import tornado.ioloop
 import tornado.web
 from aiodocker import Docker
 
-from core.config import SOURCE_URL, DOCKER_DATA_PATH
+from core.config import SOURCE_URL
 from core.models import client
 
 CODE_YES = 200  # 操作成功的响应码
 CODE_NO = 400  # 操作失败的响应码
 
+# 获取 Docker 数据路径
+def get_docker_data_path():
+    docker_info = client.info()
+    return docker_info.get('DockerRootDir')
+
+# 使用 Docker 数据路径
+docker_data_path = get_docker_data_path()
 
 def create_api_response(handler: tornado.web.RequestHandler, code: int, errmsg: any = '', data: any = None):
     """
@@ -129,7 +136,7 @@ class CreateContainerHandler(tornado.web.RequestHandler):
                 image,
                 name=name,
                 ports={k: (None, v) for k, v in ports.items()},
-                volumes={f"{DOCKER_DATA_PATH}/volumes/{v}/_data{details['bind']}": {'bind': details['bind'],
+                volumes={f"{docker_data_path}/volumes/{v}/_data{details['bind']}": {'bind': details['bind'],
                                                                                  'mode': details['mode']} for v, details
                          in volumes.items()} if volumes else {},
                 restart_policy=restart_policy,

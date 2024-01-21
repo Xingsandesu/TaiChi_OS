@@ -1031,12 +1031,9 @@ echo "9. 使用Docker安装(AMD64, ARM64 如果遇到没有对应glibc库,使用
 echo "10. 源码安装(适用于所有架构, 推荐)"
 echo "11. 源码更新"
 echo "12. 查看状态"
-echo "13. [DEBUG]更改Docker路径配置"
-echo "14. 群晖或者OpenWRT等应用安装路径错误修复"
 echo "========================"
 echo "优先使用源码安装"
 echo "群晖或者OpenWRT使用Docker安装"
-echo "群晖或者OpenWRT使用Docker安装注册完成后使用14更新路径"
 echo "========================"
 
 read -p "请输入你的选择（1-12）：" operation
