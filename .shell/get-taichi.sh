@@ -925,7 +925,7 @@ EOF
 		fushin/taichios
 
 	# 获取用户的IP地址
-	ip=$(hostname -I | awk '{print $1}')
+	ip=$(hostname -I | awk '{print $1}' || true)
 
 	echo "太极OS安装完成，您可以通过以下地址访问：${ip}:${host_port}"
 }
