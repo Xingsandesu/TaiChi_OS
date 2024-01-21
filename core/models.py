@@ -16,7 +16,7 @@ from flask_sqlalchemy import SQLAlchemy
 from lxml import html
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from core.config import DOCKER_CATEGORY, DEFAULT_LOGO_PATH
+from core.config import DOCKER_CATEGORY, DEFAULT_LOGO_PATH, SERVICE_CATEGORY
 
 db = SQLAlchemy()
 
@@ -96,8 +96,12 @@ class Items:
     def __init__(self):
         self.items_dict = {}
 
+    @staticmethod
+    def sort_key(item):
+        return item['title']
+
     def add_category(self, category_name, category_items):
-        self.items_dict[category_name] = category_items
+        self.items_dict[category_name] = sorted(category_items, key=self.sort_key)
 
     def delete_category(self, category_name):
         if category_name in self.items_dict:
@@ -105,14 +109,15 @@ class Items:
 
     def update_category(self, category_name, category_items):
         if category_name in self.items_dict:
-            self.items_dict[category_name] = category_items
+            self.items_dict[category_name] = sorted(category_items, key=self.sort_key)
 
     def get_category(self, category_name):
-        return self.items_dict.get(category_name, None)
+        return sorted(self.items_dict.get(category_name, []), key=self.sort_key)
 
     def add_item_to_category(self, category_name, item):
         if category_name in self.items_dict:
             self.items_dict[category_name].append(item)
+            self.items_dict[category_name] = sorted(self.items_dict[category_name], key=self.sort_key)
 
     def delete_item_from_category(self, category_name, item):
         if category_name in self.items_dict and item in self.items_dict[category_name]:
@@ -126,6 +131,7 @@ class Items:
     def remove_nonexistent_items(self, category_name, existing_items):
         if category_name in self.items_dict:
             self.items_dict[category_name] = [item for item in self.items_dict[category_name] if item in existing_items]
+            self.items_dict[category_name] = sorted(self.items_dict[category_name], key=self.sort_key)
 
 
 ### index docker相关
@@ -257,15 +263,24 @@ def update_docker():
     with ThreadPoolExecutor(max_workers=10) as executor:
         existing_items = list(filter(None, executor.map(lambda container: get_docker_info(container, server_ip),
                                                         dockers)))  # 过滤掉host网络和macvlan网络的容器(None)
-
+    docker_items = [item for item in existing_items if item['logo'] != DEFAULT_LOGO_PATH]
+    service_items = [item for item in existing_items if item['logo'] == DEFAULT_LOGO_PATH]
+    
     if DOCKER_CATEGORY not in items.items_dict:
-        items.add_category(DOCKER_CATEGORY, existing_items)
+        items.add_category(DOCKER_CATEGORY, docker_items)
     else:
-        for item in existing_items:
+        for item in docker_items:
             if not items.item_exists_in_category(DOCKER_CATEGORY, item):
                 items.add_item_to_category(DOCKER_CATEGORY, item)
-        items.remove_nonexistent_items(DOCKER_CATEGORY, existing_items)
+        items.remove_nonexistent_items(DOCKER_CATEGORY, docker_items)
 
+    if SERVICE_CATEGORY not in items.items_dict:
+        items.add_category(SERVICE_CATEGORY, service_items)
+    else:
+        for item in service_items:
+            if not items.item_exists_in_category(SERVICE_CATEGORY, item):
+                items.add_item_to_category(SERVICE_CATEGORY, item)
+        items.remove_nonexistent_items(SERVICE_CATEGORY, service_items)
 
 ######################### 主页相关Class结束 #########################
 
