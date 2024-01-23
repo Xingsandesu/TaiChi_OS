@@ -918,8 +918,9 @@ EOF
 	docker run -itd  \
 		-p ${host_port}:80 \
 		-v /var/run/docker.sock:/var/run/docker.sock  \
-		--mount type=bind,source=/usr/taichi/config.json,target=/taichi_os/config.json \
-		--mount type=bind,source=/usr/taichi/data.db,target=/taichi_os/data.db \
+		-v /usr/taichi/config.json:/taichi_os/config.json \
+		-v /usr/taichi/data.db:/taichi_os/data.db \
+		-v $docker_data_path/volumes:$docker_data_path/volumes \
 		--name taichios \
 		--privileged \
 		--restart=always \
@@ -960,14 +961,16 @@ update_taichi() {
     	echo "请输入程序运行的端口:"
     	read host_port
 
-    	docker run -itd  \
-    		-p ${host_port}:80 \
-    		-v /var/run/docker.sock:/var/run/docker.sock  \
-    		--mount type=bind,source=/usr/taichi/config.json,target=/taichi_os/config.json \
-    		--mount type=bind,source=/usr/taichi/data.db,target=/taichi_os/data.db \
-    		--name taichios \
-    		--restart=always \
-    		fushin/taichios
+	  docker run -itd  \
+		  -p ${host_port}:80 \
+		  -v /var/run/docker.sock:/var/run/docker.sock  \
+		  -v /usr/taichi/config.json:/taichi_os/config.json \
+		  -v /usr/taichi/data.db:/taichi_os/data.db \
+		  -v $docker_data_path/volumes:$docker_data_path/volumes \
+		  --name taichios \
+		  --privileged \
+		  --restart=always \
+		  fushin/taichios
 	fi
 }
 
@@ -1105,14 +1108,16 @@ case $operation in
 		if docker ps -a --format '{{.Names}}' | grep -q '^taichios$'; then
 			docker stop taichios
 			docker rm taichios
-			docker run -itd  \
-				-p ${new_port}:80 \
-				-v /var/run/docker.sock:/var/run/docker.sock  \
-				--mount type=bind,source=/usr/taichi/config.json,target=/taichi_os/config.json \
-				--mount type=bind,source=/usr/taichi/data.db,target=/taichi_os/data.db \
-				--name taichios \
-				--restart=always \
-				fushin/taichios
+	    docker run -itd  \
+		  -p ${new_port}:80 \
+		  -v /var/run/docker.sock:/var/run/docker.sock  \
+		  -v /usr/taichi/config.json:/taichi_os/config.json \
+		  -v /usr/taichi/data.db:/taichi_os/data.db \
+		  -v $docker_data_path/volumes:$docker_data_path/volumes \
+		  --name taichios \
+		  --privileged \
+		  --restart=always \
+		  fushin/taichios
 			echo "Docker 端口更新完毕"
 		else
 			sed -i "s/--port=[0-9]*/--port=${new_port}/g" /etc/systemd/system/taichi.service
