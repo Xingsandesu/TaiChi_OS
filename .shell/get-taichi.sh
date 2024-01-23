@@ -921,6 +921,7 @@ EOF
 		--mount type=bind,source=/usr/taichi/config.json,target=/taichi_os/config.json \
 		--mount type=bind,source=/usr/taichi/data.db,target=/taichi_os/data.db \
 		--name taichios \
+		--privileged \
 		--restart=always \
 		fushin/taichios
 
