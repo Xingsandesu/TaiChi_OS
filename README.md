@@ -50,6 +50,11 @@ curl -sSL -o get-taichi.sh https://raw.githubusercontent.com/Xingsandesu/TaiChi_
 ```Shell
 curl -sSL -o get-taichi.sh https://download.kookoo.top/get-taichi.sh && bash get-taichi.sh
 ```
+#### 群晖DSM
+```Shell
+curl -sSL -o get-taichi.sh https://raw.githubusercontent.com/Xingsandesu/TaiChi_OS_DSM/main/.shell/get-taichi.sh && bash get-taichi.sh
+```
+
 
 ### 手动部署 (源码运行)
 
