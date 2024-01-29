@@ -17,6 +17,9 @@
 
 特点：简单 轻松易上手 自带软件商店 免修改代码 使用太极私有软件源可以将任意繁杂的Docker创建流程简化为一个run.json 轻松部署
 
+## 联系方式
+QQ群：909881726
+
 ## 功能列表
 
 | 功能           | 描述                               |
@@ -36,7 +39,7 @@
 ### 一键安装
 
 #### AMD64
-- Docker支持所有运行Docker的发行版, 源码安装支持主流Linux发行版, 只有稳定版本才会发二进制, 默认推荐二进制和源码安装
+- Docker支持所有运行Docker的发行版, 源码安装支持主流Linux发行版, 1.0.0版本之后不再发布二进制
 ```Shell
 curl -sSL -o get-taichi.sh https://download.kookoo.top/get-taichi.sh && bash get-taichi.sh
 ```

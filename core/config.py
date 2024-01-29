@@ -11,7 +11,6 @@ config_path = os.path.join(os.path.dirname(argv[0]), 'config.json')
 # 定义默认值
 default_data = {
     'source_url': 'https://app.kookoo.top',
-    'docker_download_url': 'https://download.docker.com/linux/static/stable/x86_64/docker-24.0.7.tgz',
     'docker_service_config': (
         "[Unit]\n"
         "Description=Docker Application Container Engine\n"
@@ -34,7 +33,6 @@ default_data = {
         "[Install]\n"
         "WantedBy=multi-user.target\n"
     ),
-    'get_docker_shell_command': 'curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh'
 }
 
 # 如果存在，尝试打开文件并读取值
@@ -57,9 +55,8 @@ for key in default_data:
         data[key] = default_data[key]
 
 SOURCE_URL = data['source_url']
-DOCKER_DOWNLOAD_URL = data['docker_download_url']
 DOCKER_SERVICE_CONFIG = data['docker_service_config']
-GET_DOCKER_SHELL_COMMAND = data['get_docker_shell_command']
+
 
 # @/file 配置文件
 HOME_PATH = os.path.abspath('/')  # 将路径转化为标准绝对路径
@@ -69,23 +66,6 @@ DEFAULT_LOGO_PATH = 'static/img/favicon.png'
 DOCKER_CATEGORY = 'Docker Apps'
 SERVICE_CATEGORY = 'Service'
 
-INSTLL_DOCKER_COMMANDS = [
-    f'rm -rf /usr/bin/docker* && \
-    rm -rf /usr/bin/runc && \
-    rm -rf /usr/bin/ctr && \
-    rm -rf /usr/bin/containerd* && \
-    rm -rf /etc/systemd/system/docker* && \
-    rm -rf /var/lib/docker* && \
-    rm -rf /var/run/docker.sock && \
-    curl -o docker.tgz {DOCKER_DOWNLOAD_URL} && \
-    tar xzvf docker.tgz && \
-    cp docker/* /usr/bin/ && \
-    rm -rf docker && \
-    echo "{DOCKER_SERVICE_CONFIG}" > /etc/systemd/system/docker.service && \
-    chmod +x /etc/systemd/system/docker.service && \
-    systemctl daemon-reload && \
-    systemctl enable --now docker.service'
-]
 
 UNSUPPORTED_COMMANDS = [
     'top', 'vim', 'ping', 'vi', 'htop', 'nano', 'emacs', 'ssh', 'telnet',
@@ -106,27 +86,6 @@ TAICHI_OS_LOGO = """
 """
 
 TAICHI_OS_WELCOME_MESSAGE = ("\n"
-                             "版本 : 0.9.9.17-DEV\n"
-                             "GITHUB : https://github.com/Xingsandesu\n")
-# # @/command 配置文件
-# commands = {
-#     'docker ps -a': '显示全部容器',
-#     'dir': '显示路径',
-#     'echo hello word': '测试输出',
-# }
-
-# def get_latest_docker_url(base_url: str):
-#     # 打开URL并读取内容
-#     with urllib.request.urlopen(base_url) as response:
-#         html = response.read().decode()
-#
-#     # 使用正则表达式匹配所有的docker版本链接
-#     matches = re.findall(r'docker-(\d+\.\d+\.\d+)\.tgz', html)
-#
-#     # 对匹配到的版本进行排序，选择最大的版本
-#     latest_version = sorted(matches, key=lambda version: list(map(int, version.split('.'))), reverse=True)[0]
-#
-#     # 拼接完整的URL
-#     latest_docker_url = base_url + 'docker-' + latest_version + '.tgz'
-#
-#     return latest_docker_url
+                             "版本 : 1.0.0\n"
+                             "交流群 : 909881726"
+                             "GITHUB : https://github.com/Xingsandesu/TaiChi_OS\n")

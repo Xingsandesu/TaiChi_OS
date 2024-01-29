@@ -7,6 +7,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+/.shell/python_sudo.sh
 
 # C extensions
 *.so

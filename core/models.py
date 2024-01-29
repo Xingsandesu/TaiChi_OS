@@ -5,7 +5,7 @@ from collections import OrderedDict
 from concurrent.futures import ThreadPoolExecutor
 from os.path import join, isdir, abspath, pardir, basename, getmtime
 from secrets import token_hex
-from sys import exit, stdout, argv
+from sys import argv
 from time import localtime, asctime
 
 import requests
@@ -24,43 +24,6 @@ try:
     client = from_env()
 except Exception as e:
     logging.error(e)
-    try:
-        import subprocess
-        from core.config import INSTLL_DOCKER_COMMANDS, GET_DOCKER_SHELL_COMMAND
-
-        logging.error("未找到DockerSocket,可能是未安装Docker,是否安装Docker?")
-        logging.warning("-----安装方式-----")
-        logging.warning("1. 官方脚本安装")
-        logging.warning("2. 官方二进制分发")
-        logging.warning("注意: 不到万不得已不要二进制安装Docker，因为无法使用包管理更新, 只在RHEL 9上测试通过!!!")
-        logging.warning("详细请查看: https://docs.docker.com/engine/install/")
-        user_input = input("请输入选项( 1, 2 ):").lower()
-        if user_input in ['1']:
-            process = subprocess.Popen(GET_DOCKER_SHELL_COMMAND, shell=True, stdout=stdout)
-            process.wait()
-            if process and process.returncode != 0:
-                logging.error("Docker安装失败! 请检查网络或者使用root权限")
-                exit()
-            else:
-                logging.info("Docker安装成功!")
-                logging.info("程序正在启动...")
-                client = DockerClient.from_env()
-        elif user_input in ['2']:
-            process = subprocess.Popen(INSTLL_DOCKER_COMMANDS, shell=True, stdout=stdout)
-            process.wait()
-            if process and process.returncode != 0:
-                logging.error("Docker安装失败! 请检查网络或者使用root权限")
-                exit()
-            else:
-                logging.info("Docker安装成功!")
-                logging.info("程序正在启动...")
-                client = DockerClient.from_env()
-        else:
-            logging.error("无效的输入!")
-            exit()
-    except KeyboardInterrupt:
-        logging.info("用户结束进程")
-        exit()
 
 
 ######################### 数据库相关Class #########################
@@ -265,7 +228,7 @@ def update_docker():
                                                         dockers)))  # 过滤掉host网络和macvlan网络的容器(None)
     docker_items = [item for item in existing_items if item['logo'] != DEFAULT_LOGO_PATH]
     service_items = [item for item in existing_items if item['logo'] == DEFAULT_LOGO_PATH]
-    
+
     if DOCKER_CATEGORY not in items.items_dict:
         items.add_category(DOCKER_CATEGORY, docker_items)
     else:
@@ -281,6 +244,7 @@ def update_docker():
             if not items.item_exists_in_category(SERVICE_CATEGORY, item):
                 items.add_item_to_category(SERVICE_CATEGORY, item)
         items.remove_nonexistent_items(SERVICE_CATEGORY, service_items)
+
 
 ######################### 主页相关Class结束 #########################
 
