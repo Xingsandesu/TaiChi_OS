@@ -171,7 +171,7 @@ vim /etc/systemd/system/taichi.service
 	Wants=network.target
 	[Service]
 	WorkingDirectory=/usr/taichi
-	ExecStart=/usr/taichi/python/bin/python3 /usr/taichi/TaiChi_OS-main/run.py --port=
+	ExecStart=/usr/taichi/python/bin/python3 /usr/taichi/TaiChi_OS-main/run.py --port=8080
 	Restart=on-abnormal
 	RestartSec=5s
 	KillMode=mixed
