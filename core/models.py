@@ -237,13 +237,19 @@ def update_docker():
                 items.add_item_to_category(DOCKER_CATEGORY, item)
         items.remove_nonexistent_items(DOCKER_CATEGORY, docker_items)
 
-    if SERVICE_CATEGORY not in items.items_dict:
-        items.add_category(SERVICE_CATEGORY, service_items)
+    if service_items:
+        if SERVICE_CATEGORY not in items.items_dict:
+            items.add_category(SERVICE_CATEGORY, service_items)
+        else:
+            for item in service_items:
+                if not items.item_exists_in_category(SERVICE_CATEGORY, item):
+                    items.add_item_to_category(SERVICE_CATEGORY, item)
     else:
-        for item in service_items:
-            if not items.item_exists_in_category(SERVICE_CATEGORY, item):
-                items.add_item_to_category(SERVICE_CATEGORY, item)
         items.remove_nonexistent_items(SERVICE_CATEGORY, service_items)
+
+    # 如果服务类别已经存在，但是服务项列表为空，那么就删除服务类别
+    if SERVICE_CATEGORY in items.items_dict and not items.items_dict[SERVICE_CATEGORY]:
+        items.delete_category(SERVICE_CATEGORY)
 
 
 ######################### 主页相关Class结束 #########################
