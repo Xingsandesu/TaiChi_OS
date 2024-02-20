@@ -72,19 +72,23 @@ curl -sSL -o get-taichi.sh https://raw.githubusercontent.com/Xingsandesu/TaiChi_
 ##### 1. 检查Docker是否已安装
 ##### 2. 修改/etc/docker/daemon.json
 
-`{
+```
+{
     "registry-mirrors": [
         "https://dockerproxy.com",
         "https://docker.mirrors.ustc.edu.cn",
         "https://docker.nju.edu.cn"
     ]
-}`
-`	systemctl daemon-reload
-	systemctl restart docker`
+}
+```
+```
+systemctl daemon-reload
+systemctl restart docker
+```
 
 ##### 3. 安装依赖
-
-`	if [ "$OS" = "ubuntu" ] || [ "$OS" = "debian" ]; then
+```Shell
+if [ "$OS" = "ubuntu" ] || [ "$OS" = "debian" ]; then
 		sudo apt -y update
 		sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev \
 		libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev \
@@ -108,32 +112,38 @@ curl -sSL -o get-taichi.sh https://raw.githubusercontent.com/Xingsandesu/TaiChi_
 	else
 		echo "Unsupported OS"
 		exit 1
-	fi`
-
+	fi
+```
 ##### 4. 创建目录
-`mkdir -p /usr/taichi`
+```
+mkdir -p /usr/taichi
+```
 ##### 5. 下载源码并且解压
-`wget -P /usr/taichi https://codeload.github.com/Xingsandesu/TaiChi_OS/zip/refs/heads/main`
-`unzip /usr/taichi/main -d /usr/taichi`
+```
+wget -P /usr/taichi https://codeload.github.com/Xingsandesu/TaiChi_OS/zip/refs/heads/main
+```
+```
+unzip /usr/taichi/main -d /usr/taichi
+```
 ##### 6. 编译安装CPython3.11.7(或者使用包管理器安装大于此版本的CPython)
-`tar -zvxf /usr/taichi/TaiChi_OS-main/.shell/Python-3.11.7.tgz -C /usr/taichi/TaiChi_OS-main/.shell/`
+```tar -zvxf /usr/taichi/TaiChi_OS-main/.shell/Python-3.11.7.tgz -C /usr/taichi/TaiChi_OS-main/.shell/```
 
-`cd /usr/taichi/TaiChi_OS-main/.shell/Python-3.11.7`
+```cd /usr/taichi/TaiChi_OS-main/.shell/Python-3.11.7```
 
-`./configure --enable-optimizations --prefix=/usr/taichi/python`
-`make`
-`make install`
+```./configure --enable-optimizations --prefix=/usr/taichi/python```
+```make```
+```make install```
 ##### 7. 安装软件依赖, 更换国内源
-`cd /usr/taichi/TaiChi_OS-main`
-`/usr/taichi/python/bin/pip3 install -i https://mirrors.aliyun.com/pypi/simple/ pip -U`
-`/usr/taichi/python/bin/pip3 config set global.index-url https://mirrors.aliyun.com/pypi/simple/`
-`/usr/taichi/python/bin/pip3 install -r requirements.txt`
+```cd /usr/taichi/TaiChi_OS-main```
+```/usr/taichi/python/bin/pip3 install -i https://mirrors.aliyun.com/pypi/simple/ pip -U```
+```/usr/taichi/python/bin/pip3 config set global.index-url https://mirrors.aliyun.com/pypi/simple/```
+```/usr/taichi/python/bin/pip3 install -r requirements.txt```
 
 
 
 ##### 8.写入service
-`vim /etc/systemd/system/taichi.service`
-`	[Unit]
+```vim /etc/systemd/system/taichi.service```
+```	[Unit]
 	Description=Taichi
 	Documentation=https://app.kookoo.top
 	After=network.target
@@ -147,19 +157,19 @@ curl -sSL -o get-taichi.sh https://raw.githubusercontent.com/Xingsandesu/TaiChi_
 	StandardOutput=null
 	StandardError=syslog
 	[Install]
-	WantedBy=multi-user.target`
+	WantedBy=multi-user.target```
 
 
 ##### 9. 更新配置
-`systemctl daemon-reload`
+```systemctl daemon-reload```
 
 
 ##### 10. 启动服务
-`systemctl start taichi`
+```systemctl start taichi```
 
 
 ##### 11. 设置开机启动
-`systemctl enable taichi`
+```systemctl enable taichi```
 
 ### 手动部署(二进制)
 
