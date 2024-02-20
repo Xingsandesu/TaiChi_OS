@@ -86,6 +86,6 @@ TAICHI_OS_LOGO = """
 """
 
 TAICHI_OS_WELCOME_MESSAGE = ("\n"
-                             "版本 : 1.0.0\n"
+                             "版本 : 1.0.0.1\n"
                              "交流群 : 909881726"
                              "GITHUB : https://github.com/Xingsandesu/TaiChi_OS\n")

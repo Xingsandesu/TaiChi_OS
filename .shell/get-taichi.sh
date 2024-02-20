@@ -811,13 +811,13 @@ EOF
 
 	mkdir -p /usr/taichi
 	echo "目录创建完成"
-	wget -P /usr/taichi https://codeload.github.com/Xingsandesu/TaiChi_OS/zip/refs/heads/master
-	unzip /usr/taichi/master -d /usr/taichi
+	wget -P /usr/taichi https://codeload.github.com/Xingsandesu/TaiChi_OS/zip/refs/heads/main
+	unzip /usr/taichi/main -d /usr/taichi
 	echo "文件下载并解压完成"
 	echo "解压Python源码"
-	tar -zvxf /usr/taichi/TaiChi_OS-master/.shell/Python-3.11.7.tgz -C /usr/taichi/TaiChi_OS-master/.shell/
+	tar -zvxf /usr/taichi/TaiChi_OS-main/.shell/Python-3.11.7.tgz -C /usr/taichi/TaiChi_OS-main/.shell/
 	echo "编译安装Python"
-	cd /usr/taichi/TaiChi_OS-master/.shell/Python-3.11.7
+	cd /usr/taichi/TaiChi_OS-main/.shell/Python-3.11.7
 	echo "Python源码lto优化"
 	./configure --enable-optimizations --prefix=/usr/taichi/python
 	echo "Python源码编译"
@@ -825,7 +825,7 @@ EOF
 	echo "Python源码编译"
 	make install
 	echo "安装软件依赖, 更换国内源"
-	cd /usr/taichi/TaiChi_OS-master
+	cd /usr/taichi/TaiChi_OS-main
 	/usr/taichi/python/bin/pip3 install -i https://mirrors.aliyun.com/pypi/simple/ pip -U
 	/usr/taichi/python/bin/pip3 config set global.index-url https://mirrors.aliyun.com/pypi/simple/
 	/usr/taichi/python/bin/pip3 install -r requirements.txt
@@ -844,7 +844,7 @@ EOF
 
 	[Service]
 	WorkingDirectory=/usr/taichi
-	ExecStart=/usr/taichi/python/bin/python3 /usr/taichi/TaiChi_OS-master/run.py --port=${port}
+	ExecStart=/usr/taichi/python/bin/python3 /usr/taichi/TaiChi_OS-main/run.py --port=${port}
 	Restart=on-abnormal
 	RestartSec=5s
 	KillMode=mixed
@@ -977,14 +977,14 @@ update_taichi() {
 python_update_taichi() {
 	systemctl stop taichi
 	mv /usr/taichi/python /tmp/
-	mv /usr/taichi/TaiChi_OS-master/config.json /tmp/
-	mv /usr/taichi/TaiChi_OS-master/data.db /tmp/
+	mv /usr/taichi/TaiChi_OS-main/config.json /tmp/
+	mv /usr/taichi/TaiChi_OS-main/data.db /tmp/
 	rm -rf /usr/taichi/*
-	wget -P /usr/taichi https://codeload.github.com/Xingsandesu/TaiChi_OS/zip/refs/heads/master
-	unzip /usr/taichi/master -d /usr/taichi
+	wget -P /usr/taichi https://codeload.github.com/Xingsandesu/TaiChi_OS/zip/refs/heads/main
+	unzip /usr/taichi/main -d /usr/taichi
 	mv /tmp/python /usr/taichi/python
-  mv /tmp/config.json /usr/taichi/TaiChi_OS-master/config.json
- 	mv /tmp/data.db /usr/taichi/TaiChi_OS-master/data.db
+  mv /tmp/config.json /usr/taichi/TaiChi_OS-main/config.json
+ 	mv /tmp/data.db /usr/taichi/TaiChi_OS-main/data.db
 	systemctl start taichi
 	systemctl daemon-reload
 }
@@ -1074,8 +1074,8 @@ case $operation in
 	5)
 		# 恢复默认设置
 		echo "开始恢复默认设置..."
-		if [ -f "/usr/taichi/TaiChi_OS-master/config.json" ]; then
-			rm -rf /usr/taichi/TaiChi_OS-master/config.json
+		if [ -f "/usr/taichi/TaiChi_OS-main/config.json" ]; then
+			rm -rf /usr/taichi/TaiChi_OS-main/config.json
 		else
 			rm -rf /usr/taichi/config.json
 		fi
@@ -1089,8 +1089,8 @@ case $operation in
 	6)
 		# 重置账号密码
 		echo "开始重置账号密码..."
-		if [ -f "/usr/taichi/TaiChi_OS-master/data.db" ]; then
-			rm -rf /usr/taichi/TaiChi_OS-master/data.db
+		if [ -f "/usr/taichi/TaiChi_OS-main/data.db" ]; then
+			rm -rf /usr/taichi/TaiChi_OS-main/data.db
 		else
 			rm -rf /usr/taichi/data.db
 		fi
@@ -1133,8 +1133,8 @@ case $operation in
 		if [[ $new_source != http://* ]]; then
 			new_source="http://${new_source}"
 		fi
-		if [ -f "/usr/taichi/TaiChi_OS-master/config.json" ]; then
-			sed -i 's|\("source_url": "\)[^"]*"|\1'${new_source}'"|' /usr/taichi/TaiChi_OS-master/config.json
+		if [ -f "/usr/taichi/TaiChi_OS-main/config.json" ]; then
+			sed -i 's|\("source_url": "\)[^"]*"|\1'${new_source}'"|' /usr/taichi/TaiChi_OS-main/config.json
 		else
 			sed -i 's|\("source_url": "\)[^"]*"|\1'${new_source}'"|' /usr/taichi/config.json
 		fi
@@ -1169,8 +1169,8 @@ case $operation in
 	13)
 		echo "请输入新的 Docker 路径："
 		read new_docker_path
-		if [ -f "/usr/taichi/TaiChi_OS-master/config.json" ]; then
-			sed -i 's|\("docker_data_path": "\)[^"]*"|\1'${new_docker_path}'"|' /usr/taichi/TaiChi_OS-master/config.json
+		if [ -f "/usr/taichi/TaiChi_OS-main/config.json" ]; then
+			sed -i 's|\("docker_data_path": "\)[^"]*"|\1'${new_docker_path}'"|' /usr/taichi/TaiChi_OS-main/config.json
 		else
 			sed -i 's|\("docker_data_path": "\)[^"]*"|\1'${new_docker_path}'"|' /usr/taichi/config.json
 		fi
@@ -1184,8 +1184,8 @@ case $operation in
 		echo "修复开始"
 		echo "Docker 路径:$docker_data_path"
 		docker stop taichios
-		if [ -f "/usr/taichi/TaiChi_OS-master/config.json" ]; then
-			sed -i 's|\("docker_data_path": "\)[^"]*"|\1'${docker_data_path}'"|' /usr/taichi/TaiChi_OS-master/config.json
+		if [ -f "/usr/taichi/TaiChi_OS-main/config.json" ]; then
+			sed -i 's|\("docker_data_path": "\)[^"]*"|\1'${docker_data_path}'"|' /usr/taichi/TaiChi_OS-main/config.json
 		else
 			sed -i 's|\("docker_data_path": "\)[^"]*"|\1'${docker_data_path}'"|' /usr/taichi/config.json
 		fi
