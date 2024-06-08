@@ -680,7 +680,7 @@ install_taichi() {
 {
     "registry-mirrors": [
         "https://dockerproxy.com",
-        "https://docker.mirrors.ustc.edu.cn",
+        "https://mirror.baidubce.com/",
         "https://docker.nju.edu.cn"
     ]
 }
@@ -765,7 +765,7 @@ python_install_taichi() {
 {
     "registry-mirrors": [
         "https://dockerproxy.com",
-        "https://docker.mirrors.ustc.edu.cn",
+        "https://mirror.baidubce.com/",
         "https://docker.nju.edu.cn"
     ]
 }
@@ -897,7 +897,7 @@ docker_install_taichi() {
 {
     "registry-mirrors": [
         "https://dockerproxy.com",
-        "https://docker.mirrors.ustc.edu.cn",
+        "https://mirror.baidubce.com/",
         "https://docker.nju.edu.cn"
     ]
 }
@@ -1035,10 +1035,17 @@ echo "9. 使用Docker安装(AMD64, ARM64 如果遇到没有对应glibc库,使用
 echo "10. 源码安装(适用于所有架构, 推荐)"
 echo "11. 源码更新"
 echo "12. 查看状态"
+echo "13. 更换Docker镜像源"
+echo "14. 关闭Docker镜像源"
 echo "========================"
 echo "优先使用源码安装"
 echo "群晖或者OpenWRT使用Docker安装"
+echo "update: 2024/6/8"
+echo "本脚本使用nju和百度的Docker, dockerproxy镜像源"
+echo "由于大陆封锁，未来可能存在镜像源不可用的情况"
+echo "请尽快使用透明代理(V2RayA)等方法来实现访问Docker Hub"
 echo "========================"
+
 
 read -p "请输入你的选择（1-12）：" operation
 
@@ -1167,6 +1174,24 @@ case $operation in
 		fi
 		;;
 	13)
+		  tee /etc/docker/daemon.json <<-'EOF'
+			{
+   			 "registry-mirrors": [
+        		"https://dockerproxy.com",
+       			"https://mirror.baidubce.com/",
+        		"https://docker.nju.edu.cn"
+    		]
+		}
+		EOF
+		systemctl daemon-reload || true
+		systemctl restart docker || true
+		;;
+	14)
+	 	rm -rf /etc/docker/daemon.json
+		systemctl daemon-reload || true
+		systemctl restart docker || true
+		;;
+	999)
 		echo "请输入新的 Docker 路径："
 		read new_docker_path
 		if [ -f "/usr/taichi/TaiChi_OS-main/config.json" ]; then
@@ -1180,7 +1205,7 @@ case $operation in
 			docker restart taichios
 		fi
 		;;
-	14)
+	9999)
 		echo "修复开始"
 		echo "Docker 路径:$docker_data_path"
 		docker stop taichios
