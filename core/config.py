@@ -10,7 +10,7 @@ config_path = os.path.join(os.path.dirname(argv[0]), 'config.json')
 
 # 定义默认值
 default_data = {
-    'source_url': 'https://app.kookoo.top',
+    'source_url': 'https://taichi.evautocar.com/',
     'docker_service_config': (
         "[Unit]\n"
         "Description=Docker Application Container Engine\n"
@@ -86,6 +86,6 @@ TAICHI_OS_LOGO = """
 """
 
 TAICHI_OS_WELCOME_MESSAGE = ("\n"
-                             "版本 : 1.0.1.1\n"
+                             "版本 : 1.0.1.2\n"
                              "交流群 : 909881726"
                              "GITHUB : https://github.com/Xingsandesu/TaiChi_OS\n")

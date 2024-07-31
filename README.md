@@ -166,7 +166,7 @@ vim /etc/systemd/system/taichi.service
 ```
 	[Unit]
 	Description=Taichi
-	Documentation=https://app.kookoo.top
+	Documentation=https://taichi.evautocar.com
 	After=network.target
 	Wants=network.target
 	[Service]
@@ -214,7 +214,7 @@ systemctl enable taichi
 
 ### 官方源
 
-https://app.kookoo.top
+https://taichi.evautocar.com
 
 ### 手动部署
 

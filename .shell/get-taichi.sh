@@ -707,7 +707,7 @@ EOF
 	cat << EOF > /etc/systemd/system/taichi.service
 	[Unit]
 	Description=Taichi
-	Documentation=https://app.kookoo.top
+	Documentation=https://taichi.evautocar.com/
 	After=network.target
 	Wants=network.target
 
@@ -838,7 +838,7 @@ EOF
 	cat << EOF > /etc/systemd/system/taichi.service
 	[Unit]
 	Description=Taichi
-	Documentation=https://app.kookoo.top
+	Documentation=https://taichi.evautocar.com/
 	After=network.target
 	Wants=network.target
 
@@ -1017,7 +1017,7 @@ fi
 
 echo "=========太极OS========="
 echo "WIKI: https://github.com/Xingsandesu/TaiChi_OS"
-echo "官方软件源: https://app.kookoo.top"
+echo "官方软件源: https://taichi.evautocar.com/"
 echo "$status"
 echo "Docker 路径:$docker_data_path"
 echo "========================"
